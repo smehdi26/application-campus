@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F8F9FA">
+
+    <!-- HEADER WITH BACK BUTTON -->
+    <!-- FIX: Removed backgroundTint, set background directly -->
+    <LinearLayout
+        android:id="@+id/btnBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:background="#FFFFFF"
+        android:elevation="4dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_menu_revert"
+            android:rotation="180"
+            app:tint="#333"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="16dp">
+
+            <TextView
+                android:id="@+id/tvHeaderClassName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Class Name"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#000"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Manage Courses"
+                android:textSize="12sp"
+                android:textColor="#757575"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Course List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerAdminCourses"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp"
+        android:clipToPadding="false"/>
+
+    <!-- Add Course Button -->
+    <Button
+        android:id="@+id/btnAdminAddCourse"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Add New Course"
+        android:backgroundTint="@color/esprit_red"
+        android:layout_margin="16dp"/>
+
+</LinearLayout>

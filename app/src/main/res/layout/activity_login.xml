@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!-- 1. SCROLLVIEW (Placed first so it sits behind the button) -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/footer">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="24dp">
+
+            <!-- LOGO SECTION -->
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:text="E"
+                android:textSize="40sp"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:background="@drawable/bg_logo_red"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Welcome to Esprit"
+                android:textSize="24sp"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Campus Life &amp; Carpooling"
+                android:textSize="14sp"
+                android:textColor="#757575"
+                android:layout_marginBottom="40dp"/>
+
+            <!-- LOGIN FORM SECTION -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="start">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="#000"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sign in to access your account"
+                    android:textSize="14sp"
+                    android:textColor="#757575"
+                    android:layout_marginBottom="24dp"/>
+
+                <!-- Email -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/email"
+                    android:textColor="#555"
+                    android:layout_marginBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/bg_input_field"
+                    android:hint="your.email@esprit.tn"
+                    android:inputType="textEmailAddress"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:drawableStart="@android:drawable/ic_dialog_email"
+                    android:drawablePadding="12dp"
+                    android:drawableTint="#555"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- Password -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/password"
+                    android:textColor="#555"
+                    android:layout_marginBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/bg_input_field"
+                    android:hint="Enter your password"
+                    android:inputType="textPassword"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:drawableStart="@android:drawable/ic_lock_idle_lock"
+                    android:drawableEnd="@android:drawable/ic_menu_view"
+                    android:drawablePadding="12dp"
+                    android:drawableTint="#555"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="8dp"/>
+
+                <!-- Forgot Password -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Forgot Password?"
+                    android:textColor="@color/esprit_red"
+                    android:textStyle="bold"
+                    android:layout_gravity="end"
+                    android:layout_marginBottom="24dp"/>
+
+                <!-- Login Button -->
+                <Button
+                    android:id="@+id/btnLogin"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:text="@string/login"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:backgroundTint="@color/esprit_red"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- Sign Up Link -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Don't have an account? "
+                        android:textColor="#555"/>
+
+                    <TextView
+                        android:id="@+id/tvRegisterLink"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sign Up"
+                        android:textStyle="bold"
+                        android:textColor="@color/esprit_red"
+                        android:padding="8dp"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- 2. FOOTER -->
+    <TextView
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="© 2025 ESPRIT University. All rights reserved."
+        android:gravity="center"
+        android:padding="16dp"
+        android:textSize="10sp"
+        android:textColor="#999"/>
+
+    <!-- 3. LANGUAGE BUTTON (Moved to the bottom so it sits ON TOP of ScrollView) -->
+    <Button
+        android:id="@+id/btnChangeLang"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="@string/change_lang"
+        android:backgroundTint="#FFFFFF"
+        android:textColor="#555"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:textSize="12sp"
+        style="?android:attr/borderlessButtonStyle"
+        android:elevation="10dp"/>
+
+</RelativeLayout>

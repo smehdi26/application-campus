@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottomNavBar"
+    android:layout_width="match_parent"
+    android:layout_height="65dp"
+    android:layout_alignParentBottom="true"
+    android:background="#FFFFFF"
+    android:elevation="20dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:weightSum="6"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+
+    <!-- 1. Covoiturage -->
+    <TextView
+        android:id="@+id/navCovoiturage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Covoiturage"
+        android:textSize="9sp"
+        android:gravity="center"
+        android:textColor="#757575"
+        android:drawableTop="@drawable/ic_nav_car"
+        android:drawablePadding="4dp"
+        app:drawableTint="#757575"/>
+
+    <!-- 2. Courses -->
+    <TextView
+        android:id="@+id/navCourses"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Courses"
+        android:textSize="9sp"
+        android:gravity="center"
+        android:textColor="#757575"
+        android:drawableTop="@drawable/ic_nav_book"
+        android:drawablePadding="4dp"
+        app:drawableTint="#757575"/>
+
+    <!-- 3. Events -->
+    <TextView
+        android:id="@+id/navEvents"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Events"
+        android:textSize="9sp"
+        android:gravity="center"
+        android:textColor="#757575"
+        android:drawableTop="@drawable/ic_nav_event"
+        android:drawablePadding="4dp"
+        app:drawableTint="#757575"/>
+
+    <!-- 4. Map -->
+    <TextView
+        android:id="@+id/navMap"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Map"
+        android:textSize="9sp"
+        android:gravity="center"
+        android:textColor="#757575"
+        android:drawableTop="@drawable/ic_nav_map"
+        android:drawablePadding="4dp"
+        app:drawableTint="#757575"/>
+
+    <!-- 5. Forums -->
+    <TextView
+        android:id="@+id/navForums"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Forums"
+        android:textSize="9sp"
+        android:gravity="center"
+        android:textColor="#757575"
+        android:drawableTop="@drawable/ic_nav_forum"
+        android:drawablePadding="4dp"
+        app:drawableTint="#757575"/>
+
+    <!-- 6. Profile -->
+    <TextView
+        android:id="@+id/navProfile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Profile"
+        android:textSize="9sp"
+        android:gravity="center"
+        android:textColor="#757575"
+        android:drawableTop="@drawable/ic_nav_profile"
+        android:drawablePadding="4dp"
+        app:drawableTint="#757575"/>
+
+</LinearLayout>

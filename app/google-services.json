@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "932366605482",
+    "project_id": "course-managment-afd37",
+    "storage_bucket": "course-managment-afd37.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:932366605482:android:ac590919234a110b7304d3",
+        "android_client_info": {
+          "package_name": "com.example.coursemanagment"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZtRKGJGAcyoP8aGsRJzPn3dLG09Mnjig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

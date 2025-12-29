@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:gravity="center_vertical">
+
+    <CheckBox
+        android:id="@+id/cbSelectStudent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="8dp">
+
+        <TextView
+            android:id="@+id/tvStudentName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Student Name"
+            android:textStyle="bold"
+            android:textColor="#000"/>
+
+        <!-- Shows if they are already in another class -->
+        <TextView
+            android:id="@+id/tvStudentStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Unassigned"
+            android:textSize="12sp"
+            android:textColor="#757575"/>
+    </LinearLayout>
+
+</LinearLayout>

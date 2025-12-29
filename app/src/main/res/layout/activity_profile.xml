@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8F9FA">
+
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="65dp"> <!-- Space for Navbar -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Title Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="20dp">
+                <View
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/esprit_red"
+                    android:layout_marginBottom="8dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Esprit"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="#000"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Profile"
+                    android:textColor="#757575"/>
+            </LinearLayout>
+
+            <!-- PROFILE INFO CARD -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="24dp">
+
+                    <ImageView
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:src="@android:drawable/sym_def_app_icon"
+                        android:background="@drawable/bg_role_badge"
+                        android:padding="15dp"
+                        android:layout_marginBottom="12dp"/>
+
+                    <TextView
+                        android:id="@+id/tvFullName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Loading..."
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="#000"/>
+
+                    <TextView
+                        android:id="@+id/tvEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="..."
+                        android:textSize="14sp"
+                        android:textColor="#757575"
+                        android:layout_marginBottom="12dp"/>
+
+                    <TextView
+                        android:id="@+id/tvRole"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="..."
+                        android:textSize="12sp"
+                        android:textColor="@color/esprit_red"
+                        android:background="@drawable/bg_role_badge"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="6dp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- MENU OPTIONS CARD -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- 1. Edit Profile (Always Visible) -->
+                    <LinearLayout
+                        android:id="@+id/btnEditProfile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:gravity="center_vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_edit" app:tint="#333"/>
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Edit Profile" android:textSize="16sp" android:textColor="#333" android:layout_marginStart="16dp"/>
+                        <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@android:drawable/arrow_down_float" android:rotation="-90" app:tint="#999"/>
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE" android:layout_marginStart="56dp"/>
+
+                    <!-- 2. My Courses (For Students/Teachers) -->
+                    <LinearLayout
+                        android:id="@+id/btnMyCourses"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:gravity="center_vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_agenda" app:tint="#333"/>
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="My Courses" android:textSize="16sp" android:textColor="#333" android:layout_marginStart="16dp"/>
+                        <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@android:drawable/arrow_down_float" android:rotation="-90" app:tint="#999"/>
+                    </LinearLayout>
+
+                    <!-- 3. Manage Users (For Admins ONLY) - Default GONE -->
+                    <LinearLayout
+                        android:id="@+id/btnManageUsers"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:gravity="center_vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:visibility="gone"
+                        android:background="?attr/selectableItemBackground">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_myplaces" app:tint="#333"/>
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Manage Users" android:textSize="16sp" android:textColor="#333" android:layout_marginStart="16dp"/>
+                        <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@android:drawable/arrow_down_float" android:rotation="-90" app:tint="#999"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- LOGOUT BUTTON -->
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="Log Out"
+                android:textColor="@color/esprit_red"
+                android:textStyle="bold"
+                android:backgroundTint="#FFFFFF"
+                app:strokeColor="@color/esprit_red"
+                app:strokeWidth="1dp"
+                app:cornerRadius="12dp"
+                android:layout_marginTop="12dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- NAVBAR INCLUDE -->
+    <include
+        android:id="@+id/navbar"
+        layout="@layout/layout_navbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

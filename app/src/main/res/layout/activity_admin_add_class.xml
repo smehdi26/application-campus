@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F8F9FA">
+
+    <!-- 1. NEW HEADER WITH BACK BUTTON -->
+    <LinearLayout
+        android:id="@+id/btnBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        android:background="#FFFFFF"
+        android:elevation="4dp"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_menu_revert"
+            android:rotation="180"
+            android:tint="#000"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000"
+            android:layout_marginStart="12dp"/>
+    </LinearLayout>
+
+    <!-- CONTENT CONTAINER -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Class Details"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#000"
+            android:layout_marginBottom="24dp"/>
+
+        <EditText
+            android:id="@+id/etClassName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Class Name (e.g., 4TWIN1)"
+            android:background="@android:drawable/edit_text"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/etClassCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Class Code (e.g., T_2025)"
+            android:background="@android:drawable/edit_text"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Available Students:"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Student List -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerSelectStudents"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="16dp"
+            android:background="#FFFFFF"/>
+
+        <Button
+            android:id="@+id/btnSaveClass"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Save Class"
+            android:backgroundTint="@color/esprit_red"/>
+    </LinearLayout>
+
+</LinearLayout>

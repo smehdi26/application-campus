@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!-- SCROLLVIEW -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/footer"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="24dp">
+
+            <!-- 1. LOGO SECTION -->
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:text="E"
+                android:textSize="40sp"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:background="@drawable/bg_logo_red"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create Account"
+                android:textSize="24sp"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Join the Esprit Community"
+                android:textSize="14sp"
+                android:textColor="#757575"
+                android:layout_marginBottom="30dp"/>
+
+            <!-- 2. FORM SECTION -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="start">
+
+                <!-- Names Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+
+                    <EditText
+                        android:id="@+id/etFirstName"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_input_field"
+                        android:hint="First Name"
+                        android:inputType="textPersonName"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:textSize="14sp"
+                        android:layout_marginEnd="8dp"/>
+
+                    <EditText
+                        android:id="@+id/etLastName"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_input_field"
+                        android:hint="Last Name"
+                        android:inputType="textPersonName"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:textSize="14sp"
+                        android:layout_marginStart="8dp"/>
+                </LinearLayout>
+
+                <!-- Email -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Email Address"
+                    android:textColor="#555"
+                    android:layout_marginBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/etRegEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/bg_input_field"
+                    android:hint="student@esprit.tn"
+                    android:inputType="textEmailAddress"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:drawableStart="@android:drawable/ic_dialog_email"
+                    android:drawablePadding="12dp"
+                    android:drawableTint="#555"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- Password -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Password"
+                    android:textColor="#555"
+                    android:layout_marginBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/etRegPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/bg_input_field"
+                    android:hint="Create a password"
+                    android:inputType="textPassword"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:drawableStart="@android:drawable/ic_lock_idle_lock"
+                    android:drawableEnd="@android:drawable/ic_menu_view"
+                    android:drawablePadding="12dp"
+                    android:drawableTint="#555"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="30dp"/>
+                <!-- Increased margin bottom since radio buttons are gone -->
+
+                <!-- Sign Up Button -->
+                <Button
+                    android:id="@+id/btnRegister"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:text="Sign Up"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:backgroundTint="@color/esprit_red"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- Login Link -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Already have an account? "
+                        android:textColor="#555"/>
+
+                    <TextView
+                        android:id="@+id/tvGoToLogin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Login"
+                        android:textStyle="bold"
+                        android:textColor="@color/esprit_red"
+                        android:padding="8dp"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- FOOTER -->
+    <TextView
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="© 2025 ESPRIT University. All rights reserved."
+        android:gravity="center"
+        android:padding="16dp"
+        android:textSize="10sp"
+        android:textColor="#999"/>
+
+</RelativeLayout>

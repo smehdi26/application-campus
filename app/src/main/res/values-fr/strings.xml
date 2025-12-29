@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Gestion des Cours</string>
+    <string name="welcome">Bon retour</string>
+    <string name="login">Connexion</string>
+    <string name="email">Email</string>
+    <string name="password">Mot de passe</string>
+    <string name="register_link">Nouveau? Créer un compte</string>
+    <string name="change_lang">Langue</string>
+    <string name="courses">Cours</string>
+    <string name="profile">Profil</string>
+    <string name="logout">Se déconnecter</string>
+</resources>

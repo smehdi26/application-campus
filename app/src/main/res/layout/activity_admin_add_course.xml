@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="#F8F9FA">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Course"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"/>
+
+    <EditText
+        android:id="@+id/etAC_Name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Course Name"
+        android:background="@android:drawable/edit_text"
+        android:padding="12dp"
+        android:layout_marginBottom="12dp"/>
+
+    <EditText
+        android:id="@+id/etAC_Code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Course Code"
+        android:background="@android:drawable/edit_text"
+        android:padding="12dp"
+        android:layout_marginBottom="12dp"/>
+
+    <EditText
+        android:id="@+id/etAC_Time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Timing (e.g. Mon 10am)"
+        android:background="@android:drawable/edit_text"
+        android:padding="12dp"
+        android:layout_marginBottom="12dp"/>
+
+    <EditText
+        android:id="@+id/etAC_Loc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Location (e.g. Room A1)"
+        android:background="@android:drawable/edit_text"
+        android:padding="12dp"
+        android:layout_marginBottom="12dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Assign Teacher:"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <Spinner
+        android:id="@+id/spinnerAC_Teacher"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@android:drawable/btn_dropdown"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/btnAC_Save"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Create Course"
+        android:backgroundTint="@color/esprit_red"/>
+
+</LinearLayout>

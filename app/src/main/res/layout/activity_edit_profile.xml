@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F8F9FA">
+
+    <!-- 1. HEADER WITH BACK BUTTON -->
+    <LinearLayout
+        android:id="@+id/btnBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:background="#FFFFFF"
+        android:elevation="4dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_menu_revert"
+            android:rotation="180"
+            android:tint="#333"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back to Profile"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#333"
+            android:layout_marginStart="12dp"/>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit Profile"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="#000"
+                android:layout_marginBottom="24dp"/>
+
+            <!-- First Name -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="First Name"
+                android:textColor="#555"
+                android:layout_marginBottom="6dp"/>
+            <EditText
+                android:id="@+id/etEditFirst"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_input_field"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Last Name -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Last Name"
+                android:textColor="#555"
+                android:layout_marginBottom="6dp"/>
+            <EditText
+                android:id="@+id/etEditLast"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_input_field"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Email -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email Address"
+                android:textColor="#555"
+                android:layout_marginBottom="6dp"/>
+            <EditText
+                android:id="@+id/etEditEmail"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_input_field"
+                android:inputType="textEmailAddress"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Divider for Security Section -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#DDD"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Security Changes"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="#D32F2F"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- New Password -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Password (Optional)"
+                android:textColor="#555"
+                android:layout_marginBottom="6dp"/>
+            <EditText
+                android:id="@+id/etNewPassword"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_input_field"
+                android:inputType="textPassword"
+                android:hint="Leave blank to keep same"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Current Password (REQUIRED) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Current Password (Required to save)"
+                android:textColor="#D32F2F"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp"/>
+            <EditText
+                android:id="@+id/etCurrentPassword"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_input_field"
+                android:inputType="textPassword"
+                android:hint="Confirm your identity"
+                android:padding="12dp"
+                android:layout_marginBottom="24dp"/>
+
+            <!-- Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnCancel"
+                    android:layout_width="0dp"
+                    android:layout_height="55dp"
+                    android:layout_weight="1"
+                    android:text="Cancel"
+                    android:textColor="#333"
+                    android:backgroundTint="#EEE"
+                    android:layout_marginEnd="8dp"/>
+
+                <Button
+                    android:id="@+id/btnSaveChanges"
+                    android:layout_width="0dp"
+                    android:layout_height="55dp"
+                    android:layout_weight="1"
+                    android:text="Save Changes"
+                    android:backgroundTint="@color/esprit_red"
+                    android:layout_marginStart="8dp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

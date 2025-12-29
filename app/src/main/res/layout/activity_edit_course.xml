@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="#F8F9FA">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit Course"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#000"
+        android:layout_marginBottom="24dp"/>
+
+    <EditText
+        android:id="@+id/etEditCourseName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Course Name"
+        android:background="@android:drawable/edit_text"
+        android:layout_marginBottom="12dp"
+        android:padding="12dp"/>
+
+    <EditText
+        android:id="@+id/etEditCourseCode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Course Code"
+        android:background="@android:drawable/edit_text"
+        android:layout_marginBottom="12dp"
+        android:padding="12dp"/>
+
+    <EditText
+        android:id="@+id/etEditProfessor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Professor Name"
+        android:background="@android:drawable/edit_text"
+        android:layout_marginBottom="12dp"
+        android:padding="12dp"/>
+
+    <EditText
+        android:id="@+id/etEditTiming"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Time"
+        android:background="@android:drawable/edit_text"
+        android:layout_marginBottom="12dp"
+        android:padding="12dp"/>
+
+    <EditText
+        android:id="@+id/etEditLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Room"
+        android:background="@android:drawable/edit_text"
+        android:layout_marginBottom="12dp"
+        android:padding="12dp"/>
+
+    <EditText
+        android:id="@+id/etEditDescription"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:hint="Description..."
+        android:gravity="top"
+        android:background="@android:drawable/edit_text"
+        android:layout_marginBottom="24dp"
+        android:padding="12dp"/>
+
+    <Button
+        android:id="@+id/btnUpdateCourse"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Update Course"
+        android:backgroundTint="#2196F3"/>
+
+</LinearLayout>
