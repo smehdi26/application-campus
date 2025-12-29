@@ -3,6 +3,7 @@ package com.example.coursemanagment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -11,6 +12,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,7 +37,6 @@ public class EditProfileActivity extends AppCompatActivity {
     FirebaseUser firebaseUser;
     String uid;
     String currentEmailDb;
-    ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +56,6 @@ public class EditProfileActivity extends AppCompatActivity {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         uid = firebaseUser.getUid();
         mDatabase = FirebaseDatabase.getInstance().getReference("Users").child(uid);
-
-        pd = new ProgressDialog(this);
-        pd.setMessage("Updating Profile...");
 
         loadCurrentData();
 
@@ -94,104 +93,55 @@ public class EditProfileActivity extends AppCompatActivity {
             return;
         }
 
-        boolean isEmailChanged = !newEmail.equals(currentEmailDb);
-        boolean isPassChanged = !newPass.isEmpty();
+        // Check if Security Update is needed (Email or Password changed)
+        if (!newEmail.equals(currentEmailDb) || !newPass.isEmpty()) {
 
-        if (isEmailChanged || isPassChanged) {
             if (TextUtils.isEmpty(currentPass)) {
                 etCurrentPass.setError("Required");
-                etCurrentPass.requestFocus();
                 return;
             }
-            // Start the Chain of Updates
-            pd.show();
-            step1_ReAuthenticate(newFirst, newLast, newEmail, newPass, currentPass);
-        } else {
-            // Just update text in DB
-            updateDatabaseOnly(newFirst, newLast);
-        }
-    }
 
-    // STEP 1: Verify the user is who they say they are
-    private void step1_ReAuthenticate(String first, String last, String email, String newPass, String currentPass) {
-        AuthCredential credential = EmailAuthProvider.getCredential(firebaseUser.getEmail(), currentPass);
-
-        firebaseUser.reauthenticate(credential).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                // Auth OK, move to Step 2
-                step2_UpdateEmail(first, last, email, newPass);
-            } else {
-                pd.dismiss();
-                Toast.makeText(this, "Wrong Current Password", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    // STEP 2: Update Email in Authentication System
-    private void step2_UpdateEmail(String first, String last, String email, String newPass) {
-        if (!email.equals(currentEmailDb)) {
-            firebaseUser.updateEmail(email).addOnCompleteListener(task -> {
+            // 1. Re-Authenticate
+            AuthCredential credential = EmailAuthProvider.getCredential(firebaseUser.getEmail(), currentPass);
+            firebaseUser.reauthenticate(credential).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    // Email OK, move to Step 3
-                    step3_UpdatePassword(first, last, email, newPass);
+
+                    // 2. Update Email if changed
+                    if (!newEmail.equals(currentEmailDb)) {
+                        firebaseUser.updateEmail(newEmail);
+                    }
+
+                    // 3. Update Password if entered
+                    if (!newPass.isEmpty()) {
+                        firebaseUser.updatePassword(newPass);
+                    }
+
+                    // 4. Update Database
+                    updateDatabase(newFirst, newLast, newEmail);
+
                 } else {
-                    pd.dismiss();
-                    Toast.makeText(this, "Email Update Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Wrong Current Password", Toast.LENGTH_SHORT).show();
                 }
             });
+
         } else {
-            // Email didn't change, skip to Step 3
-            step3_UpdatePassword(first, last, email, newPass);
+            // No security changes, just update names in DB
+            updateDatabase(newFirst, newLast, newEmail);
         }
     }
 
-    // STEP 3: Update Password in Authentication System
-    private void step3_UpdatePassword(String first, String last, String email, String newPass) {
-        if (!newPass.isEmpty()) {
-            firebaseUser.updatePassword(newPass).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    // Password OK, move to Step 4
-                    step4_UpdateDatabase(first, last, email);
-                } else {
-                    pd.dismiss();
-                    Toast.makeText(this, "Password Update Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                }
-            });
-        } else {
-            // Password didn't change, skip to Step 4
-            step4_UpdateDatabase(first, last, email);
-        }
-    }
-
-    // STEP 4: Finally, update the Realtime Database to match Auth
-    private void step4_UpdateDatabase(String first, String last, String email) {
+    private void updateDatabase(String first, String last, String email) {
         Map<String, Object> updates = new HashMap<>();
         updates.put("firstName", first);
         updates.put("lastName", last);
         updates.put("email", email);
 
         mDatabase.updateChildren(updates).addOnCompleteListener(task -> {
-            pd.dismiss();
-            if (task.isSuccessful()) {
-                Toast.makeText(this, "Account Updated Successfully!", Toast.LENGTH_SHORT).show();
-                finish();
-            } else {
-                Toast.makeText(this, "Database Error", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void updateDatabaseOnly(String first, String last) {
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("firstName", first);
-        updates.put("lastName", last);
-
-        mDatabase.updateChildren(updates).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(this, "Profile Updated", Toast.LENGTH_SHORT).show();
                 finish();
             } else {
-                Toast.makeText(this, "Failed to update", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Update Failed", Toast.LENGTH_SHORT).show();
             }
         });
     }
