@@ -34,10 +34,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    viewBinding {
+        enable = true
+    }
 }
 
 dependencies {
     implementation(libs.appcompat)
+    implementation("com.google.android.material:material:1.9.0")
     implementation("com.google.firebase:firebase-auth:22.3.0")
     implementation("com.google.firebase:firebase-database:21.0.0")
     implementation(libs.material)
