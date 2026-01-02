@@ -21,8 +21,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.example.coursemanagment.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class CalendarFragment extends Fragment {
 
@@ -45,6 +49,12 @@ public class CalendarFragment extends Fragment {
         btnAddEvent = root.findViewById(R.id.btnAddEvent);
         btnListView = root.findViewById(R.id.btnListView);
         rvEvents = root.findViewById(R.id.rvEvents);
+
+        // Set initial date to today
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
+        String formattedDate = sdf.format(new Date());
+        selectedDateText.setText(getString(R.string.events_on, formattedDate));
+
 
         // 2. Initialisation des statistiques (Exams, Events, Defense, Clubs)
         setupStatistics(root);
@@ -75,8 +85,12 @@ public class CalendarFragment extends Fragment {
 
         // 7. Clic sur le calendrier
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(year, month, dayOfMonth);
+            String formattedDate_ = sdf.format(calendar.getTime());
+            selectedDateText.setText(getString(R.string.events_on, formattedDate_));
+
             String dateStr = dayOfMonth + "/" + (month + 1) + "/" + year;
-            selectedDateText.setText("Events on " + dayOfMonth + " November " + year);
             filterEventsByDate(dateStr);
         });
 
