@@ -47,8 +47,9 @@
         <activity android:name=".AdminClassDetailsActivity" />
         <activity android:name=".AdminAddCourseActivity" />
 
-        <!-- 6. CALENDAR (AJOUTEZ CETTE LIGNE ICI) -->
+        <!-- 6. CALENDAR -->
         <activity android:name="com.example.eventscalendar.CalendarActivity" />
+        <activity android:name="com.example.eventscalendar.EventsListActivity" />
 
     </application>
 

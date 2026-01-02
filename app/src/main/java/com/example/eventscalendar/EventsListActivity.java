@@ -1,3 +1,5 @@
+// C:/Users/lenovo/AndroidStudioProjects/application-campus/app/src/main/java/com/example/eventscalendar/EventsListActivity.java
+
 package com.example.eventscalendar;
 
 import android.content.Intent;
@@ -10,36 +12,28 @@ import com.example.coursemanagment.CoursesActivity;
 import com.example.coursemanagment.ProfileActivity;
 import com.example.coursemanagment.R;
 
-public class CalendarActivity extends AppCompatActivity {
-
+public class EventsListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_events_list);
 
-        // On utilise ton layout complet
-        setContentView(R.layout.fragment_calendar);
-
-        // On active la barre de navigation
         setupNavbar();
+        setupEventsList();
+    }
 
-        // Note : Si tu veux que le calendrier fonctionne (clics, etc.),
-        // il faudra ajouter la logique ici ou appeler une méthode du fragment.
+    private void setupEventsList() {
+        // Ici tu initialiseras ton RecyclerView rvAllEvents
     }
 
     private void setupNavbar() {
-        // 1. Récupérer la navbar incluse dans fragment_calendar.xml
-        // L'ID 'navbar' correspond au <include android:id="@+id/navbar" ... />
+        // Bouton pour revenir au calendrier
+        Button btnCalendarView = findViewById(R.id.btnCalendarView);
+        if (btnCalendarView != null) {
+            btnCalendarView.setOnClickListener(v -> finish()); // Retourne simplement à l'activité précédente (Calendar)
+        }
 
-        // Dans le onCreate de CalendarActivity.java
-        Button btnListView = findViewById(R.id.btnListView);
-        btnListView.setOnClickListener(v -> {
-            // On lance l'activité qui affiche la liste
-            Intent intent = new Intent(this, EventsListActivity.class);
-            startActivity(intent);
-            // On ne met pas forcément finish() si on veut pouvoir revenir au calendrier avec le bouton retour
-        });
-
-        // 2. Colorer l'icône Events en rouge
+        // Colorer l'icône Events en rouge
         TextView navEvents = findViewById(R.id.navEvents);
         if (navEvents != null) {
             int redColor = ContextCompat.getColor(this, R.color.esprit_red);
@@ -49,17 +43,14 @@ public class CalendarActivity extends AppCompatActivity {
             }
         }
 
-        // 3. Navigation vers Profile
+        // Navigation
         findViewById(R.id.navProfile).setOnClickListener(v -> {
             startActivity(new Intent(this, ProfileActivity.class));
-            overridePendingTransition(0, 0);
             finish();
         });
 
-        // 4. Navigation vers Courses
         findViewById(R.id.navCourses).setOnClickListener(v -> {
             startActivity(new Intent(this, CoursesActivity.class));
-            overridePendingTransition(0, 0);
             finish();
         });
     }
