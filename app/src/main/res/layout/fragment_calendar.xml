@@ -5,55 +5,65 @@
     android:layout_height="match_parent"
     android:background="#F8F9FA">
 
-    <!-- Header -->
+    <!-- Header (Identique à Courses pour la cohérence) -->
     <LinearLayout
-        android:id="@+id/header_layout"
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:padding="20dp"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-        <TextView
+        <View
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@color/esprit_red"
+            android:layout_marginEnd="10dp"/>
+
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Events Calendar"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="#000"/>
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Esprit"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Events Calendar"
+                android:textSize="12sp"
+                android:textColor="#757575"/>
+        </LinearLayout>
 
         <Button
             android:id="@+id/btnListView"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="35dp"
             android:text="List View"
+            android:textSize="10sp"
             android:textAllCaps="false"
             android:backgroundTint="#F0F0F0"
             android:textColor="#333"
-            android:layout_marginEnd="8dp"
             style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnAddEvent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fabCustomSize="45dp"
-            android:src="@android:drawable/ic_input_add"
-            app:backgroundTint="#FF0000"
-            app:tint="#FFFFFF"/>
     </LinearLayout>
 
-    <ScrollView
+    <!-- Contenu Principal (Scrollable) -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/header_layout"
-        android:layout_above="@id/bottom_nav_stats">
+        android:layout_below="@id/header"
+        android:layout_above="@id/bottom_nav_stats_container"
+        android:padding="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
             android:orientation="vertical">
 
             <!-- Calendar Card -->
@@ -75,10 +85,10 @@
                 android:text="Events on November 19"
                 android:layout_marginTop="20dp"
                 android:textSize="18sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:textColor="@color/black"/>
 
-            <!-- RecyclerView ajouté pour gérer la liste dynamique des événements -->
-            <!-- C'est cet ID 'rvEvents' que votre Java recherche -->
+            <!-- Liste dynamique des événements -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvEvents"
                 android:layout_width="match_parent"
@@ -87,48 +97,45 @@
                 android:nestedScrollingEnabled="false" />
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
-    <!-- Bottom Stats Bar -->
+    <!-- Floating Action Button (Bouton Rouge +) -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnAddEvent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottom_nav_stats_container"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="20dp"
+        android:src="@android:drawable/ic_input_add"
+        app:backgroundTint="@color/esprit_red"
+        app:tint="@color/white"
+        app:fabSize="normal"/>
+
+    <!-- Bloc des statistiques (Juste au dessus de la navbar) -->
     <LinearLayout
-        android:id="@+id/bottom_nav_stats"
+        android:id="@+id/bottom_nav_stats_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@id/navbar"
         android:orientation="horizontal"
-        android:background="#FFFFFF"
+        android:background="@color/white"
         android:padding="8dp"
-        android:elevation="8dp"
+        android:elevation="4dp"
         android:weightSum="4">
 
-        <include
-            android:id="@+id/statExams"
-            layout="@layout/item_stat_card"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <include
-            android:id="@+id/statEvents"
-            layout="@layout/item_stat_card"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <include
-            android:id="@+id/statDefense"
-            layout="@layout/item_stat_card"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <include
-            android:id="@+id/statClubs"
-            layout="@layout/item_stat_card"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
+        <include android:id="@+id/statExams" layout="@layout/item_stat_card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+        <include android:id="@+id/statEvents" layout="@layout/item_stat_card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+        <include android:id="@+id/statDefense" layout="@layout/item_stat_card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+        <include android:id="@+id/statClubs" layout="@layout/item_stat_card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
     </LinearLayout>
+
+    <!-- Inclusion de la BARRE DE NAVIGATION (Navbar) -->
+    <include
+        android:id="@+id/navbar"
+        layout="@layout/layout_navbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

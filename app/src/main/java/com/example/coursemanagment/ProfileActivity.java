@@ -117,5 +117,12 @@ public class ProfileActivity extends AppCompatActivity {
             overridePendingTransition(0, 0);
             finish();
         });
+
+        findViewById(R.id.navEvents).setOnClickListener(v -> {
+            Intent intent = new Intent(this, com.example.eventscalendar.CalendarActivity.class);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+            finish();
+        });
     }
 }

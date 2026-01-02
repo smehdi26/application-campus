@@ -33,7 +33,6 @@
         <!-- 3. COURSES & MATERIALS -->
         <activity android:name=".CoursesActivity" />
         <activity android:name=".CourseDetailsActivity" />
-        <!-- Note: If you deleted AddCourseActivity.java, remove the line below -->
         <activity android:name=".AddCourseActivity" />
         <activity android:name=".EditCourseActivity" />
 
@@ -47,6 +46,9 @@
         <activity android:name=".AdminAddClassActivity" />
         <activity android:name=".AdminClassDetailsActivity" />
         <activity android:name=".AdminAddCourseActivity" />
+
+        <!-- 6. CALENDAR (AJOUTEZ CETTE LIGNE ICI) -->
+        <activity android:name="com.example.eventscalendar.CalendarActivity" />
 
     </application>
 

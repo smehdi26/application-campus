@@ -1,6 +1,8 @@
 package com.example.eventscalendar;
 
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,7 +14,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,43 +31,39 @@ public class CalendarFragment extends Fragment {
     private FloatingActionButton btnAddEvent;
     private Button btnListView;
 
-    // Pour la gestion de la liste des événements
     private RecyclerView rvEvents;
     private EventAdapter eventAdapter;
     private List<EventModel> eventList;
-
-    // Pour les statistiques en bas
-    private TextView tvExamsCount, tvEventsCount, tvDefenseCount, tvClubsCount;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_calendar, container, false);
 
-        // Initialisation des vues de base
+        // 1. Initialisation des vues de base
         calendarView = root.findViewById(R.id.calendarView);
         selectedDateText = root.findViewById(R.id.selectedDateText);
         btnAddEvent = root.findViewById(R.id.btnAddEvent);
         btnListView = root.findViewById(R.id.btnListView);
         rvEvents = root.findViewById(R.id.rvEvents);
 
-        // Initialisation des vues de statistiques (via les includes)
+        // 2. Initialisation des statistiques (Exams, Events, Defense, Clubs)
         setupStatistics(root);
 
-        // Configuration de la liste (RecyclerView)
-        eventList = new ArrayList<>();
-        // Ajout d'une donnée de test pour l'affichage initial (comme sur l'image)
-        eventList.add(new EventModel("Project Defense", "09:00", "Room B-204", "Defense", "19/11/2025"));
+        // 3. Initialisation de la Barre de Navigation (Navbar)
+        setupNavbar(root);
 
+        // 4. Configuration de la liste (RecyclerView)
+        eventList = new ArrayList<>();
+        eventList.add(new EventModel("Project Defense", "09:00", "Room B-204", "Defense", "19/11/2025"));
         eventAdapter = new EventAdapter(eventList);
         rvEvents.setLayoutManager(new LinearLayoutManager(getContext()));
         rvEvents.setAdapter(eventAdapter);
 
-        // 1. Action du bouton rouge "+"
+        // 5. Action du bouton rouge "+"
         btnAddEvent.setOnClickListener(v -> showAddEventPopup());
 
-        // 2. Action du bouton "List View"
+        // 6. Action du bouton "List View"
         btnListView.setOnClickListener(v -> {
-            // Cache le calendrier pour ne montrer que la liste
             if (calendarView.getVisibility() == View.VISIBLE) {
                 calendarView.setVisibility(View.GONE);
                 btnListView.setText("Calendar View");
@@ -76,69 +73,84 @@ public class CalendarFragment extends Fragment {
             }
         });
 
-        // 3. Clic sur un jour du calendrier (Interactivité)
+        // 7. Clic sur le calendrier
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
             String dateStr = dayOfMonth + "/" + (month + 1) + "/" + year;
             selectedDateText.setText("Events on " + dayOfMonth + " November " + year);
-
-            // Logique : Filtrer la liste ici
             filterEventsByDate(dateStr);
         });
 
         return root;
     }
 
+    private void setupNavbar(View root) {
+        // Récupération de la navbar incluse dans le layout
+        View navbar = root.findViewById(R.id.navbar);
+        if (navbar == null) return;
+
+        // Mise en évidence de l'onglet "Events" (Couleur Esprit Red)
+        TextView navEvents = navbar.findViewById(R.id.navEvents);
+        int activeColor = Color.parseColor("#E91E63"); // Rouge Esprit
+        navEvents.setTextColor(activeColor);
+        navEvents.setCompoundDrawableTintList(ColorStateList.valueOf(activeColor));
+
+        // Navigation vers Courses (Supposons que c'est une Activity ou un Fragment)
+        navbar.findViewById(R.id.navCourses).setOnClickListener(v -> {
+            // Si vous utilisez des fragments dans MainActivity :
+            // getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, new CoursesFragment()).commit();
+            Toast.makeText(getContext(), "Navigating to Courses...", Toast.LENGTH_SHORT).show();
+        });
+
+        // Navigation vers Profile
+        navbar.findViewById(R.id.navProfile).setOnClickListener(v -> {
+            Toast.makeText(getContext(), "Navigating to Profile...", Toast.LENGTH_SHORT).show();
+        });
+
+        // Ajoutez les autres clics (navCovoiturage, navMap, navForums) ici
+    }
+
     private void setupStatistics(View root) {
-        // Accès aux IDs à l'intérieur des <include>
         View statExams = root.findViewById(R.id.statExams);
         View statEvents = root.findViewById(R.id.statEvents);
         View statDefense = root.findViewById(R.id.statDefense);
         View statClubs = root.findViewById(R.id.statClubs);
 
-        // Configuration Exams (Rouge)
+        // Exams
         ((TextView) statExams.findViewById(R.id.tvStatCount)).setText("2");
         ((TextView) statExams.findViewById(R.id.tvStatCount)).setTextColor(Color.RED);
         ((TextView) statExams.findViewById(R.id.tvStatLabel)).setText("Exams");
 
-        // Configuration Events (Bleu)
+        // Events
         ((TextView) statEvents.findViewById(R.id.tvStatCount)).setText("1");
         ((TextView) statEvents.findViewById(R.id.tvStatCount)).setTextColor(Color.BLUE);
         ((TextView) statEvents.findViewById(R.id.tvStatLabel)).setText("Events");
 
-        // Configuration Defense (Orange)
+        // Defense
         ((TextView) statDefense.findViewById(R.id.tvStatCount)).setText("1");
         ((TextView) statDefense.findViewById(R.id.tvStatCount)).setTextColor(Color.parseColor("#FFA000"));
         ((TextView) statDefense.findViewById(R.id.tvStatLabel)).setText("Defense");
 
-        // Configuration Clubs (Vert)
+        // Clubs
         ((TextView) statClubs.findViewById(R.id.tvStatCount)).setText("1");
         ((TextView) statClubs.findViewById(R.id.tvStatCount)).setTextColor(Color.parseColor("#009688"));
         ((TextView) statClubs.findViewById(R.id.tvStatLabel)).setText("Clubs");
     }
 
     private void filterEventsByDate(String date) {
-        // Dans un vrai projet, vous feriez une requête Firebase ou SQLite ici
-        // Pour l'exemple, on simule une mise à jour de la liste
         Toast.makeText(getContext(), "Loading events for " + date, Toast.LENGTH_SHORT).show();
-        // eventAdapter.updateList(newList);
     }
 
     private void showAddEventPopup() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Add Personal Event");
         builder.setMessage("Add your personal events and sync with Google Calendar.");
-
         builder.setPositiveButton("Add Event", (dialog, which) -> {
             Toast.makeText(getContext(), "Event Syncing...", Toast.LENGTH_SHORT).show();
-            // Logique d'ajout à Google Calendar ici
         });
-
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         AlertDialog dialog = builder.create();
         dialog.show();
-
-        // Style du bouton comme sur l'image
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#E91E63"));
     }
 }
