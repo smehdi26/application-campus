@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#F8F9FA">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add New Event"
+        android="19sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginBottom="24dp"/>
+
+    <EditText
+        android:id="@+id/editTextEventTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Event Title"
+        android:inputType="textCapSentences"
+        android:padding="12dp"
+        android:background="@drawable/bg_input_field"
+        android:layout_marginBottom="16dp"/>
+
+    <Spinner
+        android:id="@+id/spinnerEventCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        style="@style/Widget.AppCompat.Spinner.Underlined"/>
+
+    <EditText
+        android:id="@+id/editTextEventDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Date (e.g., 01/01/2025)"
+        android:inputType="date"
+        android:focusable="false"
+        android:clickable="true"
+        android:padding="12dp"
+        android:background="@drawable/bg_input_field"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/editTextEventTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Time (e.g., 09:00)"
+        android:inputType="time"
+        android:focusable="false"
+        android:clickable="true"
+        android:padding="12dp"
+        android:background="@drawable/bg_input_field"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/editTextEventLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Location (e.g., Room B-204)"
+        android:inputType="textCapWords"
+        android:padding="12dp"
+        android:background="@drawable/bg_input_field"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/editTextEventDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Description (optional)"
+        android:inputType="textMultiLine"
+        android:lines="3"
+        android:gravity="top"
+        android:padding="12dp"
+        android:background="@drawable/bg_input_field"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/buttonSaveEvent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save Event"
+        android:backgroundTint="@color/esprit_red"
+        android:textColor="@color/white"
+        android:padding="12dp"
+        android:textSize="16sp"/>
+
+</LinearLayout>

@@ -1,5 +1,6 @@
 package com.example.eventscalendar;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,14 +33,35 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         holder.category.setText(event.getCategory());
 
         // Change la couleur du badge selon la catégorie
-        if (event.getCategory().equals("Defense")) {
+        String category = event.getCategory();
+        if (category.equals("Defense") || category.equals("Soutenances")) {
             holder.category.setBackgroundResource(R.drawable.bg_tag_defense);
+            holder.category.setTextColor(Color.parseColor("#FFA000"));
+        } else if (category.equals("Exams") || category.equals("Examens")) {
+            holder.category.setBackgroundResource(R.drawable.bg_tag_exams);
+            holder.category.setTextColor(Color.parseColor("#D32F2F"));
+        } else if (category.equals("Clubs")) {
+            holder.category.setBackgroundResource(R.drawable.bg_tag_clubs);
+            holder.category.setTextColor(Color.parseColor("#00796B"));
+        } else if (category.equals("Conferences") || category.equals("Conférences")) {
+            holder.category.setBackgroundResource(R.drawable.bg_tag_conferences);
+            holder.category.setTextColor(Color.parseColor("#1976D2"));
+        } else {
+            // Default style
+            holder.category.setBackgroundResource(R.drawable.bg_badge_gray);
+            holder.category.setTextColor(Color.GRAY);
         }
     }
 
     @Override
     public int getItemCount() {
         return events.size();
+    }
+
+    public void updateEvents(List<EventModel> newEvents) {
+        this.events.clear();
+        this.events.addAll(newEvents);
+        notifyDataSetChanged();
     }
 
     static class EventViewHolder extends RecyclerView.ViewHolder {

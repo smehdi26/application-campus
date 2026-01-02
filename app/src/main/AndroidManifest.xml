@@ -50,6 +50,7 @@
         <!-- 6. CALENDAR -->
         <activity android:name="com.example.eventscalendar.CalendarActivity" />
         <activity android:name="com.example.eventscalendar.EventsListActivity" />
+        <activity android:name="com.example.eventscalendar.AddEventActivity" />
 
     </application>
 

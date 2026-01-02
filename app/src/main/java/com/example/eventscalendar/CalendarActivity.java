@@ -27,6 +27,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.Nullable;
+
 public class CalendarActivity extends AppCompatActivity {
 
     private CalendarView calendarView;
@@ -37,6 +39,8 @@ public class CalendarActivity extends AppCompatActivity {
     private RecyclerView rvEvents;
     private EventAdapter eventAdapter;
     private List<EventModel> eventList;
+
+    private static final int ADD_EVENT_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,17 +59,17 @@ public class CalendarActivity extends AppCompatActivity {
         String formattedDate = sdf.format(new Date());
         selectedDateText.setText(getString(R.string.events_on, formattedDate));
 
-        // 2. Initialisation des statistiques (Exams, Events, Defense, Clubs)
-        setupStatistics();
-
-        // 3. Initialisation de la Barre de Navigation (Navbar)
-        setupNavbar();
-
-        // 4. Configuration de la liste (RecyclerView)
+        // 2. Configuration de la liste (RecyclerView)
         eventList = new ArrayList<>();
         eventAdapter = new EventAdapter(eventList);
         rvEvents.setLayoutManager(new LinearLayoutManager(this));
         rvEvents.setAdapter(eventAdapter);
+        
+        // 3. Initialisation et mise à jour des statistiques
+        updateStatistics(eventList);
+
+        // 4. Initialisation de la Barre de Navigation (Navbar)
+        setupNavbar();
 
         // 5. Action du bouton rouge "+"
         btnAddEvent.setOnClickListener(v -> showAddEventPopup());
@@ -77,9 +81,30 @@ public class CalendarActivity extends AppCompatActivity {
             String formattedDate_ = sdf.format(calendar.getTime());
             selectedDateText.setText(getString(R.string.events_on, formattedDate_));
 
-            String dateStr = dayOfMonth + "/" + (month + 1) + "/" + year;
+            String dateStr = String.format(Locale.US, "%02d/%02d/%04d", dayOfMonth, month + 1, year);
             filterEventsByDate(dateStr);
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == ADD_EVENT_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            String title = data.getStringExtra("event_title");
+            String category = data.getStringExtra("event_category");
+            String date = data.getStringExtra("event_date");
+            String time = data.getStringExtra("event_time");
+            String location = data.getStringExtra("event_location");
+            String description = data.getStringExtra("event_description");
+
+            EventModel newEvent = new EventModel(title, time, location, category, date);
+            eventList.add(newEvent);
+            eventAdapter.notifyDataSetChanged(); // Update the RecyclerView
+            updateStatistics(eventList); // Update statistics after adding a new event
+            Toast.makeText(this, "Event Added: " + title, Toast.LENGTH_SHORT).show();
+            // TODO: In a real app, you might want to save this to a database
+        }
     }
 
     private void setupNavbar() {
@@ -111,48 +136,64 @@ public class CalendarActivity extends AppCompatActivity {
         });
     }
 
-    private void setupStatistics() {
+    private void updateStatistics(List<EventModel> eventsToCount) {
+        int examsCount = 0;
+        int conferencesCount = 0;
+        int soutenancesCount = 0;
+        int clubsCount = 0;
+
+        for (EventModel event : eventsToCount) {
+            String category = event.getCategory();
+            if (category.equals("Exams") || category.equals("Examens")) {
+                examsCount++;
+            } else if (category.equals("Conferences") || category.equals("Conférences")) {
+                conferencesCount++;
+            } else if (category.equals("Soutenances") || category.equals("Defense")) {
+                soutenancesCount++;
+            } else if (category.equals("Clubs")) {
+                clubsCount++;
+            }
+        }
+
         View statExams = findViewById(R.id.statExams);
-        View statEvents = findViewById(R.id.statEvents);
-        View statDefense = findViewById(R.id.statDefense);
+        View statEvents = findViewById(R.id.statEvents); // This is actually for Conferences
+        View statDefense = findViewById(R.id.statDefense); // This is actually for Soutenances
         View statClubs = findViewById(R.id.statClubs);
 
-        // Exams
-        ((TextView) statExams.findViewById(R.id.tvStatCount)).setText("0");
+        // Update Exams
+        ((TextView) statExams.findViewById(R.id.tvStatCount)).setText(String.valueOf(examsCount));
         ((TextView) statExams.findViewById(R.id.tvStatCount)).setTextColor(Color.RED);
-        ((TextView) statExams.findViewById(R.id.tvStatLabel)).setText("Exams");
+        ((TextView) statExams.findViewById(R.id.tvStatLabel)).setText(getString(R.string.category_exams));
 
-        // Events
-        ((TextView) statEvents.findViewById(R.id.tvStatCount)).setText("0");
+        // Update Conferences
+        ((TextView) statEvents.findViewById(R.id.tvStatCount)).setText(String.valueOf(conferencesCount));
         ((TextView) statEvents.findViewById(R.id.tvStatCount)).setTextColor(Color.BLUE);
-        ((TextView) statEvents.findViewById(R.id.tvStatLabel)).setText("Events");
+        ((TextView) statEvents.findViewById(R.id.tvStatLabel)).setText(getString(R.string.category_conferences));
 
-        // Defense
-        ((TextView) statDefense.findViewById(R.id.tvStatCount)).setText("0");
+        // Update Soutenances
+        ((TextView) statDefense.findViewById(R.id.tvStatCount)).setText(String.valueOf(soutenancesCount));
         ((TextView) statDefense.findViewById(R.id.tvStatCount)).setTextColor(Color.parseColor("#FFA000"));
-        ((TextView) statDefense.findViewById(R.id.tvStatLabel)).setText("Defense");
+        ((TextView) statDefense.findViewById(R.id.tvStatLabel)).setText(getString(R.string.category_soutenances));
 
-        // Clubs
-        ((TextView) statClubs.findViewById(R.id.tvStatCount)).setText("0");
+        // Update Clubs
+        ((TextView) statClubs.findViewById(R.id.tvStatCount)).setText(String.valueOf(clubsCount));
         ((TextView) statClubs.findViewById(R.id.tvStatCount)).setTextColor(Color.parseColor("#009688"));
-        ((TextView) statClubs.findViewById(R.id.tvStatLabel)).setText("Clubs");
+        ((TextView) statClubs.findViewById(R.id.tvStatLabel)).setText(getString(R.string.category_clubs));
     }
 
     private void filterEventsByDate(String date) {
-        Toast.makeText(this, "Loading events for " + date, Toast.LENGTH_SHORT).show();
+        List<EventModel> filteredEvents = new ArrayList<>();
+        for (EventModel event : eventList) {
+            if (event.getDate().equals(date)) { // Assuming event.getDate() returns "dd/MM/yyyy"
+                filteredEvents.add(event);
+            }
+        }
+        eventAdapter.updateEvents(filteredEvents);
+        updateStatistics(filteredEvents); // Update statistics based on filtered events
     }
 
     private void showAddEventPopup() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Add Personal Event");
-        builder.setMessage("Add your personal events and sync with Google Calendar.");
-        builder.setPositiveButton("Add Event", (dialog, which) -> {
-            Toast.makeText(this, "Event Syncing...", Toast.LENGTH_SHORT).show();
-        });
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#E91E63"));
+        Intent intent = new Intent(this, AddEventActivity.class);
+        startActivityForResult(intent, ADD_EVENT_REQUEST_CODE);
     }
 }
