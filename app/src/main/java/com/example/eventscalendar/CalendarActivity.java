@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,26 +24,35 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.applandeo.materialcalendarview.EventDay;
+import com.applandeo.materialcalendarview.listeners.OnDayClickListener;
+
 public class CalendarActivity extends AppCompatActivity {
 
-    private CalendarView calendarView;
+    private com.applandeo.materialcalendarview.CalendarView calendarView;
     private TextView selectedDateText;
     private FloatingActionButton btnAddEvent;
     private Button btnListView;
 
     private RecyclerView rvEvents;
     private EventAdapter eventAdapter;
-    private List<EventModel> eventList;
+    private List<EventModel> eventList; // This list will hold the currently displayed (filtered) events
+    private List<EventModel> allEventsList; // This list will hold all events fetched from the database
 
     private DatabaseReference mDatabase; // Declare DatabaseReference
 
@@ -71,13 +79,14 @@ public class CalendarActivity extends AppCompatActivity {
         selectedDateText.setText(getString(R.string.events_on, formattedDate));
 
         // 2. Configuration de la liste (RecyclerView)
-        eventList = new ArrayList<>();
+        eventList = new ArrayList<>(); // Initialize the list for the adapter
+        allEventsList = new ArrayList<>(); // Initialize the list to hold all events
         eventAdapter = new EventAdapter(eventList);
         rvEvents.setLayoutManager(new LinearLayoutManager(this));
         rvEvents.setAdapter(eventAdapter);
         
-        // 3. Initialisation et mise à jour des statistiques
-        updateStatistics(eventList);
+        // 3. Initialisation et mise à jour des statistiques (initial call with empty list)
+        updateStatistics(new ArrayList<>()); // Pass an empty list initially
 
         // Load events from Realtime Database
         loadEvents();
@@ -89,16 +98,15 @@ public class CalendarActivity extends AppCompatActivity {
         btnAddEvent.setOnClickListener(v -> showAddEventPopup());
 
         // 6. Clic sur le calendrier
-                    calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.set(year, month, dayOfMonth);
-                        SimpleDateFormat displayFormat = new SimpleDateFormat("dd LLLL yyyy", Locale.FRENCH); // For display
-                        selectedDateText.setText(getString(R.string.events_on, displayFormat.format(calendar.getTime())));
-        
-                        SimpleDateFormat filterFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US); // For filtering
-                        String dateStr = filterFormat.format(calendar.getTime());
-                        filterEventsByDate(dateStr);
-                    });    }
+        calendarView.setOnDayClickListener(eventDay -> {
+            Calendar calendar = eventDay.getCalendar(); // Get calendar from EventDay
+            SimpleDateFormat displayFormat = new SimpleDateFormat("dd LLLL yyyy", Locale.FRENCH); // For display
+            selectedDateText.setText(getString(R.string.events_on, displayFormat.format(calendar.getTime())));
+
+            SimpleDateFormat filterFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US); // For filtering
+            String dateStr = filterFormat.format(calendar.getTime());
+            filterEventsByDate(dateStr);
+        });    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -121,7 +129,8 @@ public class CalendarActivity extends AppCompatActivity {
                 mDatabase.child(eventId).setValue(newEvent)
                         .addOnSuccessListener(aVoid -> {
                             Toast.makeText(this, "Event Added: " + title, Toast.LENGTH_SHORT).show();
-                            loadEvents(); // Reload events to update the list and statistics
+                            // loadEvents() will be called by the ValueEventListener implicitly
+                            // No need to explicitly call loadEvents() here as the listener will trigger on data change.
                         })
                         .addOnFailureListener(e -> {
                             Toast.makeText(this, "Failed to add event: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -134,22 +143,79 @@ public class CalendarActivity extends AppCompatActivity {
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                eventList.clear(); // Clear old data
+                allEventsList.clear(); // Clear old data from the master list
+                // Map to store event counts per day per category: Date string -> Category -> Count
+                Map<String, Map<String, Integer>> dailyEventCategoryCounts = new HashMap<>();
+
                 for (DataSnapshot eventSnapshot : snapshot.getChildren()) {
                     EventModel event = eventSnapshot.getValue(EventModel.class);
                     if (event != null) {
-                        eventList.add(event);
+                        allEventsList.add(event); // Add to master list
+                        
+                        String eventDate = event.getDate(); // e.g., "dd/MM/yyyy"
+                        String eventCategory = event.getCategory();
+
+                        dailyEventCategoryCounts
+                                .computeIfAbsent(eventDate, k -> new HashMap<>())
+                                .merge(eventCategory, 1, Integer::sum);
                     }
                 }
-                eventAdapter.notifyDataSetChanged();
-                updateStatistics(eventList);
-                // Also filter by selected date if a date was already selected
-                Calendar calendar = Calendar.getInstance();
-                long selectedDateMillis = calendarView.getDate();
-                calendar.setTimeInMillis(selectedDateMillis);
+                
+                // Update overall statistics
+                updateStatistics(allEventsList);
+
+                // --- Highlighting Logic ---
+                List<EventDay> eventsWithColoredDots = new ArrayList<>();
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
-                String formattedSelectedDate = sdf.format(calendar.getTime());
-                filterEventsByDate(formattedSelectedDate);
+
+                for (Map.Entry<String, Map<String, Integer>> entry : dailyEventCategoryCounts.entrySet()) {
+                    String dateStr = entry.getKey();
+                    Map<String, Integer> categoryCounts = entry.getValue();
+
+                    String dominantCategory = null;
+                    int maxCount = 0;
+
+                    // Find the dominant category for the day
+                    for (Map.Entry<String, Integer> categoryEntry : categoryCounts.entrySet()) {
+                        if (categoryEntry.getValue() > maxCount) {
+                            maxCount = categoryEntry.getValue();
+                            dominantCategory = categoryEntry.getKey();
+                        }
+                    }
+
+                    // Assign drawable based on dominant category
+                    int drawableRes = R.drawable.bg_dot_exams; // Default/fallback (will not be used if categories match)
+                    if (dominantCategory != null) {
+                        if (dominantCategory.equals("Exams") || dominantCategory.equals("Examens")) {
+                            drawableRes = R.drawable.bg_dot_exams;
+                        } else if (dominantCategory.equals("Conferences") || dominantCategory.equals("Conférences")) {
+                            drawableRes = R.drawable.bg_dot_conference;
+                        } else if (dominantCategory.equals("Soutenances")) {
+                            drawableRes = R.drawable.bg_dot_soutenances;
+                        } else if (dominantCategory.equals("Clubs")) {
+                            drawableRes = R.drawable.bg_dot_clubs;
+                        } else {
+                            drawableRes = R.drawable.bg_badge_gray; // Fallback for unknown categories
+                        }
+                    }
+
+                    try {
+                        Date date = sdf.parse(dateStr);
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(date);
+                        eventsWithColoredDots.add(new EventDay(calendar, drawableRes));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        // Handle parsing error if date format is incorrect
+                    }
+                }
+                calendarView.setEvents(eventsWithColoredDots);
+                // --- End Highlighting Logic ---
+
+                // Now, re-filter for today's date to update the displayed list
+                Calendar today = Calendar.getInstance();
+                String formattedTodayDate = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(today.getTime());
+                filterEventsByDate(formattedTodayDate);
             }
 
             @Override
@@ -235,7 +301,7 @@ public class CalendarActivity extends AppCompatActivity {
 
     private void filterEventsByDate(String date) {
         List<EventModel> filteredEvents = new ArrayList<>();
-        for (EventModel event : eventList) {
+        for (EventModel event : allEventsList) { // Filter from the master list
             if (event.getDate().equals(date)) { // Assuming event.getDate() returns "dd/MM/yyyy"
                 filteredEvents.add(event);
             }
