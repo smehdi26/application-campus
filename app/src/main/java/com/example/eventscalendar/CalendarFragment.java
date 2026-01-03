@@ -56,7 +56,7 @@ public class CalendarFragment extends Fragment {
         selectedDateText.setText(getString(R.string.events_on, formattedDate));
 
 
-        // 2. Initialisation des statistiques (Exams, Events, Defense, Clubs)
+        // 2. Initialisation des statistiques (Exams, Events, Soutenances, Clubs)
         setupStatistics(root);
 
         // 3. Initialisation de la Barre de Navigation (Navbar)
@@ -64,7 +64,7 @@ public class CalendarFragment extends Fragment {
 
         // 4. Configuration de la liste (RecyclerView)
         eventList = new ArrayList<>();
-        eventList.add(new EventModel("Project Defense", "09:00", "Room B-204", "Defense", "19/11/2025"));
+        eventList.add(new EventModel("Project Soutenances", "09:00", "Room B-204", "Soutenances", "19/11/2025"));
         eventAdapter = new EventAdapter(eventList);
         rvEvents.setLayoutManager(new LinearLayoutManager(getContext()));
         rvEvents.setAdapter(eventAdapter);
@@ -126,7 +126,7 @@ public class CalendarFragment extends Fragment {
     private void setupStatistics(View root) {
         View statExams = root.findViewById(R.id.statExams);
         View statEvents = root.findViewById(R.id.statEvents);
-        View statDefense = root.findViewById(R.id.statDefense);
+        View statSoutenances = root.findViewById(R.id.statSoutenances);
         View statClubs = root.findViewById(R.id.statClubs);
 
         // Exams
@@ -139,10 +139,10 @@ public class CalendarFragment extends Fragment {
         ((TextView) statEvents.findViewById(R.id.tvStatCount)).setTextColor(Color.BLUE);
         ((TextView) statEvents.findViewById(R.id.tvStatLabel)).setText("Events");
 
-        // Defense
-        ((TextView) statDefense.findViewById(R.id.tvStatCount)).setText("1");
-        ((TextView) statDefense.findViewById(R.id.tvStatCount)).setTextColor(Color.parseColor("#FFA000"));
-        ((TextView) statDefense.findViewById(R.id.tvStatLabel)).setText("Defense");
+        // Soutenances
+        ((TextView) statSoutenances.findViewById(R.id.tvStatCount)).setText("1");
+        ((TextView) statSoutenances.findViewById(R.id.tvStatCount)).setTextColor(Color.parseColor("#FFA000"));
+        ((TextView) statSoutenances.findViewById(R.id.tvStatLabel)).setText("Soutenances");
 
         // Clubs
         ((TextView) statClubs.findViewById(R.id.tvStatCount)).setText("1");

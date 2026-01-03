@@ -3,7 +3,7 @@ public class EventModel {
     private String title;
     private String time;
     private String location;
-    private String category; // Ex: "Defense", "Exams", "Clubs"
+    private String category; // Ex: "Soutenances", "Exams", "Clubs"
     private String date;     // Format: "yyyy-MM-dd"
 
     public EventModel(String title, String time, String location, String category, String date) {

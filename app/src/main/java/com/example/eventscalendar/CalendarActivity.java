@@ -148,7 +148,7 @@ public class CalendarActivity extends AppCompatActivity {
                 examsCount++;
             } else if (category.equals("Conferences") || category.equals("Conférences")) {
                 conferencesCount++;
-            } else if (category.equals("Soutenances") || category.equals("Defense")) {
+            } else if (category.equals("Soutenances")) {
                 soutenancesCount++;
             } else if (category.equals("Clubs")) {
                 clubsCount++;
@@ -157,7 +157,7 @@ public class CalendarActivity extends AppCompatActivity {
 
         View statExams = findViewById(R.id.statExams);
         View statEvents = findViewById(R.id.statEvents); // This is actually for Conferences
-        View statDefense = findViewById(R.id.statDefense); // This is actually for Soutenances
+        View statSoutenances = findViewById(R.id.statSoutenances); // This is actually for Soutenances
         View statClubs = findViewById(R.id.statClubs);
 
         // Update Exams
@@ -171,9 +171,9 @@ public class CalendarActivity extends AppCompatActivity {
         ((TextView) statEvents.findViewById(R.id.tvStatLabel)).setText(getString(R.string.category_conferences));
 
         // Update Soutenances
-        ((TextView) statDefense.findViewById(R.id.tvStatCount)).setText(String.valueOf(soutenancesCount));
-        ((TextView) statDefense.findViewById(R.id.tvStatCount)).setTextColor(Color.parseColor("#FFA000"));
-        ((TextView) statDefense.findViewById(R.id.tvStatLabel)).setText(getString(R.string.category_soutenances));
+        ((TextView) statSoutenances.findViewById(R.id.tvStatCount)).setText(String.valueOf(soutenancesCount));
+        ((TextView) statSoutenances.findViewById(R.id.tvStatCount)).setTextColor(Color.parseColor("#FFA000"));
+        ((TextView) statSoutenances.findViewById(R.id.tvStatLabel)).setText(getString(R.string.category_soutenances));
 
         // Update Clubs
         ((TextView) statClubs.findViewById(R.id.tvStatCount)).setText(String.valueOf(clubsCount));

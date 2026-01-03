@@ -52,6 +52,8 @@ import com.example.coursemanagment.R;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 
 
 import java.util.ArrayList;
@@ -74,6 +76,8 @@ public class EventsListActivity extends AppCompatActivity {
 
     private List<EventModel> eventList;
 
+    private FirebaseFirestore db; // Firestore instance
+
 
 
     private static final int ADD_EVENT_REQUEST_CODE = 1;
@@ -87,6 +91,12 @@ public class EventsListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_events_list);
+
+
+
+        // Initialize Firestore
+
+        db = FirebaseFirestore.getInstance();
 
 
 
@@ -120,29 +130,91 @@ public class EventsListActivity extends AppCompatActivity {
 
 
 
-    private void setupEventsList() {
-
-        eventList = new ArrayList<>();
-
-        // Initialiser la liste avec des événements existants si nécessaire
-
-        eventList.add(new EventModel("Project Defense", "09:00", "B-204", "Soutenances", "02/01/2026"));
-
-        eventList.add(new EventModel("AI Lecture", "10:00", "Amphi A", "Conferences", "02/01/2026"));
-
-        eventList.add(new EventModel("Club Meeting", "14:00", "Club Room", "Clubs", "03/01/2026"));
-
-        eventList.add(new EventModel("Math Exam", "08:00", "Hall C", "Exams", "04/01/2026"));
+        private void setupEventsList() {
 
 
 
-        eventAdapter = new EventAdapter(eventList);
+            eventList = new ArrayList<>();
 
-        rvAllEvents.setLayoutManager(new LinearLayoutManager(this));
 
-        rvAllEvents.setAdapter(eventAdapter);
 
-    }
+            eventAdapter = new EventAdapter(eventList);
+
+
+
+            rvAllEvents.setLayoutManager(new LinearLayoutManager(this));
+
+
+
+            rvAllEvents.setAdapter(eventAdapter);
+
+
+
+    
+
+
+
+            // Fetch events from Firestore
+
+
+
+            db.collection("events")
+
+
+
+                .get()
+
+
+
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+
+
+
+                    eventList.clear(); // Clear the local list before populating
+
+
+
+                    for (EventModel event : queryDocumentSnapshots.toObjects(EventModel.class)) {
+
+
+
+                        eventList.add(event);
+
+
+
+                    }
+
+
+
+                    eventAdapter.notifyDataSetChanged();
+
+
+
+                    updateStatistics(eventList); // Update stats with fetched data
+
+
+
+                    Toast.makeText(this, "Fetched " + eventList.size() + " events from Firebase", Toast.LENGTH_SHORT).show();
+
+
+
+                })
+
+
+
+                .addOnFailureListener(e -> {
+
+
+
+                    Toast.makeText(this, "Error fetching events from Firebase", Toast.LENGTH_SHORT).show();
+
+
+
+                });
+
+
+
+        }
 
 
 
@@ -172,13 +244,33 @@ public class EventsListActivity extends AppCompatActivity {
 
             EventModel newEvent = new EventModel(title, time, location, category, date);
 
-            eventList.add(newEvent);
 
-            eventAdapter.notifyDataSetChanged();
 
-            updateStatistics(eventList); // Update statistics after adding a new event
+            // Save the new event to Firestore
 
-            Toast.makeText(this, "Event Added: " + title, Toast.LENGTH_SHORT).show();
+            db.collection("events")
+
+                .add(newEvent)
+
+                .addOnSuccessListener(documentReference -> {
+
+                    // L'événement est sauvegardé, maintenant on l'ajoute à la liste locale
+
+                    eventList.add(newEvent);
+
+                    eventAdapter.notifyDataSetChanged();
+
+                    updateStatistics(eventList); // Update statistics after adding a new event
+
+                    Toast.makeText(this, "Event Added to Firebase: " + title, Toast.LENGTH_SHORT).show();
+
+                })
+
+                .addOnFailureListener(e -> {
+
+                    Toast.makeText(this, "Error adding event to Firebase", Toast.LENGTH_SHORT).show();
+
+                });
 
         }
 
@@ -210,7 +302,7 @@ public class EventsListActivity extends AppCompatActivity {
 
                 conferencesCount++;
 
-            } else if (category.equals("Soutenances") || category.equals("Defense")) {
+            } else if (category.equals("Soutenances")) {
 
                 soutenancesCount++;
 
@@ -228,7 +320,7 @@ public class EventsListActivity extends AppCompatActivity {
 
         View statEvents = findViewById(R.id.statEvents); // This is actually for Conferences
 
-        View statDefense = findViewById(R.id.statDefense); // This is actually for Soutenances
+        View statSoutenances = findViewById(R.id.statSoutenances); // This is actually for Soutenances
 
         View statClubs = findViewById(R.id.statClubs);
 
@@ -256,11 +348,11 @@ public class EventsListActivity extends AppCompatActivity {
 
         // Update Soutenances
 
-        ((TextView) statDefense.findViewById(R.id.tvStatCount)).setText(String.valueOf(soutenancesCount));
+        ((TextView) statSoutenances.findViewById(R.id.tvStatCount)).setText(String.valueOf(soutenancesCount));
 
-        ((TextView) statDefense.findViewById(R.id.tvStatCount)).setTextColor(Color.parseColor("#FFA000"));
+        ((TextView) statSoutenances.findViewById(R.id.tvStatCount)).setTextColor(Color.parseColor("#FFA000"));
 
-        ((TextView) statDefense.findViewById(R.id.tvStatLabel)).setText(getString(R.string.category_soutenances));
+        ((TextView) statSoutenances.findViewById(R.id.tvStatLabel)).setText(getString(R.string.category_soutenances));
 
 
 

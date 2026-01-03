@@ -34,8 +34,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
         // Change la couleur du badge selon la catégorie
         String category = event.getCategory();
-        if (category.equals("Defense") || category.equals("Soutenances")) {
-            holder.category.setBackgroundResource(R.drawable.bg_tag_defense);
+        if (category.equals("Soutenances")) {
+            holder.category.setBackgroundResource(R.drawable.bg_tag_soutenances);
             holder.category.setTextColor(Color.parseColor("#FFA000"));
         } else if (category.equals("Exams") || category.equals("Examens")) {
             holder.category.setBackgroundResource(R.drawable.bg_tag_exams);
