@@ -19,6 +19,11 @@ import com.example.coursemanagment.CoursesActivity;
 import com.example.coursemanagment.ProfileActivity;
 import com.example.coursemanagment.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class CalendarActivity extends AppCompatActivity {
@@ -40,12 +46,17 @@ public class CalendarActivity extends AppCompatActivity {
     private EventAdapter eventAdapter;
     private List<EventModel> eventList;
 
+    private DatabaseReference mDatabase; // Declare DatabaseReference
+
     private static final int ADD_EVENT_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_calendar);
+
+        // Initialize Firebase Database
+        mDatabase = FirebaseDatabase.getInstance().getReference("events"); // 'events' is the root node for your events
 
         // 1. Initialisation des vues de base
         calendarView = findViewById(R.id.calendarView);
@@ -68,6 +79,9 @@ public class CalendarActivity extends AppCompatActivity {
         // 3. Initialisation et mise à jour des statistiques
         updateStatistics(eventList);
 
+        // Load events from Realtime Database
+        loadEvents();
+
         // 4. Initialisation de la Barre de Navigation (Navbar)
         setupNavbar();
 
@@ -75,16 +89,16 @@ public class CalendarActivity extends AppCompatActivity {
         btnAddEvent.setOnClickListener(v -> showAddEventPopup());
 
         // 6. Clic sur le calendrier
-        calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(year, month, dayOfMonth);
-            String formattedDate_ = sdf.format(calendar.getTime());
-            selectedDateText.setText(getString(R.string.events_on, formattedDate_));
-
-            String dateStr = String.format(Locale.US, "%02d/%02d/%04d", dayOfMonth, month + 1, year);
-            filterEventsByDate(dateStr);
-        });
-    }
+                    calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.set(year, month, dayOfMonth);
+                        SimpleDateFormat displayFormat = new SimpleDateFormat("dd LLLL yyyy", Locale.FRENCH); // For display
+                        selectedDateText.setText(getString(R.string.events_on, displayFormat.format(calendar.getTime())));
+        
+                        SimpleDateFormat filterFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US); // For filtering
+                        String dateStr = filterFormat.format(calendar.getTime());
+                        filterEventsByDate(dateStr);
+                    });    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -96,15 +110,53 @@ public class CalendarActivity extends AppCompatActivity {
             String date = data.getStringExtra("event_date");
             String time = data.getStringExtra("event_time");
             String location = data.getStringExtra("event_location");
-            String description = data.getStringExtra("event_description");
+            String description = data.getStringExtra("event_description"); // Retrieve description
 
-            EventModel newEvent = new EventModel(title, time, location, category, date);
-            eventList.add(newEvent);
-            eventAdapter.notifyDataSetChanged(); // Update the RecyclerView
-            updateStatistics(eventList); // Update statistics after adding a new event
-            Toast.makeText(this, "Event Added: " + title, Toast.LENGTH_SHORT).show();
-            // TODO: In a real app, you might want to save this to a database
+            EventModel newEvent = new EventModel(title, time, location, category, date, description); // Pass description to constructor
+
+            // Save event to Realtime Database
+            String eventId = mDatabase.push().getKey(); // Generate a unique ID
+            if (eventId != null) {
+                newEvent.setId(eventId);
+                mDatabase.child(eventId).setValue(newEvent)
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(this, "Event Added: " + title, Toast.LENGTH_SHORT).show();
+                            loadEvents(); // Reload events to update the list and statistics
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(this, "Failed to add event: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        });
+            }
         }
+    }
+
+    private void loadEvents() {
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                eventList.clear(); // Clear old data
+                for (DataSnapshot eventSnapshot : snapshot.getChildren()) {
+                    EventModel event = eventSnapshot.getValue(EventModel.class);
+                    if (event != null) {
+                        eventList.add(event);
+                    }
+                }
+                eventAdapter.notifyDataSetChanged();
+                updateStatistics(eventList);
+                // Also filter by selected date if a date was already selected
+                Calendar calendar = Calendar.getInstance();
+                long selectedDateMillis = calendarView.getDate();
+                calendar.setTimeInMillis(selectedDateMillis);
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+                String formattedSelectedDate = sdf.format(calendar.getTime());
+                filterEventsByDate(formattedSelectedDate);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(CalendarActivity.this, "Failed to load events: " + error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void setupNavbar() {

@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:background="@drawable/bg_tag_defense"
+            android:background="@drawable/bg_tag_soutenances"
             android:paddingHorizontal="12dp"
             android:paddingVertical="4dp"
             android:text="Defense"

@@ -32,27 +32,71 @@ import android.widget.Toast;
 
 
 
+
+
+
+
+import androidx.annotation.NonNull;
+
+
+
 import androidx.annotation.Nullable;
+
+
 
 import androidx.appcompat.app.AppCompatActivity;
 
+
+
 import androidx.core.content.ContextCompat;
 
+
+
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+
 
 import androidx.recyclerview.widget.RecyclerView;
 
 
 
+
+
+
+
 import com.example.coursemanagment.CoursesActivity;
+
+
 
 import com.example.coursemanagment.ProfileActivity;
 
+
+
 import com.example.coursemanagment.R;
+
+
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import com.google.firebase.firestore.FirebaseFirestore;
+
+
+import com.google.firebase.database.DataSnapshot;
+
+
+
+import com.google.firebase.database.DatabaseError;
+
+
+
+import com.google.firebase.database.DatabaseReference;
+
+
+
+import com.google.firebase.database.FirebaseDatabase;
+
+
+
+import com.google.firebase.database.ValueEventListener;
 
 
 
@@ -72,11 +116,11 @@ public class EventsListActivity extends AppCompatActivity {
 
     private FloatingActionButton btnAddEvent;
 
-    private EventAdapter eventAdapter;
+        private EventAdapter eventAdapter;
 
-    private List<EventModel> eventList;
+        private List<EventModel> eventList;
 
-    private FirebaseFirestore db; // Firestore instance
+        private DatabaseReference mDatabase; // Realtime Database instance
 
 
 
@@ -94,9 +138,11 @@ public class EventsListActivity extends AppCompatActivity {
 
 
 
-        // Initialize Firestore
+                // Initialize Realtime Database
 
-        db = FirebaseFirestore.getInstance();
+
+
+                mDatabase = FirebaseDatabase.getInstance().getReference("events");
 
 
 
@@ -130,23 +176,131 @@ public class EventsListActivity extends AppCompatActivity {
 
 
 
-        private void setupEventsList() {
+                private void setupEventsList() {
 
 
 
-            eventList = new ArrayList<>();
+        
 
 
 
-            eventAdapter = new EventAdapter(eventList);
+                    eventList = new ArrayList<>();
 
 
 
-            rvAllEvents.setLayoutManager(new LinearLayoutManager(this));
+                    eventAdapter = new EventAdapter(eventList);
 
 
 
-            rvAllEvents.setAdapter(eventAdapter);
+                    rvAllEvents.setLayoutManager(new LinearLayoutManager(this));
+
+
+
+                    rvAllEvents.setAdapter(eventAdapter);
+
+
+
+        
+
+
+
+                    // Fetch events from Realtime Database
+
+
+
+                    mDatabase.addValueEventListener(new ValueEventListener() {
+
+
+
+                        @Override
+
+
+
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+
+
+                            eventList.clear(); // Clear the local list before populating
+
+
+
+                            for (DataSnapshot eventSnapshot : snapshot.getChildren()) {
+
+
+
+                                EventModel event = eventSnapshot.getValue(EventModel.class);
+
+
+
+                                if (event != null) {
+
+
+
+                                    eventList.add(event);
+
+
+
+                                }
+
+
+
+                            }
+
+
+
+                            eventAdapter.notifyDataSetChanged();
+
+
+
+                            updateStatistics(eventList); // Update stats with fetched data
+
+
+
+                            Toast.makeText(EventsListActivity.this, "Fetched " + eventList.size() + " events from Firebase", Toast.LENGTH_SHORT).show();
+
+
+
+                        }
+
+
+
+        
+
+
+
+                        @Override
+
+
+
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+
+
+                            Toast.makeText(EventsListActivity.this, "Error fetching events from Firebase: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+
+
+
+                        }
+
+
+
+                    });
+
+
+
+                }
+
+
+
+        @Override
+
+
+
+        protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+
+
+            super.onActivityResult(requestCode, resultCode, data);
 
 
 
@@ -154,127 +308,107 @@ public class EventsListActivity extends AppCompatActivity {
 
 
 
-            // Fetch events from Firestore
+            if (requestCode == ADD_EVENT_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
 
 
 
-            db.collection("events")
+                String title = data.getStringExtra("event_title");
 
 
 
-                .get()
+                String category = data.getStringExtra("event_category");
 
 
 
-                .addOnSuccessListener(queryDocumentSnapshots -> {
+                String date = data.getStringExtra("event_date");
 
 
 
-                    eventList.clear(); // Clear the local list before populating
+                String time = data.getStringExtra("event_time");
 
 
 
-                    for (EventModel event : queryDocumentSnapshots.toObjects(EventModel.class)) {
+                String location = data.getStringExtra("event_location");
 
 
 
-                        eventList.add(event);
+                String description = data.getStringExtra("event_description");
 
 
 
-                    }
+    
 
 
 
-                    eventAdapter.notifyDataSetChanged();
+                EventModel newEvent = new EventModel(title, time, location, category, date, description);
 
 
 
-                    updateStatistics(eventList); // Update stats with fetched data
+    
 
 
 
-                    Toast.makeText(this, "Fetched " + eventList.size() + " events from Firebase", Toast.LENGTH_SHORT).show();
+                // Save the new event to Realtime Database
 
 
 
-                })
+                String eventId = mDatabase.push().getKey(); // Generate a unique ID
 
 
 
-                .addOnFailureListener(e -> {
+                if (eventId != null) {
 
 
 
-                    Toast.makeText(this, "Error fetching events from Firebase", Toast.LENGTH_SHORT).show();
+                    newEvent.setId(eventId);
 
 
 
-                });
+                    mDatabase.child(eventId).setValue(newEvent)
+
+
+
+                            .addOnSuccessListener(aVoid -> {
+
+
+
+                                Toast.makeText(this, "Event Added to Firebase: " + title, Toast.LENGTH_SHORT).show();
+
+
+
+                                // No need to manually add to eventList or call notifyDataSetChanged here,
+
+
+
+                                // as loadEvents (via ValueEventListener) will handle the update.
+
+
+
+                            })
+
+
+
+                            .addOnFailureListener(e -> {
+
+
+
+                                Toast.makeText(this, "Error adding event to Firebase: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+
+
+                            });
+
+
+
+                }
+
+
+
+            }
 
 
 
         }
-
-
-
-    @Override
-
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-
-        super.onActivityResult(requestCode, resultCode, data);
-
-
-
-        if (requestCode == ADD_EVENT_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
-
-            String title = data.getStringExtra("event_title");
-
-            String category = data.getStringExtra("event_category");
-
-            String date = data.getStringExtra("event_date");
-
-            String time = data.getStringExtra("event_time");
-
-            String location = data.getStringExtra("event_location");
-
-            String description = data.getStringExtra("event_description");
-
-
-
-            EventModel newEvent = new EventModel(title, time, location, category, date);
-
-
-
-            // Save the new event to Firestore
-
-            db.collection("events")
-
-                .add(newEvent)
-
-                .addOnSuccessListener(documentReference -> {
-
-                    // L'événement est sauvegardé, maintenant on l'ajoute à la liste locale
-
-                    eventList.add(newEvent);
-
-                    eventAdapter.notifyDataSetChanged();
-
-                    updateStatistics(eventList); // Update statistics after adding a new event
-
-                    Toast.makeText(this, "Event Added to Firebase: " + title, Toast.LENGTH_SHORT).show();
-
-                })
-
-                .addOnFailureListener(e -> {
-
-                    Toast.makeText(this, "Error adding event to Firebase", Toast.LENGTH_SHORT).show();
-
-                });
-
-        }
-
-    }
 
 
 
@@ -316,33 +450,59 @@ public class EventsListActivity extends AppCompatActivity {
 
 
 
-        View statExams = findViewById(R.id.statExams);
-
-        View statEvents = findViewById(R.id.statEvents); // This is actually for Conferences
-
-        View statSoutenances = findViewById(R.id.statSoutenances); // This is actually for Soutenances
-
-        View statClubs = findViewById(R.id.statClubs);
+                        View statExams = findViewById(R.id.statExams);
 
 
 
-        // Update Exams
-
-        ((TextView) statExams.findViewById(R.id.tvStatCount)).setText(String.valueOf(examsCount));
-
-        ((TextView) statExams.findViewById(R.id.tvStatCount)).setTextColor(Color.RED);
-
-        ((TextView) statExams.findViewById(R.id.tvStatLabel)).setText(getString(R.string.category_exams));
+                        View statConferences = findViewById(R.id.statConferences); // Corrected to match XML ID
 
 
 
-        // Update Conferences
+                        View statSoutenances = findViewById(R.id.statSoutenances);
 
-        ((TextView) statEvents.findViewById(R.id.tvStatCount)).setText(String.valueOf(conferencesCount));
 
-        ((TextView) statEvents.findViewById(R.id.tvStatCount)).setTextColor(Color.BLUE);
 
-        ((TextView) statEvents.findViewById(R.id.tvStatLabel)).setText(getString(R.string.category_conferences));
+                        View statClubs = findViewById(R.id.statClubs);
+
+
+
+                
+
+
+
+                        // Update Exams
+
+
+
+                        ((TextView) statExams.findViewById(R.id.tvStatCount)).setText(String.valueOf(examsCount));
+
+
+
+                        ((TextView) statExams.findViewById(R.id.tvStatCount)).setTextColor(Color.RED);
+
+
+
+                        ((TextView) statExams.findViewById(R.id.tvStatLabel)).setText(getString(R.string.category_exams));
+
+
+
+                
+
+
+
+                        // Update Conferences
+
+
+
+                        ((TextView) statConferences.findViewById(R.id.tvStatCount)).setText(String.valueOf(conferencesCount));
+
+
+
+                        ((TextView) statConferences.findViewById(R.id.tvStatCount)).setTextColor(Color.BLUE);
+
+
+
+                        ((TextView) statConferences.findViewById(R.id.tvStatLabel)).setText(getString(R.string.category_conferences));
 
 
 
