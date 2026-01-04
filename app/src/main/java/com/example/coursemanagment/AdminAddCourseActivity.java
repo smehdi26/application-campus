@@ -1,5 +1,7 @@
 package com.example.coursemanagment;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.ArrayAdapter;
@@ -10,8 +12,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.database.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class AdminAddCourseActivity extends AppCompatActivity {
 
@@ -24,6 +29,9 @@ public class AdminAddCourseActivity extends AppCompatActivity {
 
     List<User> teacherList = new ArrayList<>();
     List<String> teacherNames = new ArrayList<>();
+
+    // Calendar to store selected date/time
+    Calendar calendar = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +51,31 @@ public class AdminAddCourseActivity extends AppCompatActivity {
 
         loadTeachers();
 
+        // --- TIME PICKER LISTENER ---
+        etTime.setOnClickListener(v -> showDateTimePicker());
+
         btnSave.setOnClickListener(v -> saveCourse());
+    }
+
+    private void showDateTimePicker() {
+        // 1. Show Date Picker
+        new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH, month);
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+            // 2. Once Date is picked, Show Time Picker
+            new TimePickerDialog(this, (timeView, hourOfDay, minute) -> {
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendar.set(Calendar.MINUTE, minute);
+
+                // 3. Format Output: "Monday, 12/05/2025 - 14:30"
+                SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd/MM/yyyy - HH:mm", Locale.getDefault());
+                etTime.setText(sdf.format(calendar.getTime()));
+
+            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 
     private void loadTeachers() {
@@ -58,7 +90,7 @@ public class AdminAddCourseActivity extends AppCompatActivity {
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     User user = ds.getValue(User.class);
                     if (user != null && "Teacher".equalsIgnoreCase(user.role)) {
-                        user.uid = ds.getKey(); // Ensure ID is captured
+                        user.uid = ds.getKey();
                         teacherList.add(user);
                         teacherNames.add(user.firstName + " " + user.lastName);
                     }
@@ -79,8 +111,8 @@ public class AdminAddCourseActivity extends AppCompatActivity {
         String loc = etLoc.getText().toString();
         int pos = spinner.getSelectedItemPosition();
 
-        if (TextUtils.isEmpty(name) || pos == 0) {
-            Toast.makeText(this, "Name and Teacher are required", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(name) || pos == 0 || TextUtils.isEmpty(time)) {
+            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 

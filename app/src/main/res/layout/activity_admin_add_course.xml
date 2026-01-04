@@ -36,10 +36,14 @@
         android:id="@+id/etAC_Time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Timing (e.g. Mon 10am)"
+        android:hint="Select Date &amp; Time"
         android:background="@android:drawable/edit_text"
         android:padding="12dp"
-        android:layout_marginBottom="12dp"/>
+        android:layout_marginBottom="12dp"
+        android:focusable="false"
+        android:clickable="true"
+        android:drawableEnd="@android:drawable/ic_menu_my_calendar"/>
+    <!-- Added icon and disabled typing -->
 
     <EditText
         android:id="@+id/etAC_Loc"

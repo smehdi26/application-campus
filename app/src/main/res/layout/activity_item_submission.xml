@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp"
+    android:layout_marginBottom="8dp"
+    android:layout_marginHorizontal="4dp">
+
+    <LinearLayout
+        android:id="@+id/rootSubmission"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/sym_def_app_icon"
+            android:background="@drawable/bg_role_badge"
+            android:padding="8dp"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="12dp">
+
+            <TextView
+                android:id="@+id/tvSubStudentName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Student Name"
+                android:textStyle="bold"
+                android:textColor="#000"/>
+
+            <TextView
+                android:id="@+id/tvSubDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2026-01-01 14:30"
+                android:textSize="12sp"
+                android:textColor="#757575"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tap to open work"
+                android:textSize="10sp"
+                android:textColor="#2196F3"
+                android:layout_marginTop="2dp"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvSubGrade"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="--/100"
+            android:textStyle="bold"
+            android:textColor="@color/esprit_red"
+            android:background="@drawable/bg_badge_gray"
+            android:padding="8dp"/>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
