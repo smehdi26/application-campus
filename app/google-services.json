@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "932366605482",
+    "firebase_url": "https://course-managment-afd37-default-rtdb.firebaseio.com",
     "project_id": "course-managment-afd37",
     "storage_bucket": "course-managment-afd37.firebasestorage.app"
   },
@@ -12,7 +13,16 @@
           "package_name": "com.example.coursemanagment"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "932366605482-6isoidptje47u345outkpg46p6iipni9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.coursemanagment",
+            "certificate_hash": "fee7cc83dc8b42e1845b4c49a42d3872e6d614eb"
+          }
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBZtRKGJGAcyoP8aGsRJzPn3dLG09Mnjig"

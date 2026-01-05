@@ -38,6 +38,8 @@ import java.util.Map;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.util.Log; // Import Log
+
 public class EventsListActivity extends AppCompatActivity {
     private RecyclerView rvAllEvents;
     private FloatingActionButton btnAddEvent;
@@ -50,6 +52,10 @@ public class EventsListActivity extends AppCompatActivity {
     private String selectedMonth = "All Events";
     private static final int ADD_EVENT_REQUEST_CODE = 1;
     public static final int EDIT_EVENT_REQUEST_CODE = 2;
+    private static final int REQUEST_CODE_SIGN_IN = 100;
+    private static final int REQUEST_AUTHORIZATION = 101;
+    private GoogleCalendarHelper googleCalendarHelper;
+    private static final String TAG = "EventsListActivity"; // Tag for logging
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +71,7 @@ public class EventsListActivity extends AppCompatActivity {
         setupEventsList();
         checkUserRole();
         btnAddEvent.setOnClickListener(v -> {
+            Log.d(TAG, "Add Event button clicked.");
             Intent intent = new Intent(this, AddEventActivity.class);
             startActivityForResult(intent, ADD_EVENT_REQUEST_CODE);
         });
@@ -73,11 +80,13 @@ public class EventsListActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedMonth = parent.getItemAtPosition(position).toString();
+                Log.d(TAG, "Month selected: " + selectedMonth);
                 filterEvents(selectedMonth);
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 selectedMonth = "All Events";
+                Log.d(TAG, "Nothing selected, filtering for all events.");
                 filterEvents(selectedMonth);
             }
         });
@@ -93,20 +102,22 @@ public class EventsListActivity extends AppCompatActivity {
                         User user = snapshot.getValue(User.class);
                         if (user != null && "Admin".equalsIgnoreCase(user.role)) {
                             btnAddEvent.setVisibility(View.VISIBLE);
+                            Log.d(TAG, "User is Admin. Add Event button visible.");
                         } else {
                             btnAddEvent.setVisibility(View.GONE);
+                            Log.d(TAG, "User is not Admin. Add Event button gone.");
                         }
                     }
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    // Maybe hide the button on error too
                     btnAddEvent.setVisibility(View.GONE);
+                    Log.e(TAG, "Firebase fetch for user role cancelled: " + error.getMessage());
                 }
             });
         } else {
-            // No user logged in, hide the button
             btnAddEvent.setVisibility(View.GONE);
+            Log.d(TAG, "No current Firebase user. Add Event button gone.");
         }
     }
     private void setupEventsList() {
@@ -131,6 +142,7 @@ public class EventsListActivity extends AppCompatActivity {
                         Date date2 = sdf.parse(e2.getDate());
                         return date1.compareTo(date2);
                     } catch (ParseException e) {
+                        Log.e(TAG, "Error parsing date for event sorting: " + e.getMessage());
                         return 0;
                     }
                 });
@@ -148,7 +160,7 @@ public class EventsListActivity extends AppCompatActivity {
                         }
                         groupedEvents.get(month).add(event);
                     } catch (ParseException e) {
-                        // Handle error
+                        Log.e(TAG, "Error grouping events by month: " + e.getMessage());
                     }
                 }
                 allItems.clear();
@@ -170,10 +182,12 @@ public class EventsListActivity extends AppCompatActivity {
 
                 filterEvents(selectedMonth);
                 updateStatistics(eventList);
+                Log.d(TAG, "Fetched " + eventList.size() + " events successfully.");
                 Toast.makeText(EventsListActivity.this, "Fetched " + eventList.size() + " events", Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error fetching events from Firebase: " + error.getMessage());
                 Toast.makeText(EventsListActivity.this, "Error fetching events: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -182,6 +196,7 @@ public class EventsListActivity extends AppCompatActivity {
         this.selectedMonth = selectedMonth;
         if (selectedMonth.equals("All Events")) {
             eventAdapter.updateItems(allItems);
+            Log.d(TAG, "Filtering events: Showing all events.");
             return;
         }
         List<Object> filteredItems = new ArrayList<>();
@@ -190,18 +205,23 @@ public class EventsListActivity extends AppCompatActivity {
             if (item instanceof String && item.equals(selectedMonth)) {
                 monthFound = true;
                 filteredItems.add(item);
+                Log.d(TAG, "Filtering events: Found month header " + selectedMonth);
             } else if (monthFound && item instanceof EventModel) {
                 filteredItems.add(item);
             } else if (monthFound && item instanceof String) {
                 // Next month header found, so stop
+                Log.d(TAG, "Filtering events: Next month header found, stopping.");
                 break;
             }
         }
         eventAdapter.updateItems(filteredItems);
+        Log.d(TAG, "Filtering events: Displaying " + filteredItems.size() + " filtered items for " + selectedMonth);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult called with requestCode: " + requestCode + ", resultCode: " + resultCode);
+
         if (requestCode == ADD_EVENT_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             String title = data.getStringExtra("event_title");
             String category = data.getStringExtra("event_category");
@@ -214,11 +234,44 @@ public class EventsListActivity extends AppCompatActivity {
             if (eventId != null) {
                 newEvent.setId(eventId);
                 mDatabase.child(eventId).setValue(newEvent)
-                        .addOnSuccessListener(aVoid -> Toast.makeText(this, "Event Added", Toast.LENGTH_SHORT).show())
-                        .addOnFailureListener(e -> Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d(TAG, "New event added to Firebase: " + newEvent.getTitle());
+                            Toast.makeText(this, "Event Added", Toast.LENGTH_SHORT).show();
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e(TAG, "Error adding new event to Firebase: " + e.getMessage());
+                            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
             }
         } else if (requestCode == EDIT_EVENT_REQUEST_CODE && resultCode == RESULT_OK) {
+            Log.d(TAG, "Event edit result received. Adapter will refresh.");
             // Event was edited, the ValueEventListener will handle the refresh.
+        } else if (requestCode == REQUEST_CODE_SIGN_IN) { // REQUEST_CODE_SIGN_IN
+            Log.d(TAG, "REQUEST_CODE_SIGN_IN result.");
+            if (resultCode == RESULT_OK) {
+                if (googleCalendarHelper != null) {
+                    googleCalendarHelper.handleSignInResult(data);
+                    Log.d(TAG, "Google Sign-In successful, calling handleSignInResult.");
+                } else {
+                    Log.e(TAG, "googleCalendarHelper is null after successful sign-in.");
+                }
+            } else {
+                Log.d(TAG, "Google Sign-In failed.");
+                Toast.makeText(this, "Google Sign-In failed.", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == REQUEST_AUTHORIZATION) {
+            Log.d(TAG, "REQUEST_AUTHORIZATION result.");
+            if(resultCode == RESULT_OK) {
+                if (googleCalendarHelper != null) {
+                    googleCalendarHelper.signInAndAddEvent();
+                    Log.d(TAG, "Authorization successful, retrying signInAndAddEvent.");
+                } else {
+                    Log.e(TAG, "googleCalendarHelper is null after successful authorization.");
+                }
+            } else {
+                Log.d(TAG, "Authorization failed.");
+                Toast.makeText(this, "Authorization failed.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
     private void updateStatistics(List<EventModel> eventsToCount) {
@@ -258,7 +311,10 @@ public class EventsListActivity extends AppCompatActivity {
     private void setupNavbar() {
         Button btnCalendarView = findViewById(R.id.btnCalendarView);
         if (btnCalendarView != null) {
-            btnCalendarView.setOnClickListener(v -> finish());
+            btnCalendarView.setOnClickListener(v -> {
+                Log.d(TAG, "Calendar View button clicked.");
+                finish();
+            });
         }
         TextView navEvents = findViewById(R.id.navEvents);
         if (navEvents != null) {
@@ -269,20 +325,20 @@ public class EventsListActivity extends AppCompatActivity {
             }
         }
         findViewById(R.id.navProfile).setOnClickListener(v -> {
+            Log.d(TAG, "Profile button clicked.");
             startActivity(new Intent(this, ProfileActivity.class));
             finish();
         });
         findViewById(R.id.navCourses).setOnClickListener(v -> {
+            Log.d(TAG, "Courses button clicked.");
             startActivity(new Intent(this, CoursesActivity.class));
             finish();
         });
     }
+
+    public void syncToGoogleCalendar(EventModel event) {
+        Log.d(TAG, "syncToGoogleCalendar called for event: " + event.getTitle());
+        googleCalendarHelper = new GoogleCalendarHelper(this, event);
+        googleCalendarHelper.signInAndAddEvent();
+    }
 }
-
-
-
-    
-
-
-
-            

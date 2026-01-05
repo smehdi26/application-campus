@@ -37,7 +37,16 @@ android {
     viewBinding {
         enable = true
     }
+
+    packaging {
+        resources.excludes.add("META-INF/DEPENDENCIES")
+    }
 }
+
+configurations.all {
+    exclude(group = "com.google.guava", module = "listenablefuture")
+}
+
 
 dependencies {
     implementation(libs.appcompat)
@@ -50,4 +59,12 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    // Google API
+    implementation("com.google.android.gms:play-services-auth:20.7.0") {
+        exclude(group = "com.google.guava", module = "listenablefuture")
+    }
+    implementation("com.google.api-client:google-api-client-android:1.23.0")
+    implementation("com.google.api-client:google-api-client-gson:1.23.0")
+    implementation("com.google.apis:google-api-services-calendar:v3-rev411-1.25.0")
 }

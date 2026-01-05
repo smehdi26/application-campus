@@ -21,6 +21,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.List;
+import android.util.Log; // Import Log
+
 public class GroupedEventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<Object> items;
     private static final int VIEW_TYPE_MONTH = 0;
@@ -28,6 +30,8 @@ public class GroupedEventAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private FirebaseAuth mAuth;
     private DatabaseReference mUsersDatabase;
     private DatabaseReference mEventsDatabase;
+    private static final String TAG = "GroupedEventAdapter"; // Tag for logging
+
     public GroupedEventAdapter(List<Object> items) {
         this.items = items;
         this.mAuth = FirebaseAuth.getInstance();
@@ -82,12 +86,14 @@ public class GroupedEventAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 eventViewHolder.category.setBackgroundResource(R.drawable.bg_badge_gray);
                 eventViewHolder.category.setTextColor(Color.GRAY);
             }
-            checkUserRole(eventViewHolder);
+            checkUserRole(eventViewHolder, event);
             eventViewHolder.btnDeleteEvent.setOnClickListener(v -> {
+                Log.d(TAG, "Delete event clicked for: " + event.getTitle());
                 mEventsDatabase.child(event.getId()).removeValue();
                 Toast.makeText(v.getContext(), "Event deleted", Toast.LENGTH_SHORT).show();
             });
             eventViewHolder.btnEditEvent.setOnClickListener(v -> {
+                Log.d(TAG, "Edit event clicked for: " + event.getTitle());
                 Context context = v.getContext();
                 Intent intent = new Intent(context, EditEventActivity.class);
                 intent.putExtra("eventId", event.getId());
@@ -103,7 +109,7 @@ public class GroupedEventAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             });
         }
     }
-    private void checkUserRole(EventViewHolder holder) {
+    private void checkUserRole(EventViewHolder holder, EventModel event) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             String uid = currentUser.getUid();
@@ -112,20 +118,69 @@ public class GroupedEventAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
                         User user = snapshot.getValue(User.class);
-                        if (user != null && "Admin".equalsIgnoreCase(user.role)) {
-                            holder.adminOptions.setVisibility(View.VISIBLE);
+                        if (user != null) {
+                            if ("Admin".equalsIgnoreCase(user.role)) {
+                                holder.adminOptions.setVisibility(View.VISIBLE);
+                                holder.btnRegisterEvent.setVisibility(View.GONE);
+                                Log.d(TAG, "User is Admin. Admin options visible, Register button gone.");
+                            } else {
+                                holder.adminOptions.setVisibility(View.GONE);
+                                holder.btnRegisterEvent.setVisibility(View.VISIBLE);
+                                Log.d(TAG, "User is not Admin. Admin options gone, Register button visible.");
+                            }
+
+                            if (user.interestedEvents != null && user.interestedEvents.contains(event.getId())) {
+                                holder.btnRegisterEvent.setText("Registered");
+                                holder.btnRegisterEvent.setEnabled(false);
+                                Log.d(TAG, "Event " + event.getTitle() + " already registered by user.");
+                            } else {
+                                holder.btnRegisterEvent.setText("Register");
+                                holder.btnRegisterEvent.setEnabled(true);
+                                Log.d(TAG, "Event " + event.getTitle() + " not yet registered by user.");
+                            }
+
+                            holder.btnRegisterEvent.setOnClickListener(v -> {
+                                Log.d(TAG, "Register button clicked for event: " + event.getTitle());
+                                if (user.interestedEvents != null && !user.interestedEvents.contains(event.getId())) {
+                                    user.interestedEvents.add(event.getId());
+                                    mUsersDatabase.child(uid).setValue(user).addOnCompleteListener(task -> {
+                                        if (task.isSuccessful()) {
+                                            Log.d(TAG, "Event " + event.getTitle() + " successfully registered in Firebase.");
+                                            Toast.makeText(v.getContext(), "Event registered!", Toast.LENGTH_SHORT).show();
+                                            holder.btnRegisterEvent.setText("Registered");
+                                            holder.btnRegisterEvent.setEnabled(false);
+
+                                            if (v.getContext() instanceof EventsListActivity) {
+                                                Log.d(TAG, "Calling syncToGoogleCalendar for event: " + event.getTitle());
+                                                ((EventsListActivity) v.getContext()).syncToGoogleCalendar(event);
+                                            }
+                                        } else {
+                                            Log.e(TAG, "Failed to register event " + event.getTitle() + " in Firebase.", task.getException());
+                                            Toast.makeText(v.getContext(), "Failed to register.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                } else {
+                                    Log.d(TAG, "Event " + event.getTitle() + " already registered (or interestedEvents is null).");
+                                }
+                            });
                         } else {
-                            holder.adminOptions.setVisibility(View.GONE);
+                            Log.e(TAG, "User object is null after fetching from Firebase.");
                         }
+                    } else {
+                        Log.e(TAG, "User snapshot does not exist for UID: " + uid);
                     }
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     holder.adminOptions.setVisibility(View.GONE);
+                    holder.btnRegisterEvent.setVisibility(View.GONE); // Hide register button on error too
+                    Log.e(TAG, "Firebase fetch for user cancelled: " + error.getMessage());
                 }
             });
         } else {
             holder.adminOptions.setVisibility(View.GONE);
+            holder.btnRegisterEvent.setVisibility(View.GONE);
+            Log.d(TAG, "No current Firebase user. Hiding admin options and register button.");
         }
     }
     @Override
@@ -140,7 +195,7 @@ public class GroupedEventAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     static class EventViewHolder extends RecyclerView.ViewHolder {
         TextView title, dateTime, location, category;
         LinearLayout adminOptions;
-        Button btnEditEvent, btnDeleteEvent;
+        Button btnEditEvent, btnDeleteEvent, btnRegisterEvent;
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.tvEventTitle);
@@ -150,6 +205,7 @@ public class GroupedEventAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             adminOptions = itemView.findViewById(R.id.admin_options);
             btnEditEvent = itemView.findViewById(R.id.btnEditEvent);
             btnDeleteEvent = itemView.findViewById(R.id.btnDeleteEvent);
+            btnRegisterEvent = itemView.findViewById(R.id.btnRegisterEvent);
         }
     }
     static class MonthViewHolder extends RecyclerView.ViewHolder {

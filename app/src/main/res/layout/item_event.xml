@@ -79,5 +79,15 @@
                 android:backgroundTint="@android:color/holo_red_dark"/>
         </LinearLayout>
 
+        <Button
+            android:id="@+id/btnRegisterEvent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/admin_options"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="8dp"
+            android:text="Register"
+            android:visibility="visible"/>
+
     </RelativeLayout>
 </androidx.cardview.widget.CardView>
