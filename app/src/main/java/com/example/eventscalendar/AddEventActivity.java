@@ -100,17 +100,43 @@ public class AddEventActivity extends AppCompatActivity {
         String location = editTextEventLocation.getText().toString().trim();
         String description = editTextEventDescription.getText().toString().trim();
 
-        if (title.isEmpty() || date.isEmpty() || time.isEmpty()) {
-            Toast.makeText(this, "Please fill in title, date, and time", Toast.LENGTH_SHORT).show();
+        if (title.isEmpty()) {
+            editTextEventTitle.setError("Le titre est obligatoire");
+            editTextEventTitle.requestFocus();
             return;
         }
 
-        // For now, just send the data back to the calling activity
+        if (date.isEmpty()) {
+            Toast.makeText(this, "La date est obligatoire", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try {
+            java.util.Date eventDate = dateFormatter.parse(date);
+            if (eventDate != null && eventDate.before(new java.util.Date())) {
+                Toast.makeText(this, "La date de l'événement ne peut pas être dans le passé", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } catch (java.text.ParseException e) {
+            Toast.makeText(this, "Format de date invalide", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (time.isEmpty()) {
+            Toast.makeText(this, "Le temps est obligatoire", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (location.isEmpty()) {
+            editTextEventLocation.setError("Le lieu est obligatoire");
+            editTextEventLocation.requestFocus();
+            return;
+        }
+
         Intent resultIntent = new Intent();
         resultIntent.putExtra("event_title", title);
         resultIntent.putExtra("event_category", category);
-        resultIntent.putExtra("event_date", date); // Format: dd/MM/yyyy
-        resultIntent.putExtra("event_time", time); // Format: HH:mm
+        resultIntent.putExtra("event_date", date); 
+        resultIntent.putExtra("event_time", time); 
         resultIntent.putExtra("event_location", location);
         resultIntent.putExtra("event_description", description);
         setResult(RESULT_OK, resultIntent);

@@ -128,8 +128,35 @@ public class EditEventActivity extends AppCompatActivity {
         String location = editTextEventLocation.getText().toString().trim();
         String description = editTextEventDescription.getText().toString().trim();
 
-        if (title.isEmpty() || date.isEmpty() || time.isEmpty()) {
-            Toast.makeText(this, "Please fill in title, date, and time", Toast.LENGTH_SHORT).show();
+        if (title.isEmpty()) {
+            editTextEventTitle.setError("Le titre est obligatoire");
+            editTextEventTitle.requestFocus();
+            return;
+        }
+
+        if (date.isEmpty()) {
+            Toast.makeText(this, "La date est obligatoire", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try {
+            java.util.Date eventDate = dateFormatter.parse(date);
+            if (eventDate != null && eventDate.before(new java.util.Date())) {
+                Toast.makeText(this, "La date de l'événement ne peut pas être dans le passé", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } catch (java.text.ParseException e) {
+            Toast.makeText(this, "Format de date invalide", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (time.isEmpty()) {
+            Toast.makeText(this, "Le temps est obligatoire", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (location.isEmpty()) {
+            editTextEventLocation.setError("Le lieu est obligatoire");
+            editTextEventLocation.requestFocus();
             return;
         }
 
