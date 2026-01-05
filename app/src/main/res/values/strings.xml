@@ -9,15 +9,15 @@
     <string name="courses">Courses</string>
     <string name="profile">Profile</string>
     <string name="logout">Log Out</string>
-    <string name="events_on">Events on %1$s</string>
+    <string name="events_on" translatable="false">Events on %1$s</string>
     <string-array name="event_categories">
         <item>Exams</item>
         <item>Clubs</item>
         <item>Conferences</item>
         <item>Soutenances</item>
     </string-array>
-    <string name="category_exams">Exams</string>
-    <string name="category_conferences">Conferences</string>
-    <string name="category_soutenances">Soutenances</string>
-    <string name="category_clubs">Clubs</string>
+    <string name="category_exams" translatable="false">Exams</string>
+    <string name="category_conferences" translatable="false">Conferences</string>
+    <string name="category_soutenances" translatable="false">Soutenances</string>
+    <string name="category_clubs" translatable="false">Clubs</string>
 </resources>
