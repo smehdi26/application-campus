@@ -1,9 +1,11 @@
 package com.example.coursemanagment;
 
 public class User {
-    public String uid; // We need to store the UID inside the object now
+    public String uid;
     public String firstName, lastName, email, role;
-    public String classId = ""; // Empty means Unassigned
+
+    // --- THIS FIELD WAS LIKELY MISSING ---
+    public String classId = "";
 
     public User() {}
 

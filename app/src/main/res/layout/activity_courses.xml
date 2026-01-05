@@ -79,7 +79,17 @@
                     android:text="My Courses"
                     android:textSize="18sp"
                     android:textColor="#333"
-                    android:layout_marginBottom="16dp"/>
+                    android:layout_marginBottom="8dp"/> <!-- Reduced bottom margin -->
+
+                <!-- NEW: DEPARTMENT FILTER LIST (Hidden by default) -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerDeptFilter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"
+                    android:clipToPadding="false"/>
 
                 <!-- STATISTICS ROW -->
                 <LinearLayout

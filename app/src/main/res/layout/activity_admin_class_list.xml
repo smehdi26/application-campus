@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="#F8F9FA">
 
-    <!-- HEADER (ID: header) -->
+    <!-- 1. HEADER (ID: header) -->
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
@@ -37,14 +37,30 @@
             android:layout_marginStart="16dp"/>
     </LinearLayout>
 
+    <!-- 2. DEPARTMENT FILTER LIST (New) -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerDeptFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/header"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:clipToPadding="false"/>
+
+    <!-- 3. MAIN CLASS LIST -->
+    <!-- Positioned below the filter list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerClasses"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/header"
+        android:layout_below="@id/recyclerDeptFilter"
         android:padding="10dp"
         android:clipToPadding="false"/>
 
+    <!-- 4. FAB ADD BUTTON -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddClass"
         android:layout_width="wrap_content"
