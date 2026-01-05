@@ -53,18 +53,14 @@
             style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
     </LinearLayout>
 
-    <!-- Contenu Principal (Scrollable) -->
-    <androidx.core.widget.NestedScrollView
+    <!-- Contenu Principal -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/header"
         android:layout_above="@id/bottom_nav_stats_container"
-        android:padding="16dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        android:padding="16dp"
+        android:orientation="vertical">
 
             <!-- Calendar Card -->
             <androidx.cardview.widget.CardView
@@ -91,12 +87,11 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvEvents"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginTop="10dp"
-                android:nestedScrollingEnabled="false" />
+                android:layout_weight="1" />
 
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
 
     <!-- Floating Action Button (Bouton Rouge +) -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton

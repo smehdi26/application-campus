@@ -28,7 +28,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
         EventModel event = events.get(position);
         holder.title.setText(event.getTitle());
-        holder.time.setText(event.getTime());
+        holder.dateTime.setText(event.getDate() + " " + event.getTime());
         holder.location.setText(event.getLocation());
         holder.category.setText(event.getCategory());
 
@@ -65,11 +65,11 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     }
 
     static class EventViewHolder extends RecyclerView.ViewHolder {
-        TextView title, time, location, category;
+        TextView title, dateTime, location, category;
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.tvEventTitle);
-            time = itemView.findViewById(R.id.tvEventTime);
+            dateTime = itemView.findViewById(R.id.tvEventDateTime);
             location = itemView.findViewById(R.id.tvEventLocation);
             category = itemView.findViewById(R.id.tvCategoryBadge);
         }

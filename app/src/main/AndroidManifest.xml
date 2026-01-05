@@ -33,7 +33,6 @@
         <!-- 3. COURSES & MATERIALS -->
         <activity android:name=".CoursesActivity" />
         <activity android:name=".CourseDetailsActivity" />
-        <activity android:name=".AddCourseActivity" />
         <activity android:name=".EditCourseActivity" />
 
         <!-- 4. PROFILE EDITING -->
