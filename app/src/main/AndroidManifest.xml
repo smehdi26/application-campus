@@ -43,6 +43,7 @@
         <activity android:name=".AdminAddClassActivity" />
         <activity android:name=".AdminClassDetailsActivity" />
         <activity android:name=".AssignmentSubmissionsActivity" />
+        <activity android:name=".NotificationActivity" />
         <activity android:name=".AdminAddCourseActivity" />
         <activity android:name=".TeacherStudentListActivity" />
     </application>

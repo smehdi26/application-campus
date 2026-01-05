@@ -1,9 +1,7 @@
 package com.example.coursemanagment;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -45,7 +43,6 @@ public class AdminAddClassActivity extends AppCompatActivity {
         etCode = findViewById(R.id.etClassCode);
         spinnerDept = findViewById(R.id.spinnerDept);
         btnAddDept = findViewById(R.id.btnAddDept);
-
         recyclerStudents = findViewById(R.id.recyclerSelectStudents);
         btnSave = findViewById(R.id.btnSaveClass);
         btnBack = findViewById(R.id.btnBack);
@@ -69,11 +66,9 @@ public class AdminAddClassActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
 
-        // Load Data
         loadDepartments();
         loadStudents();
 
-        // Listeners
         btnAddDept.setOnClickListener(v -> showAddDeptDialog());
         btnSave.setOnClickListener(v -> saveClass());
     }
@@ -86,21 +81,14 @@ public class AdminAddClassActivity extends AppCompatActivity {
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     deptList.add(ds.getValue(Department.class));
                 }
-
-                ArrayAdapter<Department> deptAdapter = new ArrayAdapter<>(
-                        AdminAddClassActivity.this,
-                        android.R.layout.simple_spinner_item,
-                        deptList
-                );
+                ArrayAdapter<Department> deptAdapter = new ArrayAdapter<>(AdminAddClassActivity.this, android.R.layout.simple_spinner_item, deptList);
                 deptAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinnerDept.setAdapter(deptAdapter);
 
-                // If editing, select previous department
                 if (existingClass != null && existingClass.departmentId != null) {
                     for (int i = 0; i < deptList.size(); i++) {
                         if (deptList.get(i).id.equals(existingClass.departmentId)) {
-                            spinnerDept.setSelection(i);
-                            break;
+                            spinnerDept.setSelection(i); break;
                         }
                     }
                 }
@@ -114,7 +102,7 @@ public class AdminAddClassActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("New Department");
         final EditText input = new EditText(this);
-        input.setHint("Name (e.g. IT, Business)");
+        input.setHint("Name");
         builder.setView(input);
         builder.setPositiveButton("Add", (dialog, which) -> {
             String name = input.getText().toString();
@@ -127,7 +115,6 @@ public class AdminAddClassActivity extends AppCompatActivity {
         builder.show();
     }
 
-    // ... (Keep loadStudents logic same as before) ...
     private void loadStudents() {
         mUsersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -160,19 +147,21 @@ public class AdminAddClassActivity extends AppCompatActivity {
         Department selectedDept = (Department) spinnerDept.getSelectedItem();
 
         if (TextUtils.isEmpty(name) || selectedDept == null) {
-            Toast.makeText(this, "Name and Department required", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Fill fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Save with Department ID
         Classroom newClass = new Classroom(currentClassId, name, code, selectedDept.id);
         mClassesRef.child(currentClassId).setValue(newClass);
 
-        // Update Students (Keep same logic as before)
         for (User student : studentList) {
             boolean isSelected = adapter.selectedUserIds.contains(student.uid);
             if (isSelected) {
                 mUsersRef.child(student.uid).child("classId").setValue(currentClassId);
+
+                // --- TRIGGER NOTIFICATION ---
+                NotificationHelper.sendNotification(student.uid, "Class Enrollment", "You have been added to: " + name);
+
             } else if (currentClassId.equals(student.classId)) {
                 mUsersRef.child(student.uid).child("classId").setValue("");
             }

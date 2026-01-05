@@ -25,7 +25,6 @@ public class SubmissionAdapter extends RecyclerView.Adapter<SubmissionAdapter.Vi
     String courseId;
     String assignmentId;
 
-    // Updated Constructor to accept IDs
     public SubmissionAdapter(Context context, ArrayList<Submission> list, String courseId, String assignmentId) {
         this.context = context;
         this.list = list;
@@ -46,17 +45,12 @@ public class SubmissionAdapter extends RecyclerView.Adapter<SubmissionAdapter.Vi
         holder.name.setText(sub.studentName);
         holder.date.setText(sub.date);
 
-        // --- GRADE LOGIC ---
         String grade = sub.grade != null ? sub.grade : "Pending";
         holder.grade.setText(grade);
-
-        // --- COLOR CODING ---
         applyGradeColor(holder.grade, grade);
 
-        // --- CLICK TO GRADE (Teacher/Admin) ---
         holder.grade.setOnClickListener(v -> showGradingDialog(sub));
 
-        // Click to Open File
         holder.root.setOnClickListener(v -> {
             try {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -71,7 +65,6 @@ public class SubmissionAdapter extends RecyclerView.Adapter<SubmissionAdapter.Vi
     private void showGradingDialog(Submission sub) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Grade for " + sub.studentName);
-
         final EditText input = new EditText(context);
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
         input.setHint("Enter score (0-100)");
@@ -80,17 +73,14 @@ public class SubmissionAdapter extends RecyclerView.Adapter<SubmissionAdapter.Vi
         builder.setPositiveButton("Save", (dialog, which) -> {
             String score = input.getText().toString();
             if (!score.isEmpty()) {
-                String finalGrade = score + "/100"; // Format: 85/100
+                String finalGrade = score + "/100";
 
-                // Update Firebase
                 FirebaseDatabase.getInstance().getReference("Courses")
-                        .child(courseId)
-                        .child("assignments")
-                        .child(assignmentId)
-                        .child("submissions")
-                        .child(sub.studentId)
-                        .child("grade")
-                        .setValue(finalGrade);
+                        .child(courseId).child("assignments").child(assignmentId)
+                        .child("submissions").child(sub.studentId).child("grade").setValue(finalGrade);
+
+                // --- NOTIFICATION ---
+                NotificationHelper.sendNotification(sub.studentId, "Grade Posted", "You received " + finalGrade);
 
                 Toast.makeText(context, "Graded!", Toast.LENGTH_SHORT).show();
             }
@@ -100,31 +90,20 @@ public class SubmissionAdapter extends RecyclerView.Adapter<SubmissionAdapter.Vi
     }
 
     private void applyGradeColor(TextView tv, String gradeText) {
-        // Reset default
         tv.setBackgroundResource(R.drawable.bg_badge_gray);
-        tv.setTextColor(Color.parseColor("#555555")); // Grey
-
+        tv.setTextColor(Color.parseColor("#555555"));
         if (gradeText.equals("Pending")) return;
-
         try {
-            // Extract number from "85/100" -> "85"
-            String numberOnly = gradeText.split("/")[0];
-            int score = Integer.parseInt(numberOnly);
-
+            int score = Integer.parseInt(gradeText.split("/")[0]);
             if (score >= 75) {
-                // GREEN
                 tv.setTextColor(Color.parseColor("#388E3C"));
-                tv.setBackgroundResource(R.drawable.bg_role_badge); // Reusing light red/pink shape, ideally create a green one, but text color matters most
+                tv.setBackgroundResource(R.drawable.bg_role_badge);
             } else if (score >= 60) {
-                // YELLOW/ORANGE
                 tv.setTextColor(Color.parseColor("#FBC02D"));
             } else {
-                // RED
                 tv.setTextColor(Color.parseColor("#D32F2F"));
             }
-        } catch (Exception e) {
-            // Keep default if parsing fails
-        }
+        } catch (Exception e) {}
     }
 
     @Override

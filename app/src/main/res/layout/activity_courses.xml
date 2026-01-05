@@ -18,7 +18,7 @@
             android:orientation="vertical"
             android:paddingBottom="80dp">
 
-            <!-- HEADER (Updated) -->
+            <!-- HEADER -->
             <LinearLayout
                 android:id="@+id/header"
                 android:layout_width="match_parent"
@@ -34,7 +34,7 @@
                     android:background="@color/esprit_red"
                     android:layout_marginEnd="10dp"/>
 
-                <!-- Title Wrapper (weight=1 pushes the class name to the right) -->
+                <!-- Title Wrapper -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -55,7 +55,19 @@
                         android:textColor="#757575"/>
                 </LinearLayout>
 
-                <!-- NEW: Class Name Display -->
+                <!-- NEW: Notification Bell -->
+                <ImageView
+                    android:id="@+id/btnNotifications"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@android:drawable/ic_popup_reminder"
+                    app:tint="@color/esprit_red"
+                    android:layout_marginEnd="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"/>
+
+                <!-- Class Name / Role Display -->
                 <TextView
                     android:id="@+id/tvHeaderClassName"
                     android:layout_width="wrap_content"
@@ -67,6 +79,7 @@
                     android:gravity="end"/>
             </LinearLayout>
 
+            <!-- Main Content -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -79,9 +92,9 @@
                     android:text="My Courses"
                     android:textSize="18sp"
                     android:textColor="#333"
-                    android:layout_marginBottom="8dp"/> <!-- Reduced bottom margin -->
+                    android:layout_marginBottom="16dp"/>
 
-                <!-- NEW: DEPARTMENT FILTER LIST (Hidden by default) -->
+                <!-- Department Filters -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerDeptFilter"
                     android:layout_width="match_parent"
@@ -99,7 +112,7 @@
                     android:orientation="horizontal"
                     android:layout_marginBottom="24dp">
 
-                    <!-- Stat 1: Total Courses -->
+                    <!-- Stat 1 -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="0dp"
                         android:layout_height="90dp"
@@ -112,7 +125,6 @@
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:orientation="vertical">
-
                             <TextView
                                 android:id="@+id/tvStatCourses"
                                 android:layout_width="wrap_content"
@@ -121,7 +133,6 @@
                                 android:textSize="22sp"
                                 android:textColor="@color/esprit_red"
                                 android:textStyle="bold"/>
-
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -131,7 +142,7 @@
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Stat 2: Assignments -->
+                    <!-- Stat 2 -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="0dp"
                         android:layout_height="90dp"
@@ -144,7 +155,6 @@
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:orientation="vertical">
-
                             <TextView
                                 android:id="@+id/tvStatAssignments"
                                 android:layout_width="wrap_content"
@@ -153,7 +163,6 @@
                                 android:textSize="22sp"
                                 android:textColor="@color/esprit_red"
                                 android:textStyle="bold"/>
-
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -163,7 +172,7 @@
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Stat 3: Avg Grade -->
+                    <!-- Stat 3 -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="0dp"
                         android:layout_height="90dp"
@@ -175,7 +184,6 @@
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:orientation="vertical">
-
                             <TextView
                                 android:id="@+id/tvStatGrade"
                                 android:layout_width="wrap_content"
@@ -184,7 +192,6 @@
                                 android:textSize="22sp"
                                 android:textColor="@color/esprit_red"
                                 android:textStyle="bold"/>
-
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -206,7 +213,7 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Admin Add Button (Floating) -->
+    <!-- Admin Add Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddCourse"
         android:layout_width="wrap_content"

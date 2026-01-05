@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +28,7 @@ public class CoursesActivity extends AppCompatActivity {
     FloatingActionButton fabAdd;
     TextView tvStatCourses, tvStatAssignments, tvStatGrade, tvHeaderClassName;
     LinearLayout layoutStats;
+    ImageView btnNotifications;
 
     // Data Lists
     ArrayList<Course> courseList;
@@ -43,7 +45,6 @@ public class CoursesActivity extends AppCompatActivity {
     DatabaseReference mDatabase;
     FirebaseAuth mAuth;
 
-    // Language Support
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
@@ -66,6 +67,7 @@ public class CoursesActivity extends AppCompatActivity {
         tvStatCourses = findViewById(R.id.tvStatCourses);
         tvStatAssignments = findViewById(R.id.tvStatAssignments);
         tvStatGrade = findViewById(R.id.tvStatGrade);
+        btnNotifications = findViewById(R.id.btnNotifications);
 
         // Setup Lists
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -81,6 +83,9 @@ public class CoursesActivity extends AppCompatActivity {
         deptList = new ArrayList<>();
 
         mAuth = FirebaseAuth.getInstance();
+
+        // Notification Click
+        btnNotifications.setOnClickListener(v -> startActivity(new Intent(this, NotificationActivity.class)));
 
         // Start Loading
         checkRoleAndLoad();
