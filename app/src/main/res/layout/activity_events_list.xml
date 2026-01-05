@@ -33,12 +33,11 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/black"/>
-            <TextView
+            <Spinner
+                android:id="@+id/monthSpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="All Events"
-                android:textSize="12sp"
-                android:textColor="#757575"/>
+                android:layout_gravity="center_vertical" />
         </LinearLayout>
 
         <Button

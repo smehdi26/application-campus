@@ -144,6 +144,18 @@ import java.util.Map;
 
 
 
+import android.widget.AdapterView;
+
+
+
+import android.widget.ArrayAdapter;
+
+
+
+import android.widget.Spinner;
+
+
+
 
 
 
@@ -164,123 +176,119 @@ public class EventsListActivity extends AppCompatActivity {
 
 
 
-        private GroupedEventAdapter eventAdapter;
+    private GroupedEventAdapter eventAdapter;
 
 
 
-        private List<Object> items;
+    private List<Object> allItems;
 
 
 
-        private DatabaseReference mDatabase; // Realtime Database instance
+    private DatabaseReference mDatabase;
 
 
 
-    
+    private Spinner monthSpinner;
 
 
 
-        private static final int ADD_EVENT_REQUEST_CODE = 1;
 
 
 
-    
 
+    private static final int ADD_EVENT_REQUEST_CODE = 1;
 
 
-        @Override
 
 
 
-        protected void onCreate(Bundle savedInstanceState) {
 
 
+    @Override
 
-            super.onCreate(savedInstanceState);
 
 
+    protected void onCreate(Bundle savedInstanceState) {
 
-            setContentView(R.layout.activity_events_list);
 
 
+        super.onCreate(savedInstanceState);
 
-    
 
 
+        setContentView(R.layout.activity_events_list);
 
-            // Initialize Realtime Database
 
 
 
-            mDatabase = FirebaseDatabase.getInstance().getReference("events");
 
 
 
-    
+        mDatabase = FirebaseDatabase.getInstance().getReference("events");
 
 
 
-            // Initialisation des vues
+        rvAllEvents = findViewById(R.id.rvAllEvents);
 
 
 
-            rvAllEvents = findViewById(R.id.rvAllEvents);
+        btnAddEvent = findViewById(R.id.btnAddEvent);
 
 
 
-            btnAddEvent = findViewById(R.id.btnAddEvent);
+        monthSpinner = findViewById(R.id.monthSpinner);
 
 
 
-    
 
 
 
-            setupNavbar();
 
+        setupNavbar();
 
 
-            setupEventsList();
 
+        setupEventsList();
 
 
-    
 
 
 
-            btnAddEvent.setOnClickListener(v -> {
 
 
+        btnAddEvent.setOnClickListener(v -> {
 
-                Intent intent = new Intent(this, AddEventActivity.class);
 
 
+            Intent intent = new Intent(this, AddEventActivity.class);
 
-                startActivityForResult(intent, ADD_EVENT_REQUEST_CODE);
 
 
+            startActivityForResult(intent, ADD_EVENT_REQUEST_CODE);
 
-            });
 
 
+        });
 
-        }
 
 
+    }
 
-    
 
 
 
-        private void setupEventsList() {
 
 
 
-            items = new ArrayList<>();
+    private void setupEventsList() {
 
 
 
-            eventAdapter = new GroupedEventAdapter(items);
+        allItems = new ArrayList<>();
+
+
+
+        eventAdapter = new GroupedEventAdapter(new ArrayList<>());
 
 
 
@@ -340,10 +348,6 @@ public class EventsListActivity extends AppCompatActivity {
 
 
 
-                // Sort events by date
-
-
-
                 Collections.sort(eventList, (e1, e2) -> {
 
 
@@ -385,10 +389,6 @@ public class EventsListActivity extends AppCompatActivity {
 
 
 
-
-
-
-                // Group events by month
 
 
 
@@ -456,7 +456,7 @@ public class EventsListActivity extends AppCompatActivity {
 
 
 
-                        // Handle date parsing error
+                        // Handle error
 
 
 
@@ -472,11 +472,7 @@ public class EventsListActivity extends AppCompatActivity {
 
 
 
-                // Create the final list with headers
-
-
-
-                List<Object> finalItems = new ArrayList<>();
+                allItems.clear();
 
 
 
@@ -484,11 +480,11 @@ public class EventsListActivity extends AppCompatActivity {
 
 
 
-                    finalItems.add(entry.getKey());
+                    allItems.add(entry.getKey());
 
 
 
-                    finalItems.addAll(entry.getValue());
+                    allItems.addAll(entry.getValue());
 
 
 
@@ -500,7 +496,83 @@ public class EventsListActivity extends AppCompatActivity {
 
 
 
-                eventAdapter.updateItems(finalItems);
+                List<String> months = new ArrayList<>();
+
+
+
+                months.add("All Events");
+
+
+
+                months.addAll(groupedEvents.keySet());
+
+
+
+
+
+
+
+                ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(EventsListActivity.this, android.R.layout.simple_spinner_item, months);
+
+
+
+                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+
+
+                monthSpinner.setAdapter(spinnerAdapter);
+
+
+
+                
+
+
+
+                monthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+
+
+                    @Override
+
+
+
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+
+
+                        filterEvents(parent.getItemAtPosition(position).toString());
+
+
+
+                    }
+
+
+
+
+
+
+
+                    @Override
+
+
+
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+
+
+                    }
+
+
+
+                });
+
+
+
+
+
+
+
+                eventAdapter.updateItems(allItems);
 
 
 
@@ -508,7 +580,7 @@ public class EventsListActivity extends AppCompatActivity {
 
 
 
-                Toast.makeText(EventsListActivity.this, "Fetched " + eventList.size() + " events from Firebase", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EventsListActivity.this, "Fetched " + eventList.size() + " events", Toast.LENGTH_SHORT).show();
 
 
 
@@ -528,7 +600,7 @@ public class EventsListActivity extends AppCompatActivity {
 
 
 
-                Toast.makeText(EventsListActivity.this, "Error fetching events from Firebase: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(EventsListActivity.this, "Error fetching events: " + error.getMessage(), Toast.LENGTH_SHORT).show();
 
 
 
@@ -537,6 +609,94 @@ public class EventsListActivity extends AppCompatActivity {
 
 
         });
+
+
+
+    }
+
+
+
+
+
+
+
+    private void filterEvents(String selectedMonth) {
+
+
+
+        if (selectedMonth.equals("All Events")) {
+
+
+
+            eventAdapter.updateItems(allItems);
+
+
+
+            return;
+
+
+
+        }
+
+
+
+
+
+
+
+        List<Object> filteredItems = new ArrayList<>();
+
+
+
+        boolean monthFound = false;
+
+
+
+        for (Object item : allItems) {
+
+
+
+            if (item instanceof String && item.equals(selectedMonth)) {
+
+
+
+                monthFound = true;
+
+
+
+                filteredItems.add(item);
+
+
+
+            } else if (monthFound && item instanceof EventModel) {
+
+
+
+                filteredItems.add(item);
+
+
+
+            } else if (monthFound && item instanceof String) {
+
+
+
+                // Next month header found, so stop
+
+
+
+                break;
+
+
+
+            }
+
+
+
+        }
+
+
+
+        eventAdapter.updateItems(filteredItems);
 
 
 
@@ -620,27 +780,11 @@ public class EventsListActivity extends AppCompatActivity {
 
 
 
-                        .addOnSuccessListener(aVoid -> {
+                        .addOnSuccessListener(aVoid -> Toast.makeText(this, "Event Added", Toast.LENGTH_SHORT).show())
 
 
 
-                            Toast.makeText(this, "Event Added to Firebase: " + title, Toast.LENGTH_SHORT).show();
-
-
-
-                        })
-
-
-
-                        .addOnFailureListener(e -> {
-
-
-
-                            Toast.makeText(this, "Error adding event to Firebase: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-
-
-
-                        });
+                        .addOnFailureListener(e -> Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
 
 
 
@@ -924,4 +1068,16 @@ public class EventsListActivity extends AppCompatActivity {
 
 
 
+
+
+
+
 }
+
+
+
+    
+
+
+
+            
