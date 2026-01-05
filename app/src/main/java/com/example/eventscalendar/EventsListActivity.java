@@ -47,7 +47,10 @@ public class EventsListActivity extends AppCompatActivity {
     private DatabaseReference mUsersDatabase;
     private FirebaseAuth mAuth;
     private Spinner monthSpinner;
+    private String selectedMonth = "All Events";
     private static final int ADD_EVENT_REQUEST_CODE = 1;
+    public static final int EDIT_EVENT_REQUEST_CODE = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +67,19 @@ public class EventsListActivity extends AppCompatActivity {
         btnAddEvent.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddEventActivity.class);
             startActivityForResult(intent, ADD_EVENT_REQUEST_CODE);
+        });
+
+        monthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedMonth = parent.getItemAtPosition(position).toString();
+                filterEvents(selectedMonth);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                selectedMonth = "All Events";
+                filterEvents(selectedMonth);
+            }
         });
     }
     private void checkUserRole() {
@@ -146,16 +162,13 @@ public class EventsListActivity extends AppCompatActivity {
                 ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(EventsListActivity.this, android.R.layout.simple_spinner_item, months);
                 spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 monthSpinner.setAdapter(spinnerAdapter);
-                monthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        filterEvents(parent.getItemAtPosition(position).toString());
-                    }
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                    }
-                });
-                eventAdapter.updateItems(allItems);
+
+                int selectionIndex = months.indexOf(selectedMonth);
+                if (selectionIndex != -1) {
+                    monthSpinner.setSelection(selectionIndex);
+                }
+
+                filterEvents(selectedMonth);
                 updateStatistics(eventList);
                 Toast.makeText(EventsListActivity.this, "Fetched " + eventList.size() + " events", Toast.LENGTH_SHORT).show();
             }
@@ -166,6 +179,7 @@ public class EventsListActivity extends AppCompatActivity {
         });
     }
     private void filterEvents(String selectedMonth) {
+        this.selectedMonth = selectedMonth;
         if (selectedMonth.equals("All Events")) {
             eventAdapter.updateItems(allItems);
             return;
@@ -203,6 +217,8 @@ public class EventsListActivity extends AppCompatActivity {
                         .addOnSuccessListener(aVoid -> Toast.makeText(this, "Event Added", Toast.LENGTH_SHORT).show())
                         .addOnFailureListener(e -> Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
             }
+        } else if (requestCode == EDIT_EVENT_REQUEST_CODE && resultCode == RESULT_OK) {
+            // Event was edited, the ValueEventListener will handle the refresh.
         }
     }
     private void updateStatistics(List<EventModel> eventsToCount) {
