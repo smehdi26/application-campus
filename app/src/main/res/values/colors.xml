@@ -13,7 +13,7 @@
     <color name="calendar_day_bg">#F1F3F5</color>
     <color name="calendar_event_bg">#FEEBEB</color>
     <color name="calendar_selected_border">#E31E24</color>
-    
+
     <color name="count_exams">#E31E24</color>
     <color name="count_events">#3F51B5</color>
     <color name="count_defense">#FFB100</color>
@@ -24,7 +24,15 @@
     <color name="cat_events">#3F51B5</color>
     <color name="cat_defense">#FFB100</color>
     <color name="cat_clubs">#009688</color>
-    
+
     <color name="tag_defense_bg">#FFF8E1</color>
     <color name="tag_defense_text">#FFB100</color>
+    <!-- These are the custom colors you need -->
+    <color name="text_gray">#757575</color>
+
+    <!-- Covoiturage Brand Colors -->
+    <color name="covoiturage_red_primary">#E30613</color>
+    <color name="covoiturage_dark_gray">#333333</color>
+    <color name="covoiturage_light_gray_bg">#F3F4F6</color>
+    <color name="covoiturage_red_light_bg">#FEE2E2</color>
 </resources>

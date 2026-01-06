@@ -55,6 +55,8 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    // MPAndroidChart temporarily removed - can be added back later if needed
+    // implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation(libs.applandeo.calendar)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

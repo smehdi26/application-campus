@@ -15,32 +15,32 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CourseManagment"
         tools:targetApi="31">
-
+        <activity
+            android:name=".covoiturage.activities.CovoiturageActivity"
+            android:exported="false" />
         <!-- 1. LAUNCHER (Login) -->
         <activity
             android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- 2. AUTH & HOME -->
+        </activity> <!-- 2. AUTH & HOME -->
         <activity android:name=".RegisterActivity" />
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".HomeActivity" />
-
-        <!-- 3. COURSES & MATERIALS -->
+        <activity android:name=".HomeActivity" /> <!-- 3. COURSES & MATERIALS -->
         <activity android:name=".CoursesActivity" />
         <activity android:name=".CourseDetailsActivity" />
         <activity android:name=".EditCourseActivity" />
 
         <!-- 4. PROFILE EDITING -->
+        <activity android:name=".CourseDetailsActivity" /> <!-- Note: If you deleted AddCourseActivity.java, remove the line below -->
+        <activity android:name=".AddCourseActivity" />
+        <activity android:name=".EditCourseActivity" /> <!-- 4. PROFILE EDITING -->
         <activity android:name=".EditProfileActivity" />
-        <activity android:name=".AllUsersActivity" />
-
-        <!-- 5. ADMIN PAGES -->
+        <activity android:name=".AllUsersActivity" /> <!-- 5. ADMIN PAGES -->
         <activity android:name=".AdminDashboardActivity" />
         <activity android:name=".AdminClassListActivity" />
         <activity android:name=".AdminAddClassActivity" />
