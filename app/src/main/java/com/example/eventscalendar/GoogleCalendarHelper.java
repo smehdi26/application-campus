@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.widget.Toast;
+// import androidx.fragment.app.Fragment; // Removed import for Fragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -29,14 +30,14 @@ import android.util.Log; // Import Log
 
 public class GoogleCalendarHelper {
 
-    private static final int REQUEST_CODE_SIGN_IN = 100;
-    private static final int REQUEST_AUTHORIZATION = 101;
+    public static final int REQUEST_CODE_SIGN_IN = 100; // Made public
+    public static final int REQUEST_AUTHORIZATION = 101; // Made public
     private final GoogleSignInClient mGoogleSignInClient;
-    private final Activity mActivity;
+    private final Activity mActivity; // Reverted from Fragment
     private EventModel mEvent;
     private static final String TAG = "GoogleCalendarHelper"; // Tag for logging
 
-    public GoogleCalendarHelper(Activity activity, EventModel event) {
+    public GoogleCalendarHelper(Activity activity, EventModel event) { // Reverted constructor parameter
         mActivity = activity;
         mEvent = event;
         Log.d(TAG, "Initializing GoogleCalendarHelper for event: " + event.getTitle());
@@ -44,10 +45,8 @@ public class GoogleCalendarHelper {
                 .requestEmail()
                 .requestScopes(new Scope(CalendarScopes.CALENDAR))
                 .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(activity, gso);
-    }
-
-    public void signInAndAddEvent() {
+        mGoogleSignInClient = GoogleSignIn.getClient(activity, gso); // Use activity for context
+    }    public void signInAndAddEvent() {
         Log.d(TAG, "signInAndAddEvent called.");
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(mActivity);
         if (account == null) {
@@ -90,20 +89,20 @@ public class GoogleCalendarHelper {
         new AddEventTask(service, mEvent, mActivity).execute();
     }
 
-    private static class AddEventTask extends AsyncTask<Void, Void, Void> {
+    private static class AddEventTask extends AsyncTask<Void, Void, String> {
         private final com.google.api.services.calendar.Calendar mService;
         private final EventModel mEventModel;
-        private final Activity mActivity;
+        private final Activity mActivity; // Reverted from Fragment
 
-        AddEventTask(com.google.api.services.calendar.Calendar service, EventModel eventModel, Activity activity) {
+        AddEventTask(com.google.api.services.calendar.Calendar service, EventModel eventModel, Activity activity) { // Reverted parameter
             mService = service;
             mEventModel = eventModel;
-            mActivity = activity;
+            mActivity = activity; // Assign activity
             Log.d(TAG, "AddEventTask initialized for event: " + eventModel.getTitle());
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected String doInBackground(Void... voids) {
             Log.d(TAG, "AddEventTask doInBackground started for event: " + mEventModel.getTitle());
             try {
                 Event event = new Event()
@@ -134,20 +133,26 @@ public class GoogleCalendarHelper {
                 Log.d(TAG, "Attempting to insert event into calendar ID: " + calendarId);
                 mService.events().insert(calendarId, event).execute();
                 Log.d(TAG, "Event successfully inserted into Google Calendar.");
+                return "Event added to Google Calendar";
             } catch (UserRecoverableAuthIOException userRecoverableException) {
                 Log.w(TAG, "User recoverable authorization exception: " + userRecoverableException.getMessage());
                 mActivity.startActivityForResult(userRecoverableException.getIntent(), REQUEST_AUTHORIZATION);
-            } catch (IOException | ParseException e) {
-                Log.e(TAG, "Error adding event to Google Calendar: " + e.getMessage(), e);
+                return "Authorization required. Please grant access.";
+            } catch (ParseException e) {
+                Log.e(TAG, "Error parsing date/time for Google Calendar event: " + e.getMessage(), e);
+                return "Error with event date/time format: " + e.getMessage();
             }
-            return null;
+            catch (IOException e) {
+                Log.e(TAG, "Error adding event to Google Calendar: " + e.getMessage(), e);
+                return "Error adding event: " + e.getMessage();
+            }
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            Log.d(TAG, "AddEventTask onPostExecute: Event added to Google Calendar (or error occurred).");
-            Toast.makeText(mActivity, "Event added to Google Calendar", Toast.LENGTH_SHORT).show();
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            Log.d(TAG, "AddEventTask onPostExecute: " + result);
+            Toast.makeText(mActivity, result, Toast.LENGTH_LONG).show(); // Changed to LENGTH_LONG for error messages
         }
     }
 }

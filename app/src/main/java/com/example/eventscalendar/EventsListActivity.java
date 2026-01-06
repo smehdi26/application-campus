@@ -40,20 +40,20 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.util.Log; // Import Log
 
-public class EventsListActivity extends AppCompatActivity {
+public class EventsListActivity extends AppCompatActivity implements EventAdapter.OnEventRegisterClickListener { // Added interface
     private RecyclerView rvAllEvents;
     private FloatingActionButton btnAddEvent;
     private GroupedEventAdapter eventAdapter;
     private List<Object> allItems;
     private DatabaseReference mDatabase;
-    private DatabaseReference mUsersDatabase;
+    private DatabaseReference mUsersDatabase; // New for interestedEvents
     private FirebaseAuth mAuth;
     private Spinner monthSpinner;
     private String selectedMonth = "All Events";
     private static final int ADD_EVENT_REQUEST_CODE = 1;
     public static final int EDIT_EVENT_REQUEST_CODE = 2;
-    private static final int REQUEST_CODE_SIGN_IN = 100;
-    private static final int REQUEST_AUTHORIZATION = 101;
+    private static final int REQUEST_CODE_SIGN_IN = 100; // These are from GoogleCalendarHelper
+    private static final int REQUEST_AUTHORIZATION = 101; // These are from GoogleCalendarHelper
     private GoogleCalendarHelper googleCalendarHelper;
     private static final String TAG = "EventsListActivity"; // Tag for logging
 
@@ -63,7 +63,7 @@ public class EventsListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_events_list);
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference("events");
-        mUsersDatabase = FirebaseDatabase.getInstance().getReference("Users");
+        mUsersDatabase = FirebaseDatabase.getInstance().getReference("Users"); // Initialized
         rvAllEvents = findViewById(R.id.rvAllEvents);
         btnAddEvent = findViewById(R.id.btnAddEvent);
         monthSpinner = findViewById(R.id.monthSpinner);
@@ -90,6 +90,27 @@ public class EventsListActivity extends AppCompatActivity {
                 filterEvents(selectedMonth);
             }
         });
+    }
+
+    @Override
+    public void onRegisterClick(EventModel event) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            String uid = currentUser.getUid();
+            // 1. Save to Firebase interestedEvents
+            mUsersDatabase.child(uid).child("interestedEvents").child(event.getId()).setValue(event)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(this, "Event '" + event.getTitle() + "' registered!", Toast.LENGTH_SHORT).show();
+                        // 2. Add to Google Calendar
+                        googleCalendarHelper = new GoogleCalendarHelper(this, event);
+                        googleCalendarHelper.signInAndAddEvent();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Failed to register event: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    });
+        } else {
+            Toast.makeText(this, "You need to be logged in to register for events.", Toast.LENGTH_SHORT).show();
+        }
     }
     private void checkUserRole() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -122,7 +143,7 @@ public class EventsListActivity extends AppCompatActivity {
     }
     private void setupEventsList() {
         allItems = new ArrayList<>();
-        eventAdapter = new GroupedEventAdapter(new ArrayList<>());
+        eventAdapter = new GroupedEventAdapter(new ArrayList<>(), this);
         rvAllEvents.setLayoutManager(new LinearLayoutManager(this));
         rvAllEvents.setAdapter(eventAdapter);
         mDatabase.addValueEventListener(new ValueEventListener() {
@@ -336,9 +357,4 @@ public class EventsListActivity extends AppCompatActivity {
         });
     }
 
-    public void syncToGoogleCalendar(EventModel event) {
-        Log.d(TAG, "syncToGoogleCalendar called for event: " + event.getTitle());
-        googleCalendarHelper = new GoogleCalendarHelper(this, event);
-        googleCalendarHelper.signInAndAddEvent();
-    }
 }

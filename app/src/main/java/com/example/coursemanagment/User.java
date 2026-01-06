@@ -1,13 +1,14 @@
 package com.example.coursemanagment;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.example.eventscalendar.EventModel; // New import
+import java.util.HashMap; // New import
+import java.util.Map; // New import
 
 public class User {
     public String uid; // We need to store the UID inside the object now
     public String firstName, lastName, email, role;
     public String classId = ""; // Empty means Unassigned
-    public List<String> interestedEvents = new ArrayList<>(); // Dedicated field for calendar events
+    public Map<String, EventModel> interestedEvents = new HashMap<>(); // Changed to Map<String, EventModel>
 
     public User() {}
 
@@ -18,6 +19,6 @@ public class User {
         this.email = email;
         this.role = role;
         this.classId = "";
-        // 'interestedEvents' will be initialized by ArrayList's default constructor
+        // 'interestedEvents' will be initialized by HashMap's default constructor
     }
 }

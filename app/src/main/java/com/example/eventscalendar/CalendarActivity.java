@@ -33,9 +33,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import com.example.eventscalendar.GoogleCalendarHelper;
+import com.example.eventscalendar.EventModel;
 import java.util.Locale;
 import java.util.Map;
-public class CalendarActivity extends AppCompatActivity {
+
+public class CalendarActivity extends AppCompatActivity implements EventAdapter.OnEventRegisterClickListener { // Added interface
     private com.applandeo.materialcalendarview.CalendarView calendarView;
     private TextView selectedDateText;
     private FloatingActionButton btnAddEvent;
@@ -47,7 +50,12 @@ public class CalendarActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private DatabaseReference mUsersDatabase;
     private FirebaseAuth mAuth;
+    private GoogleCalendarHelper googleCalendarHelper; // New
     private static final int ADD_EVENT_REQUEST_CODE = 1;
+    // Define request codes for GoogleCalendarHelper (public constants from GCH are implicitly public)
+    private static final int REQUEST_CODE_SIGN_IN_GCH = GoogleCalendarHelper.REQUEST_CODE_SIGN_IN; // Define request codes for GoogleCalendarHelper
+    private static final int REQUEST_AUTHORIZATION_GCH = GoogleCalendarHelper.REQUEST_AUTHORIZATION;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +73,7 @@ public class CalendarActivity extends AppCompatActivity {
         selectedDateText.setText(getString(R.string.events_on, formattedDate));
         eventList = new ArrayList<>();
         allEventsList = new ArrayList<>();
-        eventAdapter = new EventAdapter(eventList);
+        eventAdapter = new EventAdapter(eventList, this); // Pass 'this' as listener
         rvEvents.setLayoutManager(new LinearLayoutManager(this));
         rvEvents.setAdapter(eventAdapter);
         updateStatistics(new ArrayList<>());
@@ -110,6 +118,15 @@ public class CalendarActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        // Handle results from GoogleCalendarHelper's sign-in or authorization
+        if (requestCode == REQUEST_CODE_SIGN_IN_GCH || requestCode == REQUEST_AUTHORIZATION_GCH) {
+            if (googleCalendarHelper != null) { // Ensure helper is initialized before handling result
+                googleCalendarHelper.handleSignInResult(data);
+            }
+            return; // Consume the result
+        }
+
         if (requestCode == ADD_EVENT_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             String title = data.getStringExtra("event_title");
             String category = data.getStringExtra("event_category");
@@ -117,16 +134,21 @@ public class CalendarActivity extends AppCompatActivity {
             String time = data.getStringExtra("event_time");
             String location = data.getStringExtra("event_location");
             String description = data.getStringExtra("event_description");
+
             EventModel newEvent = new EventModel(title, time, location, category, date, description);
             String eventId = mDatabase.push().getKey();
+
             if (eventId != null) {
                 newEvent.setId(eventId);
                 mDatabase.child(eventId).setValue(newEvent)
                         .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(this, "Event Added: " + title, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Event Added to Firebase: " + title, Toast.LENGTH_SHORT).show();
+                            // Now, add to Google Calendar
+                            googleCalendarHelper = new GoogleCalendarHelper(this, newEvent); // Instantiate with the new event
+                            googleCalendarHelper.signInAndAddEvent();
                         })
                         .addOnFailureListener(e -> {
-                            Toast.makeText(this, "Failed to add event: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, "Failed to add event to Firebase: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         });
             }
         }
@@ -268,5 +290,26 @@ public class CalendarActivity extends AppCompatActivity {
     private void showAddEventPopup() {
         Intent intent = new Intent(this, AddEventActivity.class);
         startActivityForResult(intent, ADD_EVENT_REQUEST_CODE);
+    }
+
+    @Override
+    public void onRegisterClick(EventModel event) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            String uid = currentUser.getUid();
+            // 1. Save to Firebase interestedEvents
+            mUsersDatabase.child(uid).child("interestedEvents").child(event.getId()).setValue(event)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(this, "Event '" + event.getTitle() + "' registered!", Toast.LENGTH_SHORT).show();
+                        // 2. Add to Google Calendar
+                        googleCalendarHelper = new GoogleCalendarHelper(this, event);
+                        googleCalendarHelper.signInAndAddEvent();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Failed to register event: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    });
+        } else {
+            Toast.makeText(this, "You need to be logged in to register for events.", Toast.LENGTH_SHORT).show();
+        }
     }
 }
