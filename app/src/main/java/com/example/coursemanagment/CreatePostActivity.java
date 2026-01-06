@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -318,11 +319,39 @@ public class CreatePostActivity extends AppCompatActivity {
                                 .addOnSuccessListener(aVoid -> {
                                     doneSubmittingUi();
                                     Toast.makeText(CreatePostActivity.this, getString(R.string.post_created), Toast.LENGTH_SHORT).show();
+                                    
+                                    if ("PUBLISHED".equals(status)) {
+                                        sendNotificationsToAll(postId, title, user.firstName + " " + user.lastName);
+                                    }
+                                    
                                     finish();
                                 })
                                 .addOnFailureListener(e -> doneSubmittingUi());
                     }
                     @Override public void onCancelled(@NonNull DatabaseError error) { doneSubmittingUi(); }
+                });
+    }
+
+    private void sendNotificationsToAll(String postId, String title, String authorName) {
+        FirebaseDatabase.getInstance().getReference("Users")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Map<String, Object> updates = new HashMap<>();
+                        for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                            String targetUserId = userSnapshot.getKey();
+                            if (targetUserId == null || targetUserId.equals(currentUserId)) continue;
+
+                            String message = authorName + " a publié un nouveau post : " + title;
+                            Notification notification = new Notification(
+                                    targetUserId, currentUserId, authorName, "NEW_POST", postId, title, message
+                            );
+                            
+                            updates.put("/Users/" + targetUserId + "/Notifications/" + notification.notificationId, notification);
+                        }
+                        FirebaseDatabase.getInstance().getReference().updateChildren(updates);
+                    }
+                    @Override public void onCancelled(@NonNull DatabaseError error) {}
                 });
     }
 
