@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -18,7 +19,7 @@ import com.google.firebase.database.*;
 public class ProfileActivity extends AppCompatActivity {
 
     TextView tvFullName, tvEmail, tvRole;
-    LinearLayout btnEditProfile, btnMyCourses, btnManageUsers; // Added btnManageUsers
+    LinearLayout btnEditProfile, btnMyCourses, btnManageUsers, btnManageClasses; // Added btnManageClasses
     Button btnLogout;
 
     FirebaseAuth mAuth;
@@ -52,7 +53,8 @@ public class ProfileActivity extends AppCompatActivity {
         tvRole = findViewById(R.id.tvRole);
         btnEditProfile = findViewById(R.id.btnEditProfile);
         btnMyCourses = findViewById(R.id.btnMyCourses);
-        btnManageUsers = findViewById(R.id.btnManageUsers); // Find new button
+        btnManageUsers = findViewById(R.id.btnManageUsers);
+        btnManageClasses = findViewById(R.id.btnManageClasses); // Find new button
         btnLogout = findViewById(R.id.btnLogout);
 
         setupNavbar();
@@ -75,9 +77,14 @@ public class ProfileActivity extends AppCompatActivity {
             overridePendingTransition(0, 0);
         });
 
-        // Manage Users Click
         btnManageUsers.setOnClickListener(v -> {
             Intent intent = new Intent(this, AllUsersActivity.class);
+            startActivity(intent);
+        });
+
+        // Manage Classes Listener
+        btnManageClasses.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AdminClassListActivity.class);
             startActivity(intent);
         });
     }
@@ -99,12 +106,14 @@ public class ProfileActivity extends AppCompatActivity {
 
                             // --- ROLE UI TOGGLE ---
                             if ("Admin".equalsIgnoreCase(user.role)) {
-                                // Admin: Show Manage Users, Hide My Courses
+                                // ADMIN
                                 btnManageUsers.setVisibility(View.VISIBLE);
+                                btnManageClasses.setVisibility(View.VISIBLE); // Show
                                 btnMyCourses.setVisibility(View.GONE);
                             } else {
-                                // User: Show My Courses, Hide Manage Users
+                                // USER
                                 btnManageUsers.setVisibility(View.GONE);
+                                btnManageClasses.setVisibility(View.GONE); // Hide
                                 btnMyCourses.setVisibility(View.VISIBLE);
                             }
                         }

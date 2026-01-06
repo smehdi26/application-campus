@@ -145,7 +145,7 @@
                         <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@android:drawable/arrow_down_float" android:rotation="-90" app:tint="#999"/>
                     </LinearLayout>
 
-                    <!-- 3. Manage Users (For Admins ONLY) - Default GONE -->
+                    <!-- 3. Manage Users (For Admins ONLY) -->
                     <LinearLayout
                         android:id="@+id/btnManageUsers"
                         android:layout_width="match_parent"
@@ -159,6 +159,23 @@
                         android:background="?attr/selectableItemBackground">
                         <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_myplaces" app:tint="#333"/>
                         <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Manage Users" android:textSize="16sp" android:textColor="#333" android:layout_marginStart="16dp"/>
+                        <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@android:drawable/arrow_down_float" android:rotation="-90" app:tint="#999"/>
+                    </LinearLayout>
+
+                    <!-- 4. Manage Classes (For Admins ONLY) - NEW -->
+                    <LinearLayout
+                        android:id="@+id/btnManageClasses"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:gravity="center_vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:visibility="gone"
+                        android:background="?attr/selectableItemBackground">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_agenda" app:tint="#333"/>
+                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Manage Classes" android:textSize="16sp" android:textColor="#333" android:layout_marginStart="16dp"/>
                         <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@android:drawable/arrow_down_float" android:rotation="-90" app:tint="#999"/>
                     </LinearLayout>
 

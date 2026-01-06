@@ -3,72 +3,144 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="24dp"
     android:background="#F8F9FA">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Course"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="24dp"/>
-
-    <EditText
-        android:id="@+id/etAC_Name"
+    <!-- 1. HEADER WITH BACK BUTTON -->
+    <LinearLayout
+        android:id="@+id/btnBack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Course Name"
-        android:background="@android:drawable/edit_text"
-        android:padding="12dp"
-        android:layout_marginBottom="12dp"/>
+        android:padding="16dp"
+        android:background="#FFFFFF"
+        android:elevation="4dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true">
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_menu_revert"
+            android:rotation="180"
+            android:tint="#333"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000"
+            android:layout_marginStart="12dp"/>
+    </LinearLayout>
 
-    <EditText
-        android:id="@+id/etAC_Code"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Course Code"
-        android:background="@android:drawable/edit_text"
-        android:padding="12dp"
-        android:layout_marginBottom="12dp"/>
+        android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/etAC_Time"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Timing (e.g. Mon 10am)"
-        android:background="@android:drawable/edit_text"
-        android:padding="12dp"
-        android:layout_marginBottom="12dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
 
-    <EditText
-        android:id="@+id/etAC_Loc"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Location (e.g. Room A1)"
-        android:background="@android:drawable/edit_text"
-        android:padding="12dp"
-        android:layout_marginBottom="12dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Course"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#000"
+                android:layout_marginBottom="24dp"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Assign Teacher:"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
+            <EditText
+                android:id="@+id/etAC_Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Course Name"
+                android:background="@drawable/bg_input_field"
+                android:padding="12dp"
+                android:layout_marginBottom="12dp"/>
 
-    <Spinner
-        android:id="@+id/spinnerAC_Teacher"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@android:drawable/btn_dropdown"
-        android:layout_marginBottom="24dp"/>
+            <EditText
+                android:id="@+id/etAC_Code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Course Code"
+                android:background="@drawable/bg_input_field"
+                android:padding="12dp"
+                android:layout_marginBottom="12dp"/>
 
-    <Button
-        android:id="@+id/btnAC_Save"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Create Course"
-        android:backgroundTint="@color/esprit_red"/>
+            <!-- DYNAMIC TIME SECTION -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Class Schedule:"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
 
+            <!-- Container for added times -->
+            <LinearLayout
+                android:id="@+id/layoutTimeContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- Add Time Button -->
+            <LinearLayout
+                android:id="@+id/btnAddTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:background="@drawable/bg_input_field"
+                android:padding="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginBottom="16dp">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_input_add"
+                    android:tint="@color/esprit_red"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add Date &amp; Time"
+                    android:textColor="@color/esprit_red"
+                    android:textStyle="bold"
+                    android:layout_marginStart="8dp"/>
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/etAC_Loc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Location (e.g. Room A1)"
+                android:background="@drawable/bg_input_field"
+                android:padding="12dp"
+                android:layout_marginBottom="12dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Assign Teacher:"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <Spinner
+                android:id="@+id/spinnerAC_Teacher"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@android:drawable/btn_dropdown"
+                android:layout_marginBottom="24dp"/>
+
+            <Button
+                android:id="@+id/btnAC_Save"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="Create Course"
+                android:backgroundTint="@color/esprit_red"/>
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

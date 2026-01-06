@@ -6,8 +6,7 @@
     android:orientation="vertical"
     android:background="#F8F9FA">
 
-    <!-- HEADER WITH BACK BUTTON -->
-    <!-- FIX: Removed backgroundTint, set background directly -->
+    <!-- 1. HEADER WITH BACK BUTTON -->
     <LinearLayout
         android:id="@+id/btnBack"
         android:layout_width="match_parent"
@@ -51,22 +50,48 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Course List -->
+    <!-- 2. EDIT CLASS INFO BUTTON (NEW) -->
+    <Button
+        android:id="@+id/btnManageClassInfo"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Edit Class Info &amp; Students"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#2196F3"
+        android:drawableStart="@android:drawable/ic_menu_edit"
+        android:drawableTint="#FFFFFF"
+        android:paddingStart="20dp"
+        android:gravity="center_vertical|start"/>
+
+    <!-- 3. COURSE LIST -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Courses in this Class"
+        android:textStyle="bold"
+        android:textColor="#555"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerAdminCourses"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="16dp"
+        android:padding="10dp"
         android:clipToPadding="false"/>
 
-    <!-- Add Course Button -->
+    <!-- 4. ADD COURSE BUTTON -->
     <Button
         android:id="@+id/btnAdminAddCourse"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:text="Add New Course"
         android:backgroundTint="@color/esprit_red"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
         android:layout_margin="16dp"/>
 
 </LinearLayout>

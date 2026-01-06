@@ -20,6 +20,12 @@
             android:exported="false" />
         <!-- 1. LAUNCHER (Login) -->
         <activity
+            android:name=".item_submission"
+            android:exported="false" />
+        <activity
+            android:name=".Assignment"
+            android:exported="false" /> <!-- 1. LAUNCHER (Login) -->
+        <activity
             android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
@@ -36,15 +42,14 @@
         <activity android:name=".EditCourseActivity" />
 
         <!-- 4. PROFILE EDITING -->
-        <activity android:name=".CourseDetailsActivity" /> <!-- Note: If you deleted AddCourseActivity.java, remove the line below -->
-        <activity android:name=".AddCourseActivity" />
-        <activity android:name=".EditCourseActivity" /> <!-- 4. PROFILE EDITING -->
         <activity android:name=".EditProfileActivity" />
         <activity android:name=".AllUsersActivity" /> <!-- 5. ADMIN PAGES -->
         <activity android:name=".AdminDashboardActivity" />
         <activity android:name=".AdminClassListActivity" />
         <activity android:name=".AdminAddClassActivity" />
         <activity android:name=".AdminClassDetailsActivity" />
+        <activity android:name=".AssignmentSubmissionsActivity" />
+        <activity android:name=".NotificationActivity" />
         <activity android:name=".AdminAddCourseActivity" />
 
         <!-- 6. CALENDAR -->
@@ -53,6 +58,7 @@
         <activity android:name="com.example.eventscalendar.AddEventActivity" />
         <activity android:name="com.example.eventscalendar.EditEventActivity" />
 
+        <activity android:name=".TeacherStudentListActivity" />
     </application>
 
 </manifest>

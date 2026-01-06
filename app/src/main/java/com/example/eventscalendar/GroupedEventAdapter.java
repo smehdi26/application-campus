@@ -129,7 +129,7 @@ public class GroupedEventAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 Log.d(TAG, "User is not Admin. Admin options gone, Register button visible.");
                             }
 
-                            if (user.interestedEvents != null && user.interestedEvents.contains(event.getId())) {
+                            if (user.interestedEvents != null && user.interestedEvents.containsKey(event.getId())) {
                                 holder.btnRegisterEvent.setText("Registered");
                                 holder.btnRegisterEvent.setEnabled(false);
                                 Log.d(TAG, "Event " + event.getTitle() + " already registered by user.");
@@ -141,8 +141,8 @@ public class GroupedEventAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                             holder.btnRegisterEvent.setOnClickListener(v -> {
                                 Log.d(TAG, "Register button clicked for event: " + event.getTitle());
-                                if (user.interestedEvents != null && !user.interestedEvents.contains(event.getId())) {
-                                    user.interestedEvents.add(event.getId());
+                                if (user.interestedEvents != null && !user.interestedEvents.containsKey(event.getId())) {
+                                    user.interestedEvents.put(event.getId(), true);
                                     mUsersDatabase.child(uid).setValue(user).addOnCompleteListener(task -> {
                                         if (task.isSuccessful()) {
                                             Log.d(TAG, "Event " + event.getTitle() + " successfully registered in Firebase.");
