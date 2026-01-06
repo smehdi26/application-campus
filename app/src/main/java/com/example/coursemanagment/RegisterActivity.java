@@ -112,7 +112,16 @@ public class RegisterActivity extends AppCompatActivity {
                                     .addOnCompleteListener(saveTask -> {
                                         if (saveTask.isSuccessful()) {
                                             Log.d(TAG, "User details saved to database for uid: " + uid);
-                                            runOnUiThread(() -> Toast.makeText(RegisterActivity.this, "User Created Successfully!", Toast.LENGTH_SHORT).show());
+                                            mAuth.sendPasswordResetEmail(email)
+                                                    .addOnCompleteListener(emailTask -> {
+                                                        if (emailTask.isSuccessful()) {
+                                                            Log.d(TAG, "Password reset email sent to " + email);
+                                                            runOnUiThread(() -> Toast.makeText(RegisterActivity.this, "User Created. Password reset email sent.", Toast.LENGTH_LONG).show());
+                                                        } else {
+                                                            Log.e(TAG, "Failed to send password reset email: " + emailTask.getException().getMessage(), emailTask.getException());
+                                                            runOnUiThread(() -> Toast.makeText(RegisterActivity.this, "User Created. Failed to send password reset email.", Toast.LENGTH_LONG).show());
+                                                        }
+                                                    });
                                             // Redirect to AllUsersActivity
                                             Intent intent = new Intent(RegisterActivity.this, AllUsersActivity.class);
                                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
