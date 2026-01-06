@@ -8,4 +8,10 @@
     </style>
 
     <style name="Theme.CourseManagment" parent="Base.Theme.CourseManagment" />
+    <style name="Theme.YourApp.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+
+    <!-- Circular ImageView Shape -->
+    <style name="ShapeAppearance.App.CircleImageView" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>
