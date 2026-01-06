@@ -33,6 +33,16 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        TextView navCovoiturage = findViewById(R.id.navCovoiturage);
+
+        navCovoiturage.setOnClickListener(v -> {
+            Intent intent = new Intent(
+                    ProfileActivity.this,
+                    com.example.coursemanagment.covoiturage.activities.CovoiturageActivity.class
+            );
+            startActivity(intent);
+        });
+
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference("Users");
