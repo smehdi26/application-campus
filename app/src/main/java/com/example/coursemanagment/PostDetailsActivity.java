@@ -586,7 +586,7 @@ public class PostDetailsActivity extends AppCompatActivity implements MentionAda
                 .child(post.authorId).child("Notifications");
         String notifId = notifRef.push().getKey();
 
-        Notification notification = new Notification(
+        NotificationForum notificationForum = new NotificationForum(
                 post.authorId,
                 currentUserId,
                 senderName,
@@ -595,8 +595,8 @@ public class PostDetailsActivity extends AppCompatActivity implements MentionAda
                 post.title,
                 senderName + " a répondu à votre post."
         );
-        notification.notificationId = notifId;
-        if (notifId != null) notifRef.child(notifId).setValue(notification);
+        notificationForum.notificationId = notifId;
+        if (notifId != null) notifRef.child(notifId).setValue(notificationForum);
     }
 
     private void sendMentionNotification(String mentionedUserId, String mentionerName, String postTitle, String postId) {
@@ -606,7 +606,7 @@ public class PostDetailsActivity extends AppCompatActivity implements MentionAda
                 .child(mentionedUserId).child("Notifications");
         String notifId = notifRef.push().getKey();
 
-        Notification notification = new Notification(
+        NotificationForum notificationForum = new NotificationForum(
                 mentionedUserId,
                 currentUserId,
                 mentionerName,
@@ -615,8 +615,8 @@ public class PostDetailsActivity extends AppCompatActivity implements MentionAda
                 postTitle,
                 mentionerName + " vous a mentionné dans un post: " + postTitle
         );
-        notification.notificationId = notifId;
-        if (notifId != null) notifRef.child(notifId).setValue(notification);
+        notificationForum.notificationId = notifId;
+        if (notifId != null) notifRef.child(notifId).setValue(notificationForum);
     }
 
     public void replyToComment(Comment comment) {

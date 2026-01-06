@@ -65,7 +65,7 @@
                 android:layout_height="match_parent"
                 android:padding="8dp"
                 android:src="@android:drawable/ic_menu_close_clear_cancel"
-                android:contentDescription="Delete notification"
+                android:contentDescription="Delete notificationForum"
                 android:scaleType="centerInside"
                 app:tint="@color/esprit_red" />
         </com.google.android.material.card.MaterialCardView>

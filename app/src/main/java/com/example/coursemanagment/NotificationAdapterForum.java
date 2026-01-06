@@ -19,12 +19,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.MyViewHolder> {
+public class NotificationAdapterForum extends RecyclerView.Adapter<NotificationAdapterForum.MyViewHolder> {
     Context context;
-    ArrayList<Notification> list;
+    ArrayList<NotificationForum> list;
     String currentUserId;
 
-    public NotificationAdapter(Context context, ArrayList<Notification> list, String currentUserId) {
+    public NotificationAdapterForum(Context context, ArrayList<NotificationForum> list, String currentUserId) {
         this.context = context;
         this.list = list;
         this.currentUserId = currentUserId;
@@ -33,45 +33,45 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.activity_item_notification, parent, false);
+        View v = LayoutInflater.from(context).inflate(R.layout.activity_item_notification_forum, parent, false);
         return new MyViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Notification notification = list.get(position);
+        NotificationForum notificationForum = list.get(position);
 
-        if (notification.triggerUserName != null && !notification.triggerUserName.isEmpty()) {
-            String initial = String.valueOf(notification.triggerUserName.charAt(0)).toUpperCase(java.util.Locale.getDefault());
+        if (notificationForum.triggerUserName != null && !notificationForum.triggerUserName.isEmpty()) {
+            String initial = String.valueOf(notificationForum.triggerUserName.charAt(0)).toUpperCase(java.util.Locale.getDefault());
             holder.tvAvatar.setText(initial);
         }
 
-        holder.tvMessage.setText(notification.message);
-        holder.tvPostTitle.setText(notification.postTitle);
+        holder.tvMessage.setText(notificationForum.message);
+        holder.tvPostTitle.setText(notificationForum.postTitle);
         
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-        holder.tvTime.setText(sdf.format(new Date(notification.timestamp)));
+        holder.tvTime.setText(sdf.format(new Date(notificationForum.timestamp)));
 
         // Set visual state based on read status
-        holder.itemView.setAlpha(notification.isRead ? 0.6f : 1.0f);
+        holder.itemView.setAlpha(notificationForum.isRead ? 0.6f : 1.0f);
 
         holder.itemView.setOnClickListener(v -> {
-            if (currentUserId == null || currentUserId.isEmpty() || notification.notificationId == null || notification.notificationId.isEmpty()) return;
+            if (currentUserId == null || currentUserId.isEmpty() || notificationForum.notificationId == null || notificationForum.notificationId.isEmpty()) return;
 
             // 1. Immediate UI Feedback & Firebase update
-            if (!notification.isRead) {
-                notification.isRead = true;
+            if (!notificationForum.isRead) {
+                notificationForum.isRead = true;
                 notifyItemChanged(position);
                 FirebaseDatabase.getInstance().getReference("Users")
                         .child(currentUserId).child("Notifications")
-                        .child(notification.notificationId).child("isRead").setValue(true);
+                        .child(notificationForum.notificationId).child("isRead").setValue(true);
             }
 
             // 2. Fetch the post from Firebase
-            if (notification.postId != null && !notification.postId.isEmpty()) {
+            if (notificationForum.postId != null && !notificationForum.postId.isEmpty()) {
                 holder.itemView.setEnabled(false); // Prevent multiple clicks
                 FirebaseDatabase.getInstance().getReference("Forum").child("Posts")
-                        .child(notification.postId)
+                        .child(notificationForum.postId)
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -98,10 +98,10 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         });
 
         holder.btnDelete.setOnClickListener(v -> {
-            if (currentUserId != null && !currentUserId.isEmpty() && notification.notificationId != null && !notification.notificationId.isEmpty()) {
+            if (currentUserId != null && !currentUserId.isEmpty() && notificationForum.notificationId != null && !notificationForum.notificationId.isEmpty()) {
                 FirebaseDatabase.getInstance().getReference("Users")
                         .child(currentUserId).child("Notifications")
-                        .child(notification.notificationId).removeValue();
+                        .child(notificationForum.notificationId).removeValue();
             }
         });
     }

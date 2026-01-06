@@ -3,14 +3,12 @@ package com.example.coursemanagment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -125,7 +123,7 @@ public class ForumActivity extends AppCompatActivity {
                 startActivity(new Intent(ForumActivity.this, CreatePostActivity.class)));
 
         btnOpenNotifications.setOnClickListener(v ->
-                startActivity(new Intent(ForumActivity.this, NotificationsActivity.class)));
+                startActivity(new Intent(ForumActivity.this, NotificationsActivityForum.class)));
 
         btnSort.setOnClickListener(v -> showSortBottomSheet());
         

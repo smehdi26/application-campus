@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -343,11 +342,11 @@ public class CreatePostActivity extends AppCompatActivity {
                             if (targetUserId == null || targetUserId.equals(currentUserId)) continue;
 
                             String message = authorName + " a publié un nouveau post : " + title;
-                            Notification notification = new Notification(
+                            NotificationForum notificationForum = new NotificationForum(
                                     targetUserId, currentUserId, authorName, "NEW_POST", postId, title, message
                             );
                             
-                            updates.put("/Users/" + targetUserId + "/Notifications/" + notification.notificationId, notification);
+                            updates.put("/Users/" + targetUserId + "/Notifications/" + notificationForum.notificationId, notificationForum);
                         }
                         FirebaseDatabase.getInstance().getReference().updateChildren(updates);
                     }

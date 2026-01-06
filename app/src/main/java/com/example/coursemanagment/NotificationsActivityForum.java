@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,11 +18,11 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class NotificationsActivity extends AppCompatActivity {
+public class NotificationsActivityForum extends AppCompatActivity {
 
     RecyclerView recyclerView;
-    NotificationAdapter adapter;
-    ArrayList<Notification> notificationsList;
+    NotificationAdapterForum adapter;
+    ArrayList<NotificationForum> notificationsList;
     ImageView btnBack;
     LinearLayout emptyState;
     String currentUserId;
@@ -36,7 +36,7 @@ public class NotificationsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notifications);
+        setContentView(R.layout.activity_notifications_forum);
 
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -48,7 +48,7 @@ public class NotificationsActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         notificationsList = new ArrayList<>();
-        adapter = new NotificationAdapter(this, notificationsList, currentUserId);
+        adapter = new NotificationAdapterForum(this, notificationsList, currentUserId);
         recyclerView.setAdapter(adapter);
 
         loadNotifications();
@@ -89,9 +89,9 @@ public class NotificationsActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 notificationsList.clear();
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    Notification notification = child.getValue(Notification.class);
-                    if (notification != null) {
-                        notificationsList.add(notification);
+                    NotificationForum notificationForum = child.getValue(NotificationForum.class);
+                    if (notificationForum != null) {
+                        notificationsList.add(notificationForum);
                     }
                 }
                 

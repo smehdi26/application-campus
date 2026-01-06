@@ -2,7 +2,7 @@ package com.example.coursemanagment;
 
 import java.io.Serializable;
 
-public class Notification implements Serializable {
+public class NotificationForum implements Serializable {
     public String notificationId;
     public String userId; // User who receives notification
     public String triggeredBy; // User who triggered notification
@@ -11,14 +11,14 @@ public class Notification implements Serializable {
     public String postId; // Related post ID
     public String commentId; // Related comment ID (if applicable)
     public String postTitle; // Post title for display
-    public String message; // Notification message
+    public String message; // NotificationForum message
     public long timestamp;
     public boolean isRead; // Mark as read/unread
 
-    public Notification() {}
+    public NotificationForum() {}
 
-    public Notification(String userId, String triggeredBy, String triggerUserName, String type, 
-                       String postId, String postTitle, String message) {
+    public NotificationForum(String userId, String triggeredBy, String triggerUserName, String type,
+                             String postId, String postTitle, String message) {
         this.notificationId = System.currentTimeMillis() + "_" + userId + "_" + triggeredBy;
         this.userId = userId;
         this.triggeredBy = triggeredBy;
