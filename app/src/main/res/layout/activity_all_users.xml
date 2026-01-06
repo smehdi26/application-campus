@@ -1,46 +1,67 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#F8F9FA">
+    android:layout_height="match_parent">
 
-    <!-- HEADER -->
     <LinearLayout
-        android:id="@+id/btnBack"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:background="#FFFFFF"
-        android:elevation="4dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:clickable="true"
-        android:focusable="true">
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@android:drawable/ic_menu_revert"
-            android:rotation="180"
-            app:tint="#333"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Registered Users"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#000"
-            android:layout_marginStart="16dp"/>
-    </LinearLayout>
-
-    <!-- LIST -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerAllUsers"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="12dp"
-        android:clipToPadding="false"/>
+        android:orientation="vertical"
+        android:background="#F8F9FA">
 
-</LinearLayout>
+        <!-- HEADER -->
+        <LinearLayout
+            android:id="@+id/header_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:elevation="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:rotation="180"
+                android:src="@android:drawable/ic_menu_revert"
+                app:tint="#333"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                android:text="Registered Users"
+                android:textColor="#000"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabAddUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:clickable="true"
+                android:contentDescription="Add new user"
+                android:focusable="true"
+                app:backgroundTint="@color/esprit_red"
+                app:fabSize="mini"
+                app:tint="@android:color/white"
+                android:src="@android:drawable/ic_input_add" />
+        </LinearLayout>
+
+        <!-- LIST -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerAllUsers"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="12dp"
+            android:clipToPadding="false"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

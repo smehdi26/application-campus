@@ -139,28 +139,7 @@
                     android:backgroundTint="@color/esprit_red"
                     android:layout_marginBottom="16dp"/>
 
-                <!-- Sign Up Link -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Don't have an account? "
-                        android:textColor="#555"/>
-
-                    <TextView
-                        android:id="@+id/tvRegisterLink"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Sign Up"
-                        android:textStyle="bold"
-                        android:textColor="@color/esprit_red"
-                        android:padding="8dp"/>
-                </LinearLayout>
 
             </LinearLayout>
         </LinearLayout>

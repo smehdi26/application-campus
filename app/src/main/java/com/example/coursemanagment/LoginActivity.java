@@ -31,7 +31,6 @@ public class LoginActivity extends AppCompatActivity {
 
     EditText etEmail, etPassword;
     Button btnLogin, btnLang;
-    TextView tvRegisterLink;
     FirebaseAuth mAuth;
     boolean isPasswordVisible = false;
 
@@ -52,19 +51,11 @@ public class LoginActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
-        tvRegisterLink = findViewById(R.id.tvRegisterLink);
         btnLang = findViewById(R.id.btnChangeLang);
 
         // Listeners
         btnLang.setOnClickListener(v -> showLanguageDialog());
         btnLogin.setOnClickListener(v -> loginUser());
-
-        if (tvRegisterLink != null) {
-            tvRegisterLink.setOnClickListener(v -> {
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
-            });
-        }
 
         // Setup the Eye Icon logic
         setupPasswordVisibility();

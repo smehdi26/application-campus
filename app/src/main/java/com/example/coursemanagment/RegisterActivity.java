@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +30,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     EditText etFirst, etLast, etEmail, etPass;
     Button btnRegister;
-    TextView tvGoToLogin;
+    RadioGroup rgRole;
+    RadioButton rbStudent, rbTeacher;
 
     FirebaseAuth mAuth;
     DatabaseReference mDatabase;
@@ -48,14 +51,11 @@ public class RegisterActivity extends AppCompatActivity {
         etPass = findViewById(R.id.etRegPassword);
 
         btnRegister = findViewById(R.id.btnRegister);
-        tvGoToLogin = findViewById(R.id.tvGoToLogin);
+        rgRole = findViewById(R.id.rgRole);
+        rbStudent = findViewById(R.id.rbStudent);
+        rbTeacher = findViewById(R.id.rbTeacher);
 
         btnRegister.setOnClickListener(v -> registerUser());
-
-        tvGoToLogin.setOnClickListener(v -> {
-            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-            finish();
-        });
 
         setupPasswordVisibility();
     }
@@ -91,7 +91,12 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        String role = "Student";
+        String role;
+        if (rbTeacher.isChecked()) {
+            role = "Teacher";
+        } else {
+            role = "Student"; // Default to Student if neither or Student is checked
+        }
 
         mAuth.createUserWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -101,15 +106,16 @@ public class RegisterActivity extends AppCompatActivity {
                             String uid = mAuth.getCurrentUser().getUid();
                             Log.d(TAG, "Firebase authentication successful for uid: " + uid);
 
-                            User user = new User(uid, first, last, email, role);
+                            User user = new User(uid, first, last, email, role); // Pass selected role
 
                             mDatabase.child(uid).setValue(user)
                                     .addOnCompleteListener(saveTask -> {
                                         if (saveTask.isSuccessful()) {
                                             Log.d(TAG, "User details saved to database for uid: " + uid);
-                                            runOnUiThread(() -> Toast.makeText(RegisterActivity.this, "Registered Successfully!", Toast.LENGTH_SHORT).show());
-                                            Intent intent = new Intent(RegisterActivity.this, ProfileActivity.class);
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            runOnUiThread(() -> Toast.makeText(RegisterActivity.this, "User Created Successfully!", Toast.LENGTH_SHORT).show());
+                                            // Redirect to AllUsersActivity
+                                            Intent intent = new Intent(RegisterActivity.this, AllUsersActivity.class);
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                                             startActivity(intent);
                                             finish();
                                         } else {
