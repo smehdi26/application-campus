@@ -33,8 +33,6 @@
         <!-- 3. COURSES & MATERIALS -->
         <activity android:name=".CoursesActivity" />
         <activity android:name=".CourseDetailsActivity" />
-        <!-- Note: If you deleted AddCourseActivity.java, remove the line below -->
-        <activity android:name=".AddCourseActivity" />
         <activity android:name=".EditCourseActivity" />
 
         <!-- 4. PROFILE EDITING -->
@@ -47,6 +45,15 @@
         <activity android:name=".AdminAddClassActivity" />
         <activity android:name=".AdminClassDetailsActivity" />
         <activity android:name=".AdminAddCourseActivity" />
+
+        <!-- 6. FORUM PAGES -->
+        <activity
+            android:name=".ForumActivity"
+            android:theme="@style/Theme.YourApp.NoActionBar"/>
+        <activity android:name=".PostDetailsActivity" />
+        <activity android:name=".CreatePostActivity" />
+        <activity android:name=".AdminForumActivity" />
+        <activity android:name=".NotificationsActivity" />
 
     </application>
 

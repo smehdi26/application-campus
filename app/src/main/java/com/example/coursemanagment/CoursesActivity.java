@@ -154,5 +154,11 @@ public class CoursesActivity extends AppCompatActivity {
             overridePendingTransition(0, 0);
             finish();
         });
+
+        findViewById(R.id.navForums).setOnClickListener(v -> {
+            startActivity(new Intent(this, ForumActivity.class));
+            overridePendingTransition(0, 0);
+            finish();
+        });
     }
 }
