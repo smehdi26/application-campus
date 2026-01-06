@@ -5,9 +5,12 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,10 +26,12 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    private static final String TAG = "RegisterActivity";
+
     EditText etFirst, etLast, etEmail, etPass;
-    // Removed RadioGroup variables
     Button btnRegister;
-    TextView tvGoToLogin;
+    RadioGroup rgRole;
+    RadioButton rbStudent, rbTeacher;
 
     FirebaseAuth mAuth;
     DatabaseReference mDatabase;
@@ -44,17 +49,13 @@ public class RegisterActivity extends AppCompatActivity {
         etLast = findViewById(R.id.etLastName);
         etEmail = findViewById(R.id.etRegEmail);
         etPass = findViewById(R.id.etRegPassword);
-        // Removed findViewById for RadioGroup
 
         btnRegister = findViewById(R.id.btnRegister);
-        tvGoToLogin = findViewById(R.id.tvGoToLogin);
+        rgRole = findViewById(R.id.rgRole);
+        rbStudent = findViewById(R.id.rbStudent);
+        rbTeacher = findViewById(R.id.rbTeacher);
 
         btnRegister.setOnClickListener(v -> registerUser());
-
-        tvGoToLogin.setOnClickListener(v -> {
-            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-            finish();
-        });
 
         setupPasswordVisibility();
     }
@@ -90,8 +91,12 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        // --- HARDCODED ROLE ---
-        String role = "Student";
+        String role;
+        if (rbTeacher.isChecked()) {
+            role = "Teacher";
+        } else {
+            role = "Student"; // Default to Student if neither or Student is checked
+        }
 
         mAuth.createUserWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -99,24 +104,38 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             String uid = mAuth.getCurrentUser().getUid();
+                            Log.d(TAG, "Firebase authentication successful for uid: " + uid);
 
-                            // Save as Student
-                            User user = new User(uid, first, last, email, role);
+                            User user = new User(uid, first, last, email, role); // Pass selected role
 
-                            mDatabase.child(uid).setValue(user).addOnCompleteListener(task1 -> {
-                                if(task1.isSuccessful()){
-                                    Toast.makeText(RegisterActivity.this, "Registered Successfully!", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(RegisterActivity.this, ProfileActivity.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(intent);
-                                    finish();
-                                } else {
-                                    Toast.makeText(RegisterActivity.this, "Failed to save details", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                            mDatabase.child(uid).setValue(user)
+                                    .addOnCompleteListener(saveTask -> {
+                                        if (saveTask.isSuccessful()) {
+                                            Log.d(TAG, "User details saved to database for uid: " + uid);
+                                            mAuth.sendPasswordResetEmail(email)
+                                                    .addOnCompleteListener(emailTask -> {
+                                                        if (emailTask.isSuccessful()) {
+                                                            Log.d(TAG, "Password reset email sent to " + email);
+                                                            runOnUiThread(() -> Toast.makeText(RegisterActivity.this, "User Created. Password reset email sent.", Toast.LENGTH_LONG).show());
+                                                        } else {
+                                                            Log.e(TAG, "Failed to send password reset email: " + emailTask.getException().getMessage(), emailTask.getException());
+                                                            runOnUiThread(() -> Toast.makeText(RegisterActivity.this, "User Created. Failed to send password reset email.", Toast.LENGTH_LONG).show());
+                                                        }
+                                                    });
+                                            // Redirect to AllUsersActivity
+                                            Intent intent = new Intent(RegisterActivity.this, AllUsersActivity.class);
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                            startActivity(intent);
+                                            finish();
+                                        } else {
+                                            Log.e(TAG, "Failed to save user details to database: " + saveTask.getException().getMessage(), saveTask.getException());
+                                            runOnUiThread(() -> Toast.makeText(RegisterActivity.this, "Failed to save details: " + saveTask.getException().getMessage(), Toast.LENGTH_LONG).show());
+                                        }
+                                    });
 
                         } else {
-                            Toast.makeText(RegisterActivity.this, "Registration Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            Log.e(TAG, "Firebase authentication failed: " + task.getException().getMessage(), task.getException());
+                            runOnUiThread(() -> Toast.makeText(RegisterActivity.this, "Registration Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show());
                         }
                     }
                 });

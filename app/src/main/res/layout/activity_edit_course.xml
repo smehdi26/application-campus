@@ -74,7 +74,7 @@
         android:id="@+id/btnUpdateCourse"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:text="Update Course"
+        android:text="Modifier le cours"
         android:backgroundTint="#2196F3"/>
 
 </LinearLayout>

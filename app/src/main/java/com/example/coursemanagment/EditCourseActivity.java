@@ -54,6 +54,10 @@ public class EditCourseActivity extends AppCompatActivity {
     }
 
     private void updateCourse() {
+        if (course == null || course.courseId == null) {
+            Toast.makeText(this, "Error: Course data is missing.", Toast.LENGTH_SHORT).show();
+            return;
+        }
         // Create a Map to update only specific fields
         Map<String, Object> updates = new HashMap<>();
         updates.put("courseName", etName.getText().toString());

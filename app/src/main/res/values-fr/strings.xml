@@ -10,4 +10,15 @@
     <string name="courses">Cours</string>
     <string name="profile">Profil</string>
     <string name="logout">Se déconnecter</string>
+    <string name="events_on">Événements du %1$s</string>
+    <string-array name="event_categories">
+        <item>Examens</item>
+        <item>Clubs</item>
+        <item>Conférences</item>
+        <item>Soutenances</item>
+    </string-array>
+    <string name="category_exams">Examens</string>
+    <string name="category_conferences">Conférences</string>
+    <string name="category_soutenances">Soutenances</string>
+    <string name="category_clubs">Clubs</string>
 </resources>
