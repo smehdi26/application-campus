@@ -4,10 +4,15 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,9 +25,10 @@ import java.util.Locale;
 
 public class AdminAddCourseActivity extends AppCompatActivity {
 
-    EditText etName, etCode, etTime, etLoc;
+    EditText etName, etCode, etLoc;
     Spinner spinner;
     Button btnSave;
+    LinearLayout btnBack, btnAddTime, layoutTimeContainer;
 
     DatabaseReference mCoursesRef, mUsersRef;
     String classId;
@@ -30,7 +36,8 @@ public class AdminAddCourseActivity extends AppCompatActivity {
     List<User> teacherList = new ArrayList<>();
     List<String> teacherNames = new ArrayList<>();
 
-    // Calendar to store selected date/time
+    // Store multiple times here
+    ArrayList<String> selectedTimes = new ArrayList<>();
     Calendar calendar = Calendar.getInstance();
 
     @Override
@@ -44,38 +51,81 @@ public class AdminAddCourseActivity extends AppCompatActivity {
 
         etName = findViewById(R.id.etAC_Name);
         etCode = findViewById(R.id.etAC_Code);
-        etTime = findViewById(R.id.etAC_Time);
         etLoc = findViewById(R.id.etAC_Loc);
         spinner = findViewById(R.id.spinnerAC_Teacher);
         btnSave = findViewById(R.id.btnAC_Save);
+        btnBack = findViewById(R.id.btnBack);
 
+        // Time Views
+        btnAddTime = findViewById(R.id.btnAddTime);
+        layoutTimeContainer = findViewById(R.id.layoutTimeContainer);
+
+        btnBack.setOnClickListener(v -> finish());
         loadTeachers();
 
-        // --- TIME PICKER LISTENER ---
-        etTime.setOnClickListener(v -> showDateTimePicker());
+        // Add Time Click
+        btnAddTime.setOnClickListener(v -> showDateTimePicker());
 
         btnSave.setOnClickListener(v -> saveCourse());
     }
 
     private void showDateTimePicker() {
-        // 1. Show Date Picker
-        new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+        new DatePickerDialog(this, (view, year, month, day) -> {
             calendar.set(Calendar.YEAR, year);
             calendar.set(Calendar.MONTH, month);
-            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            calendar.set(Calendar.DAY_OF_MONTH, day);
 
-            // 2. Once Date is picked, Show Time Picker
-            new TimePickerDialog(this, (timeView, hourOfDay, minute) -> {
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            new TimePickerDialog(this, (tView, hour, minute) -> {
+                calendar.set(Calendar.HOUR_OF_DAY, hour);
                 calendar.set(Calendar.MINUTE, minute);
 
-                // 3. Format Output: "Monday, 12/05/2025 - 14:30"
-                SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd/MM/yyyy - HH:mm", Locale.getDefault());
-                etTime.setText(sdf.format(calendar.getTime()));
+                SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd/MM - HH:mm", Locale.getDefault());
+                String timeString = sdf.format(calendar.getTime());
+
+                // Add to list and update UI
+                selectedTimes.add(timeString);
+                refreshTimeViews();
 
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
 
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+    private void refreshTimeViews() {
+        layoutTimeContainer.removeAllViews(); // Clear current list
+
+        for (int i = 0; i < selectedTimes.size(); i++) {
+            String time = selectedTimes.get(i);
+            int index = i;
+
+            // Create a simple row view programmatically
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setPadding(0, 10, 0, 10);
+
+            TextView tv = new TextView(this);
+            tv.setText("• " + time);
+            tv.setTextSize(16);
+            tv.setTextColor(getResources().getColor(R.color.black));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
+            tv.setLayoutParams(params);
+
+            // Delete Icon
+            ImageView imgDelete = new ImageView(this);
+            imgDelete.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+            imgDelete.setColorFilter(getResources().getColor(R.color.esprit_red));
+            imgDelete.setPadding(10, 0, 10, 0);
+
+            // Remove time on click
+            imgDelete.setOnClickListener(v -> {
+                selectedTimes.remove(index);
+                refreshTimeViews();
+            });
+
+            row.addView(tv);
+            row.addView(imgDelete);
+            layoutTimeContainer.addView(row);
+        }
     }
 
     private void loadTeachers() {
@@ -107,19 +157,21 @@ public class AdminAddCourseActivity extends AppCompatActivity {
     private void saveCourse() {
         String name = etName.getText().toString();
         String code = etCode.getText().toString();
-        String time = etTime.getText().toString();
         String loc = etLoc.getText().toString();
         int pos = spinner.getSelectedItemPosition();
 
-        if (TextUtils.isEmpty(name) || pos == 0 || TextUtils.isEmpty(time)) {
-            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(name) || pos == 0 || selectedTimes.isEmpty()) {
+            Toast.makeText(this, "Please fill all fields and add at least one time", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // Combine all times into one string separated by new line
+        String timeString = TextUtils.join("\n", selectedTimes);
 
         User teacher = teacherList.get(pos);
         String courseId = mCoursesRef.push().getKey();
 
-        Course newCourse = new Course(courseId, name, code, "No Desc", time, loc, classId, teacher.uid, teacher.firstName + " " + teacher.lastName);
+        Course newCourse = new Course(courseId, name, code, "No Desc", timeString, loc, classId, teacher.uid, teacher.firstName + " " + teacher.lastName);
 
         mCoursesRef.child(courseId).setValue(newCourse).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
