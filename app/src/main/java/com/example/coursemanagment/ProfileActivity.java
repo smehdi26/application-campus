@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.coursemanagment.covoiturage.activities.CovoiturageActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
@@ -34,15 +35,7 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        TextView navCovoiturage = findViewById(R.id.navCovoiturage);
 
-        navCovoiturage.setOnClickListener(v -> {
-            Intent intent = new Intent(
-                    ProfileActivity.this,
-                    com.example.coursemanagment.covoiturage.activities.CovoiturageActivity.class
-            );
-            startActivity(intent);
-        });
 
 
         mAuth = FirebaseAuth.getInstance();
@@ -145,6 +138,11 @@ public class ProfileActivity extends AppCompatActivity {
         });
         findViewById(R.id.navForums).setOnClickListener(v -> {
             startActivity(new Intent(this, ForumActivity.class));
+            overridePendingTransition(0, 0);
+            finish();
+        });
+        findViewById(R.id.navCovoiturage).setOnClickListener(v -> {
+            startActivity(new Intent(this, CovoiturageActivity.class));
             overridePendingTransition(0, 0);
             finish();
         });

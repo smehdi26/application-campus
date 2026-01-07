@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.example.coursemanagment.CoursesActivity;
+import com.example.coursemanagment.ForumActivity;
 import com.example.coursemanagment.ProfileActivity;
 import com.example.coursemanagment.R;
 import com.example.coursemanagment.covoiturage.fragments.BrowseRidesFragment;
@@ -67,6 +68,16 @@ public class CovoiturageActivity extends AppCompatActivity {
 
         findViewById(R.id.navProfile).setOnClickListener(v -> {
             startActivity(new Intent(this, ProfileActivity.class));
+            overridePendingTransition(0, 0);
+            finish();
+        });
+        findViewById(R.id.navEvents).setOnClickListener(v -> {
+            startActivity(new Intent(this, com.example.eventscalendar.CalendarActivity.class));
+            overridePendingTransition(0, 0);
+            finish();
+        });
+        findViewById(R.id.navForums).setOnClickListener(v -> {
+            startActivity(new Intent(this, ForumActivity.class));
             overridePendingTransition(0, 0);
             finish();
         });

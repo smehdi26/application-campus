@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.coursemanagment.covoiturage.activities.CovoiturageActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
@@ -344,6 +345,18 @@ public class CoursesActivity extends AppCompatActivity {
 
         findViewById(R.id.navEvents).setOnClickListener(v -> {
             Intent intent = new Intent(this, com.example.eventscalendar.CalendarActivity.class);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+            finish();
+        });
+        findViewById(R.id.navCovoiturage).setOnClickListener(v -> {
+            Intent intent = new Intent(this, CovoiturageActivity.class);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+            finish();
+        });
+        findViewById(R.id.navForums).setOnClickListener(v -> {
+            Intent intent = new Intent(this, ForumActivity.class);
             startActivity(intent);
             overridePendingTransition(0, 0);
             finish();

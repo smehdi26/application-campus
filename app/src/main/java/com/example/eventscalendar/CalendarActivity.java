@@ -15,9 +15,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.applandeo.materialcalendarview.EventDay;
 import com.applandeo.materialcalendarview.listeners.OnDayClickListener;
 import com.example.coursemanagment.CoursesActivity;
+import com.example.coursemanagment.ForumActivity;
 import com.example.coursemanagment.ProfileActivity;
 import com.example.coursemanagment.R;
 import com.example.coursemanagment.User;
+import com.example.coursemanagment.covoiturage.activities.CovoiturageActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -217,6 +219,18 @@ public class CalendarActivity extends AppCompatActivity {
         });
         findViewById(R.id.navCourses).setOnClickListener(v -> {
             startActivity(new Intent(this, CoursesActivity.class));
+            overridePendingTransition(0, 0);
+            finish();
+        });
+
+        findViewById(R.id.navCovoiturage).setOnClickListener(v -> {
+            startActivity(new Intent(this, CovoiturageActivity.class));
+            overridePendingTransition(0, 0);
+            finish();
+        });
+
+        findViewById(R.id.navForums).setOnClickListener(v -> {
+            startActivity(new Intent(this, ForumActivity.class));
             overridePendingTransition(0, 0);
             finish();
         });

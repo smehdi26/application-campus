@@ -16,6 +16,7 @@ import androidx.core.view.WindowCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.coursemanagment.covoiturage.activities.CovoiturageActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.chip.Chip;
@@ -412,6 +413,20 @@ public class ForumActivity extends AppCompatActivity {
         });
         findViewById(R.id.navCourses).setOnClickListener(v -> {
             startActivity(new Intent(this, CoursesActivity.class));
+            overridePendingTransition(0, 0);
+            finish();
+        });
+
+        findViewById(R.id.navEvents).setOnClickListener(v -> {
+            Intent intent = new Intent(this, com.example.eventscalendar.CalendarActivity.class);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+            finish();
+        });
+
+        findViewById(R.id.navCovoiturage).setOnClickListener(v -> {
+            Intent intent = new Intent(this, CovoiturageActivity.class);
+            startActivity(intent);
             overridePendingTransition(0, 0);
             finish();
         });
