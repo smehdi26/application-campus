@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8F9FA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add / Edit Building"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Name -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Name"
+                android:inputType="textPersonName"
+                android:autofillHints="name"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Type (ENUM dropdown) -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:boxBackgroundMode="outline"
+            app:endIconMode="dropdown_menu"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/ddType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Type"
+                android:inputType="none"
+                android:autofillHints="none"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Description -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Description"
+                android:inputType="textMultiLine"
+                android:minLines="3"
+                android:gravity="top"
+                android:autofillHints="none"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Floors -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etFloors"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Floors"
+                android:inputType="number"
+                android:autofillHints="none"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Faculties dynamic list -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Faculties"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="14dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:boxBackgroundMode="outline"
+                app:endIconMode="dropdown_menu"
+                app:boxCornerRadiusTopStart="14dp"
+                app:boxCornerRadiusTopEnd="14dp"
+                app:boxCornerRadiusBottomStart="14dp"
+                app:boxCornerRadiusBottomEnd="14dp">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/ddFaculty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Choose faculty"
+                    android:inputType="none"
+                    android:autofillHints="none"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddFaculty"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="10dp"
+                android:text="+"
+                android:textStyle="bold"
+                app:cornerRadius="14dp"
+                app:backgroundTint="@color/esprit_red"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipFaculties"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:singleSelection="false"
+            app:chipSpacingHorizontal="8dp"
+            app:chipSpacingVertical="8dp"/>
+
+        <!-- Location picker -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Location"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="14dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:boxBackgroundMode="outline">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etLat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Latitude"
+                    android:enabled="false"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                app:boxBackgroundMode="outline">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etLng"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Longitude"
+                    android:enabled="false"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPickLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Pick location on map"
+            android:textAllCaps="false"
+            app:cornerRadius="14dp"
+            app:backgroundTint="@color/esprit_red"
+            android:textColor="@android:color/white"/>
+
+        <!-- Images upload -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Images"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="14dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Upload image (ImgBB)"
+            android:textAllCaps="false"
+            app:cornerRadius="14dp"/>
+
+        <TextView
+            android:id="@+id/tvImagesCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="0 images"
+            android:textColor="#666666"
+            android:layout_marginTop="6dp"/>
+
+        <!-- Save / Delete -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="Save"
+            android:textAllCaps="false"
+            app:cornerRadius="14dp"
+            app:backgroundTint="@color/esprit_red"
+            android:textColor="@android:color/white"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDelete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Delete"
+            android:textAllCaps="false"
+            app:cornerRadius="14dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+</ScrollView>

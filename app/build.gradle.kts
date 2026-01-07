@@ -62,6 +62,23 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
+
+    // --- UI helpers for Map + Details ---
+    implementation("androidx.recyclerview:recyclerview:1.4.0")
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
+
+    // Image loading
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
+    // QR scanning (in-app)
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation("com.google.zxing:core:3.5.3")
+
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
+
     // Google API
     implementation("com.google.android.gms:play-services-auth:20.7.0") {
         exclude(group = "com.google.guava", module = "listenablefuture")

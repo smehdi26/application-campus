@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8F9FA">
+
+    <!-- Header -->
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <View
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@color/esprit_red"
+            android:layout_marginEnd="10dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Esprit"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Smart Map"
+                android:textSize="12sp"
+                android:textColor="#757575" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Content -->
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/header"
+        android:layout_marginBottom="65dp"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvCampusMap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Campus Map"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:layout_marginBottom="10dp" />
+
+        <!-- Search + QR + Admin -->
+        <LinearLayout
+            android:id="@+id/searchRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="10dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusTopStart="14dp"
+                app:boxCornerRadiusTopEnd="14dp"
+                app:boxCornerRadiusBottomStart="14dp"
+                app:boxCornerRadiusBottomEnd="14dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Search buildings..."
+                    android:inputType="text"
+                    android:imeOptions="actionSearch" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- QR Button -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btnQrCard"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="10dp"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/esprit_red">
+
+                <ImageButton
+                    android:id="@+id/btnQr"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="QR"
+                    android:src="@drawable/ic_qr_code"
+                    app:tint="@android:color/white" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Admin Manage Buildings Button -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btnManageBuildingsCard"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="10dp"
+                android:visibility="gone"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/esprit_red">
+
+                <ImageButton
+                    android:id="@+id/btnManageBuildings"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="Manage Buildings"
+                    android:src="@drawable/ic_admin_panel"
+                    app:tint="@android:color/white" />
+            </com.google.android.material.card.MaterialCardView>
+
+
+        </LinearLayout>
+
+        <!-- Filter chips -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:layout_marginBottom="10dp">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleSelection="true"
+                app:selectionRequired="true"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="All"
+                    android:checkable="true"
+                    android:checked="true"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFaculty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Faculty"
+                    android:checkable="true"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipLab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lab"
+                    android:checkable="true"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipLibrary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Library"
+                    android:checkable="true"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipCafeteria"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cafeteria"
+                    android:checkable="true"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipSports"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sports"
+                    android:checkable="true"
+                    app:checkedIconVisible="false" />
+
+            </com.google.android.material.chip.ChipGroup>
+
+        </HorizontalScrollView>
+
+        <!-- Map card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/mapCard"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:strokeColor="#EEEEEE"
+            app:strokeWidth="1dp">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- ✅ Native OpenStreetMap -->
+                <org.osmdroid.views.MapView
+                    android:id="@+id/mapView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <!-- Popup overlay -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/popupCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:layout_margin="12dp"
+                    android:visibility="gone"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="6dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="14dp">
+
+                        <ImageButton
+                            android:id="@+id/btnPopupClose"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="end"
+                            android:background="@android:color/transparent"
+                            android:contentDescription="Close"
+                            android:src="@android:drawable/ic_menu_close_clear_cancel" />
+
+                        <TextView
+                            android:id="@+id/tvPopupName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Building Name"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvPopupType"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Faculty"
+                            android:textColor="#D32F2F"
+                            android:textSize="12sp"
+                            android:paddingTop="2dp" />
+
+                        <TextView
+                            android:id="@+id/tvPopupDesc"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Description"
+                            android:textColor="#666666"
+                            android:textSize="13sp"
+                            android:paddingTop="8dp" />
+
+                        <TextView
+                            android:id="@+id/tvPopupMeta"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Floors: 0\nFacilities: ..."
+                            android:textColor="#333333"
+                            android:textSize="12sp"
+                            android:paddingTop="10dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnViewDetails"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:text="View Full Details"
+                            android:textAllCaps="false"
+                            app:cornerRadius="12dp"
+                            app:backgroundTint="@color/esprit_red"
+                            android:textColor="@color/white" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnGetDirections"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Get Directions"
+                            android:textAllCaps="false"
+                            app:cornerRadius="12dp"
+                            app:backgroundTint="@color/esprit_red"
+                            android:textColor="@color/white" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+    <!-- Route panel above navbar -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/routeCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/navbar"
+        android:layout_margin="12dp"
+        android:visibility="gone"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <TextView
+                android:id="@+id/tvRouteSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Route • 0 m • 0 min"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvRouteSteps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Steps..."
+                android:textColor="#333333"
+                android:textSize="12sp"
+                android:maxLines="8"
+                android:ellipsize="end" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnClearRoute"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Clear route"
+                android:textAllCaps="false"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Bottom navbar -->
+    <include
+        android:id="@+id/navbar"
+        layout="@layout/layout_navbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>

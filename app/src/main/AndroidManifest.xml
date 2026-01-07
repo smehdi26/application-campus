@@ -4,6 +4,12 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -59,6 +65,13 @@
         <activity android:name="com.example.eventscalendar.EditEventActivity" />
 
         <activity android:name=".TeacherStudentListActivity" />
+
+        <!-- 3b. MAPS -->
+        <activity android:name=".MapsActivity" />
+        <activity android:name=".QrScannerActivity" />
+        <activity android:name=".AdminBuildingListActivity" />
+        <activity android:name=".AdminAddEditBuildingActivity" />
+
         <!-- 6. FORUM PAGES -->
         <activity
             android:name=".ForumActivity"

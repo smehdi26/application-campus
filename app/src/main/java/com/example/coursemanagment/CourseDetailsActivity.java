@@ -1,7 +1,5 @@
 package com.example.coursemanagment;
 
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -49,7 +47,7 @@ public class CourseDetailsActivity extends AppCompatActivity {
     String currentUserRole = "Student";
     String currentUserName = "Student";
 
-    Calendar calendar = Calendar.getInstance(); // For Date Picker
+    Calendar calendar = Calendar.getInstance();
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -92,7 +90,6 @@ public class CourseDetailsActivity extends AppCompatActivity {
         recyclerAssignments.setLayoutManager(new LinearLayoutManager(this));
         assignmentList = new ArrayList<>();
 
-        // Setup Assignment Adapter with Callback
         assignmentAdapter = new AssignmentAdapter(this, assignmentList, currentUserRole, "", new AssignmentAdapter.AssignmentActionListener() {
             @Override
             public void onSubmitClick(Assignment assignment) {
@@ -108,17 +105,14 @@ public class CourseDetailsActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
 
+        // Get initial data from Intent
         course = (Course) getIntent().getSerializableExtra("course_data");
 
         if (course != null) {
             if (course.courseId == null) return;
 
-            tvName.setText(course.courseName);
-            tvCode.setText(course.courseCode);
-            tvDesc.setText(course.description);
-            tvProf.setText("👤 " + course.teacherName);
-            tvTime.setText("🕒 " + course.timing);
-            tvLoc.setText("📍 " + course.location);
+            // Initial UI Set
+            updateCourseUI(course);
 
             // Update Adapters with ID
             materialAdapter = new MaterialAdapter(this, materialList, currentUserRole, course.courseId);
@@ -130,8 +124,12 @@ public class CourseDetailsActivity extends AppCompatActivity {
             });
             recyclerAssignments.setAdapter(assignmentAdapter);
 
+            // --- LOAD DATA ---
             loadMaterials();
             checkRoleAndSetupUI();
+
+            // --- NEW: LISTEN FOR LIVE UPDATES ---
+            loadLiveCourseData();
 
             // Listeners
             btnAddLink.setOnClickListener(v -> showAddLinkDialog(true));
@@ -156,6 +154,41 @@ public class CourseDetailsActivity extends AppCompatActivity {
             });
         }
     }
+
+    // --- NEW: LIVE DATA LISTENER ---
+    private void loadLiveCourseData() {
+        mDatabase.child(course.courseId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Course updatedCourse = snapshot.getValue(Course.class);
+                if (updatedCourse != null) {
+                    // Keep the ID (Firebase doesn't return key in getValue)
+                    updatedCourse.courseId = snapshot.getKey();
+
+                    // Update local object so if we click Edit again, we have fresh data
+                    course = updatedCourse;
+
+                    // Refresh UI Text
+                    updateCourseUI(course);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+    }
+
+    private void updateCourseUI(Course c) {
+        tvName.setText(c.courseName);
+        tvCode.setText(c.courseCode);
+        tvDesc.setText(c.description);
+        tvProf.setText("👤 " + c.teacherName);
+        tvTime.setText("🕒 " + c.timing); // Handles new lines automatically
+        tvLoc.setText("📍 " + c.location);
+    }
+
+    // ... (REST OF THE CODE REMAINS THE SAME) ...
+    // Copy the existing methods below: checkRoleAndSetupUI, updateButtonsVisibility, Dialogs, etc.
 
     private void checkRoleAndSetupUI() {
         String uid = mAuth.getCurrentUser().getUid();
@@ -195,7 +228,6 @@ public class CourseDetailsActivity extends AppCompatActivity {
         }
     }
 
-    // --- CREATE ASSIGNMENT (Teacher/Admin) ---
     private void showCreateAssignmentDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Create Assignment");
@@ -223,16 +255,10 @@ public class CourseDetailsActivity extends AppCompatActivity {
         String id = mDatabase.push().getKey();
         Assignment a = new Assignment(id, title, dueDate, timestamp);
         mDatabase.child(course.courseId).child("assignments").child(id).setValue(a);
-
-        // --- UPDATED NOTIFICATION ---
-        // Includes "in [Course Name]"
-        NotificationHelper.sendToClass(course.classId, "New Assignment",
-                "New homework: '" + title + "' added in " + course.courseName);
-
+        NotificationHelper.sendToClass(course.classId, "New Assignment", "New homework: '" + title + "' added in " + course.courseName);
         Toast.makeText(this, "Created!", Toast.LENGTH_SHORT).show();
     }
 
-    // --- EDIT ASSIGNMENT ---
     private void showEditAssignmentDialog(Assignment assignment) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Edit Assignment");
@@ -261,7 +287,6 @@ public class CourseDetailsActivity extends AppCompatActivity {
             calendar.set(Calendar.YEAR, year);
             calendar.set(Calendar.MONTH, month);
             calendar.set(Calendar.DAY_OF_MONTH, day);
-
             new android.app.TimePickerDialog(this, (tView, hour, minute) -> {
                 calendar.set(Calendar.HOUR_OF_DAY, hour);
                 calendar.set(Calendar.MINUTE, minute);
@@ -272,7 +297,6 @@ public class CourseDetailsActivity extends AppCompatActivity {
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 
-    // --- SUBMIT HOMEWORK ---
     private void showSubmitHomeworkDialog(Assignment assignment) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Submit: " + assignment.title);
@@ -293,12 +317,10 @@ public class CourseDetailsActivity extends AppCompatActivity {
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(new Date());
         Submission sub = new Submission(currentUserName, uid, link, date, "Pending");
         mDatabase.child(course.courseId).child("assignments").child(assignmentId).child("submissions").child(uid).setValue(sub);
-
         Toast.makeText(this, "Submitted!", Toast.LENGTH_SHORT).show();
         assignmentAdapter.notifyDataSetChanged();
     }
 
-    // --- ADD MATERIAL ---
     private void showAddLinkDialog(boolean isMaterial) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add Material");
@@ -316,12 +338,7 @@ public class CourseDetailsActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(name)) return;
         Material material = new Material(name, url);
         mDatabase.child(course.courseId).child("materials").push().setValue(material);
-
-        // --- UPDATED NOTIFICATION ---
-        // Includes "in [Course Name]"
-        NotificationHelper.sendToClass(course.classId, "New Material",
-                "New material: '" + name + "' added in " + course.courseName);
-
+        NotificationHelper.sendToClass(course.classId, "New Material", "New material: '" + name + "' added in " + course.courseName);
         Toast.makeText(this, "Added!", Toast.LENGTH_SHORT).show();
     }
 

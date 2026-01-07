@@ -35,4 +35,12 @@
     <color name="covoiturage_dark_gray">#333333</color>
     <color name="covoiturage_light_gray_bg">#F3F4F6</color>
     <color name="covoiturage_red_light_bg">#FEE2E2</color>
+
+    <!-- Building type colors (for Smart Map) -->
+    <color name="type_faculty_bg">#FEE2E2</color>
+    <color name="type_library_bg">#DBEAFE</color>
+    <color name="type_lab_bg">#FEF3C7</color>
+    <color name="type_admin_bg">#E0E7FF</color>
+    <color name="type_cafeteria_bg">#D1FAE5</color>
+    <color name="type_sports_bg">#FCE7F3</color>
 </resources>

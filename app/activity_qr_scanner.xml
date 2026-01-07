@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#B3000000"
+    android:padding="20dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Scan Building QR Code"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+
+                <ImageButton
+                    android:id="@+id/btnClose"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="#F3F4F6"
+                    android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    android:contentDescription="Close" />
+            </LinearLayout>
+
+            <com.journeyapps.barcodescanner.DecoratedBarcodeView
+                android:id="@+id/barcodeView"
+                android:layout_width="match_parent"
+                android:layout_height="320dp"
+                android:layout_marginTop="14dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Point your camera at the QR code at building entrance to get instant information"
+                android:textAlignment="center"
+                android:textColor="#333333" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</FrameLayout>

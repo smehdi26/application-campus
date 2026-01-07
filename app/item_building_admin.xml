@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#EEEEEE">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center_vertical">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
+            android:layout_marginEnd="12dp">
+
+            <ImageView
+                android:id="@+id/ivThumb"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="Thumbnail" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Building Name"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:textSize="15sp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="type"
+                android:layout_marginTop="6dp"
+                app:chipCornerRadius="12dp"
+                app:checkedIconVisible="false" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnEdit"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@android:color/transparent"
+            android:src="@android:drawable/ic_menu_edit"
+            app:tint="@color/esprit_red"
+            android:contentDescription="Edit"/>
+
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@android:color/transparent"
+            android:src="@android:drawable/ic_menu_delete"
+            app:tint="#D32F2F"
+            android:contentDescription="Delete"/>
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

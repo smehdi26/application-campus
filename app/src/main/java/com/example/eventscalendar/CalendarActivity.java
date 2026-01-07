@@ -16,6 +16,7 @@ import com.applandeo.materialcalendarview.EventDay;
 import com.applandeo.materialcalendarview.listeners.OnDayClickListener;
 import com.example.coursemanagment.CoursesActivity;
 import com.example.coursemanagment.ForumActivity;
+import com.example.coursemanagment.MapsActivity;
 import com.example.coursemanagment.ProfileActivity;
 import com.example.coursemanagment.R;
 import com.example.coursemanagment.User;
@@ -214,6 +215,12 @@ public class CalendarActivity extends AppCompatActivity {
         }
         findViewById(R.id.navProfile).setOnClickListener(v -> {
             startActivity(new Intent(this, ProfileActivity.class));
+            overridePendingTransition(0, 0);
+            finish();
+        });
+        findViewById(R.id.navMap).setOnClickListener(v -> {
+            Intent intent = new Intent(this, MapsActivity.class);
+            startActivity(intent);
             overridePendingTransition(0, 0);
             finish();
         });
