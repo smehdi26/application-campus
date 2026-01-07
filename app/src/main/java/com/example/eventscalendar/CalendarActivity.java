@@ -1,4 +1,6 @@
 package com.example.eventscalendar;
+
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -6,29 +8,33 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.applandeo.materialcalendarview.EventDay;
-import com.applandeo.materialcalendarview.listeners.OnDayClickListener;
+import com.example.coursemanagment.AdminClassListActivity;
+import com.example.coursemanagment.AllUsersActivity;
 import com.example.coursemanagment.CoursesActivity;
+import com.example.coursemanagment.EditProfileActivity;
 import com.example.coursemanagment.ForumActivity;
+import com.example.coursemanagment.LocaleHelper;
+import com.example.coursemanagment.LoginActivity;
 import com.example.coursemanagment.MapsActivity;
-import com.example.coursemanagment.ProfileActivity;
 import com.example.coursemanagment.R;
 import com.example.coursemanagment.User;
 import com.example.coursemanagment.covoiturage.activities.CovoiturageActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.*;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,63 +42,201 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import com.example.eventscalendar.GoogleCalendarHelper;
-import com.example.eventscalendar.EventModel;
 import java.util.Locale;
 import java.util.Map;
 
-public class CalendarActivity extends AppCompatActivity implements EventAdapter.OnEventRegisterClickListener { // Added interface
+public class CalendarActivity extends AppCompatActivity implements EventAdapter.OnEventRegisterClickListener {
+
+    // Drawer
+    private DrawerLayout drawerLayout;
+
+    // Drawer profile views (from drawer_profile.xml)
+    private TextView tvFullName, tvEmail, tvRole;
+    private View btnEditProfile, btnMyCourses, btnManageUsers, btnManageClasses, btnLogout;
+
     private com.applandeo.materialcalendarview.CalendarView calendarView;
     private TextView selectedDateText;
     private FloatingActionButton btnAddEvent;
     private Button btnListView;
     private RecyclerView rvEvents;
+
     private EventAdapter eventAdapter;
     private List<EventModel> eventList;
     private List<EventModel> allEventsList;
+
     private DatabaseReference mDatabase;
     private DatabaseReference mUsersDatabase;
     private FirebaseAuth mAuth;
-    private GoogleCalendarHelper googleCalendarHelper; // New
+
+    private GoogleCalendarHelper googleCalendarHelper;
+
     private static final int ADD_EVENT_REQUEST_CODE = 1;
-    // Define request codes for GoogleCalendarHelper (public constants from GCH are implicitly public)
-    private static final int REQUEST_CODE_SIGN_IN_GCH = GoogleCalendarHelper.REQUEST_CODE_SIGN_IN; // Define request codes for GoogleCalendarHelper
+    private static final int REQUEST_CODE_SIGN_IN_GCH = GoogleCalendarHelper.REQUEST_CODE_SIGN_IN;
     private static final int REQUEST_AUTHORIZATION_GCH = GoogleCalendarHelper.REQUEST_AUTHORIZATION;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.fragment_calendar);
+
+        drawerLayout = findViewById(R.id.drawerLayout);
+
+        // Open drawer when clicking header area (red square + title area)
+        View header = findViewById(R.id.header);
+        View btnOpenDrawer = findViewById(R.id.btnOpenDrawer);
+        View headerTitleArea = findViewById(R.id.headerTitleArea);
+
+        View.OnClickListener openDrawer = v -> {
+            if (drawerLayout != null) drawerLayout.openDrawer(GravityCompat.START);
+        };
+
+        if (header != null) header.setOnClickListener(openDrawer);
+        if (btnOpenDrawer != null) btnOpenDrawer.setOnClickListener(openDrawer);
+        if (headerTitleArea != null) headerTitleArea.setOnClickListener(openDrawer);
+
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference("events");
         mUsersDatabase = FirebaseDatabase.getInstance().getReference("Users");
+
         calendarView = findViewById(R.id.calendarView);
         selectedDateText = findViewById(R.id.selectedDateText);
         btnAddEvent = findViewById(R.id.btnAddEvent);
         btnListView = findViewById(R.id.btnListView);
         rvEvents = findViewById(R.id.rvEvents);
+
         SimpleDateFormat sdf = new SimpleDateFormat("dd LLLL yyyy", Locale.FRENCH);
         String formattedDate = sdf.format(new Date());
         selectedDateText.setText(getString(R.string.events_on, formattedDate));
+
         eventList = new ArrayList<>();
         allEventsList = new ArrayList<>();
-        eventAdapter = new EventAdapter(eventList, this); // Pass 'this' as listener
+
+        eventAdapter = new EventAdapter(eventList, this);
         rvEvents.setLayoutManager(new LinearLayoutManager(this));
         rvEvents.setAdapter(eventAdapter);
+
         updateStatistics(new ArrayList<>());
+        setupDrawerProfile();     // ✅ Drawer profile setup
         loadEvents();
         setupNavbar();
         checkUserRole();
+
         btnAddEvent.setOnClickListener(v -> showAddEventPopup());
+
         calendarView.setOnDayClickListener(eventDay -> {
             Calendar calendar = eventDay.getCalendar();
             SimpleDateFormat displayFormat = new SimpleDateFormat("dd LLLL yyyy", Locale.FRENCH);
             selectedDateText.setText(getString(R.string.events_on, displayFormat.format(calendar.getTime())));
+
             SimpleDateFormat filterFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
             String dateStr = filterFormat.format(calendar.getTime());
             filterEventsByDate(dateStr);
         });
     }
+
+    // ===================== Drawer Profile =====================
+    private void setupDrawerProfile() {
+        tvFullName = findViewById(R.id.tvFullName);
+        tvEmail = findViewById(R.id.tvEmail);
+        tvRole = findViewById(R.id.tvRole);
+
+        btnEditProfile = findViewById(R.id.btnEditProfile);
+        btnMyCourses = findViewById(R.id.btnMyCourses);
+        btnManageUsers = findViewById(R.id.btnManageUsers);
+        btnManageClasses = findViewById(R.id.btnManageClasses);
+        btnLogout = findViewById(R.id.btnLogout);
+
+        if (btnLogout != null) {
+            btnLogout.setOnClickListener(v -> {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(CalendarActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            });
+        }
+
+        if (btnEditProfile != null) {
+            btnEditProfile.setOnClickListener(v -> {
+                startActivity(new Intent(this, EditProfileActivity.class));
+                closeDrawer();
+            });
+        }
+
+        if (btnMyCourses != null) {
+            btnMyCourses.setOnClickListener(v -> {
+                startActivity(new Intent(this, CoursesActivity.class));
+                overridePendingTransition(0, 0);
+                closeDrawer();
+                finish();
+            });
+        }
+
+        if (btnManageUsers != null) {
+            btnManageUsers.setOnClickListener(v -> {
+                startActivity(new Intent(this, AllUsersActivity.class));
+                closeDrawer();
+            });
+        }
+
+        if (btnManageClasses != null) {
+            btnManageClasses.setOnClickListener(v -> {
+                startActivity(new Intent(this, AdminClassListActivity.class));
+                closeDrawer();
+            });
+        }
+
+        loadUserProfileAndRoleIntoDrawer();
+    }
+
+    private void loadUserProfileAndRoleIntoDrawer() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) return;
+
+        String uid = currentUser.getUid();
+
+        mUsersDatabase.child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) return;
+
+                User user = snapshot.getValue(User.class);
+                if (user == null) return;
+
+                if (tvFullName != null) tvFullName.setText(user.firstName + " " + user.lastName);
+                if (tvEmail != null) tvEmail.setText(user.email);
+                if (tvRole != null) tvRole.setText(user.role);
+
+                boolean isAdmin = user.role != null && user.role.equalsIgnoreCase("Admin");
+                if (btnManageUsers != null) btnManageUsers.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
+                if (btnManageClasses != null) btnManageClasses.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
+                if (btnMyCourses != null) btnMyCourses.setVisibility(isAdmin ? View.GONE : View.VISIBLE);
+            }
+
+            @Override public void onCancelled(@NonNull DatabaseError error) { }
+        });
+    }
+
+    private void closeDrawer() {
+        if (drawerLayout != null) drawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    // ===================== Role check (existing) =====================
     private void checkUserRole() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
@@ -118,16 +262,17 @@ public class CalendarActivity extends AppCompatActivity implements EventAdapter.
             btnAddEvent.setVisibility(View.GONE);
         }
     }
+
+    // ===================== Activity Result (existing) =====================
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Handle results from GoogleCalendarHelper's sign-in or authorization
         if (requestCode == REQUEST_CODE_SIGN_IN_GCH || requestCode == REQUEST_AUTHORIZATION_GCH) {
-            if (googleCalendarHelper != null) { // Ensure helper is initialized before handling result
+            if (googleCalendarHelper != null) {
                 googleCalendarHelper.handleSignInResult(data);
             }
-            return; // Consume the result
+            return;
         }
 
         if (requestCode == ADD_EVENT_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
@@ -146,8 +291,7 @@ public class CalendarActivity extends AppCompatActivity implements EventAdapter.
                 mDatabase.child(eventId).setValue(newEvent)
                         .addOnSuccessListener(aVoid -> {
                             Toast.makeText(this, "Event Added to Firebase: " + title, Toast.LENGTH_SHORT).show();
-                            // Now, add to Google Calendar
-                            googleCalendarHelper = new GoogleCalendarHelper(this, newEvent); // Instantiate with the new event
+                            googleCalendarHelper = new GoogleCalendarHelper(this, newEvent);
                             googleCalendarHelper.signInAndAddEvent();
                         })
                         .addOnFailureListener(e -> {
@@ -156,37 +300,48 @@ public class CalendarActivity extends AppCompatActivity implements EventAdapter.
             }
         }
     }
+
+    // ===================== Load events (existing) =====================
     private void loadEvents() {
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 allEventsList.clear();
                 Map<String, Map<String, Integer>> dailyEventCategoryCounts = new HashMap<>();
+
                 for (DataSnapshot eventSnapshot : snapshot.getChildren()) {
                     EventModel event = eventSnapshot.getValue(EventModel.class);
                     if (event != null) {
                         allEventsList.add(event);
+
                         String eventDate = event.getDate();
                         String eventCategory = event.getCategory();
+
                         dailyEventCategoryCounts
                                 .computeIfAbsent(eventDate, k -> new HashMap<>())
                                 .merge(eventCategory, 1, Integer::sum);
                     }
                 }
+
                 updateStatistics(allEventsList);
+
                 List<EventDay> eventsWithColoredDots = new ArrayList<>();
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+
                 for (Map.Entry<String, Map<String, Integer>> entry : dailyEventCategoryCounts.entrySet()) {
                     String dateStr = entry.getKey();
                     Map<String, Integer> categoryCounts = entry.getValue();
+
                     String dominantCategory = null;
                     int maxCount = 0;
+
                     for (Map.Entry<String, Integer> categoryEntry : categoryCounts.entrySet()) {
                         if (categoryEntry.getValue() > maxCount) {
                             maxCount = categoryEntry.getValue();
                             dominantCategory = categoryEntry.getKey();
                         }
                     }
+
                     int drawableRes = R.drawable.bg_dot_exams;
                     if (dominantCategory != null) {
                         if (dominantCategory.equals("Exams") || dominantCategory.equals("Examens")) {
@@ -201,6 +356,7 @@ public class CalendarActivity extends AppCompatActivity implements EventAdapter.
                             drawableRes = R.drawable.bg_badge_gray;
                         }
                     }
+
                     try {
                         Date date = sdf.parse(dateStr);
                         Calendar calendar = Calendar.getInstance();
@@ -210,23 +366,29 @@ public class CalendarActivity extends AppCompatActivity implements EventAdapter.
                         e.printStackTrace();
                     }
                 }
+
                 calendarView.setEvents(eventsWithColoredDots);
+
                 Calendar today = Calendar.getInstance();
                 String formattedTodayDate = new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(today.getTime());
                 filterEventsByDate(formattedTodayDate);
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(CalendarActivity.this, "Failed to load events: " + error.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
+
+    // ===================== Navbar (UPDATED: Profile opens drawer) =====================
     private void setupNavbar() {
         Button btnListView = findViewById(R.id.btnListView);
         btnListView.setOnClickListener(v -> {
             Intent intent = new Intent(this, EventsListActivity.class);
             startActivity(intent);
         });
+
         TextView navEvents = findViewById(R.id.navEvents);
         if (navEvents != null) {
             int redColor = ContextCompat.getColor(this, R.color.esprit_red);
@@ -235,10 +397,10 @@ public class CalendarActivity extends AppCompatActivity implements EventAdapter.
                 if (d != null) d.setTint(redColor);
             }
         }
+
+        // ✅ Profile => open drawer
         findViewById(R.id.navProfile).setOnClickListener(v -> {
-            startActivity(new Intent(this, ProfileActivity.class));
-            overridePendingTransition(0, 0);
-            finish();
+            if (drawerLayout != null) drawerLayout.openDrawer(GravityCompat.START);
         });
 
         findViewById(R.id.navForums).setOnClickListener(v -> {
@@ -265,11 +427,14 @@ public class CalendarActivity extends AppCompatActivity implements EventAdapter.
             finish();
         });
     }
+
+    // ===================== Stats & filtering (existing) =====================
     private void updateStatistics(List<EventModel> eventsToCount) {
         int examsCount = 0;
         int conferencesCount = 0;
         int soutenancesCount = 0;
         int clubsCount = 0;
+
         for (EventModel event : eventsToCount) {
             String category = event.getCategory();
             if (category.equals("Exams") || category.equals("Examens")) {
@@ -282,23 +447,29 @@ public class CalendarActivity extends AppCompatActivity implements EventAdapter.
                 clubsCount++;
             }
         }
+
         View statExams = findViewById(R.id.statExams);
         View statEvents = findViewById(R.id.statEvents);
         View statSoutenances = findViewById(R.id.statSoutenances);
         View statClubs = findViewById(R.id.statClubs);
+
         ((TextView) statExams.findViewById(R.id.tvStatCount)).setText(String.valueOf(examsCount));
         ((TextView) statExams.findViewById(R.id.tvStatCount)).setTextColor(Color.RED);
         ((TextView) statExams.findViewById(R.id.tvStatLabel)).setText(getString(R.string.category_exams));
+
         ((TextView) statEvents.findViewById(R.id.tvStatCount)).setText(String.valueOf(conferencesCount));
         ((TextView) statEvents.findViewById(R.id.tvStatCount)).setTextColor(Color.BLUE);
         ((TextView) statEvents.findViewById(R.id.tvStatLabel)).setText(getString(R.string.category_conferences));
+
         ((TextView) statSoutenances.findViewById(R.id.tvStatCount)).setText(String.valueOf(soutenancesCount));
         ((TextView) statSoutenances.findViewById(R.id.tvStatCount)).setTextColor(Color.parseColor("#FFA000"));
         ((TextView) statSoutenances.findViewById(R.id.tvStatLabel)).setText(getString(R.string.category_soutenances));
+
         ((TextView) statClubs.findViewById(R.id.tvStatCount)).setText(String.valueOf(clubsCount));
         ((TextView) statClubs.findViewById(R.id.tvStatCount)).setTextColor(Color.parseColor("#009688"));
         ((TextView) statClubs.findViewById(R.id.tvStatLabel)).setText(getString(R.string.category_clubs));
     }
+
     private void filterEventsByDate(String date) {
         List<EventModel> filteredEvents = new ArrayList<>();
         for (EventModel event : allEventsList) {
@@ -309,6 +480,7 @@ public class CalendarActivity extends AppCompatActivity implements EventAdapter.
         eventAdapter.updateEvents(filteredEvents);
         updateStatistics(filteredEvents);
     }
+
     private void showAddEventPopup() {
         Intent intent = new Intent(this, AddEventActivity.class);
         startActivityForResult(intent, ADD_EVENT_REQUEST_CODE);
@@ -319,17 +491,17 @@ public class CalendarActivity extends AppCompatActivity implements EventAdapter.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             String uid = currentUser.getUid();
-            // 1. Save to Firebase interestedEvents
+
             mUsersDatabase.child(uid).child("interestedEvents").child(event.getId()).setValue(event)
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(this, "Event '" + event.getTitle() + "' registered!", Toast.LENGTH_SHORT).show();
-                        // 2. Add to Google Calendar
                         googleCalendarHelper = new GoogleCalendarHelper(this, event);
                         googleCalendarHelper.signInAndAddEvent();
                     })
                     .addOnFailureListener(e -> {
                         Toast.makeText(this, "Failed to register event: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     });
+
         } else {
             Toast.makeText(this, "You need to be logged in to register for events.", Toast.LENGTH_SHORT).show();
         }

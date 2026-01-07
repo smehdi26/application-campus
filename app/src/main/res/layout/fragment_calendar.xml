@@ -1,66 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#F8F9FA">
+    android:layout_height="match_parent">
 
-    <!-- Header (Identique à Courses pour la cohérence) -->
-    <LinearLayout
-        android:id="@+id/header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:background="@color/white"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
-
-        <View
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:background="@color/esprit_red"
-            android:layout_marginEnd="10dp"/>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Esprit"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Events Calendar"
-                android:textSize="12sp"
-                android:textColor="#757575"/>
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/btnListView"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:text="List View"
-            android:textSize="10sp"
-            android:textAllCaps="false"
-            android:backgroundTint="#F0F0F0"
-            android:textColor="#333"
-            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
-    </LinearLayout>
-
-    <!-- Contenu Principal -->
-    <LinearLayout
+    <!-- ===================== MAIN CONTENT ===================== -->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/header"
-        android:layout_above="@id/bottom_nav_stats_container"
-        android:padding="16dp"
-        android:orientation="vertical">
+        android:background="#F8F9FA">
+
+        <!-- Header (Identique à Courses pour la cohérence) -->
+        <LinearLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true">
+
+            <View
+                android:id="@+id/btnOpenDrawer"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@color/esprit_red"
+                android:layout_marginEnd="10dp" />
+
+            <LinearLayout
+                android:id="@+id/headerTitleArea"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Esprit"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Events Calendar"
+                    android:textSize="12sp"
+                    android:textColor="#757575" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnListView"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:text="List View"
+                android:textSize="10sp"
+                android:textAllCaps="false"
+                android:backgroundTint="#F0F0F0"
+                android:textColor="#333"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
+        </LinearLayout>
+
+        <!-- Contenu Principal -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/header"
+            android:layout_above="@id/bottom_nav_stats_container"
+            android:padding="16dp"
+            android:orientation="vertical">
 
             <!-- Calendar Card -->
             <androidx.cardview.widget.CardView
@@ -68,6 +83,7 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="15dp"
                 app:cardElevation="2dp">
+
                 <com.applandeo.materialcalendarview.CalendarView
                     android:id="@+id/calendarView"
                     android:layout_width="match_parent"
@@ -81,7 +97,7 @@
                 android:layout_marginTop="20dp"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black" />
 
             <!-- Liste dynamique des événements -->
             <androidx.recyclerview.widget.RecyclerView
@@ -93,43 +109,78 @@
 
         </LinearLayout>
 
-    <!-- Floating Action Button (Bouton Rouge +) -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btnAddEvent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/bottom_nav_stats_container"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="20dp"
-        android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@color/esprit_red"
-        app:tint="@color/white"
-        app:fabSize="normal"/>
+        <!-- Floating Action Button (Bouton Rouge +) -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnAddEvent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/bottom_nav_stats_container"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="20dp"
+            android:src="@android:drawable/ic_input_add"
+            app:backgroundTint="@color/esprit_red"
+            app:tint="@color/white"
+            app:fabSize="normal" />
 
-    <!-- Bloc des statistiques (Juste au dessus de la navbar) -->
-    <LinearLayout
-        android:id="@+id/bottom_nav_stats_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/navbar"
-        android:orientation="horizontal"
-        android:background="@color/white"
-        android:padding="8dp"
-        android:elevation="4dp"
-        android:weightSum="4">
+        <!-- Bloc des statistiques (Juste au dessus de la navbar) -->
+        <LinearLayout
+            android:id="@+id/bottom_nav_stats_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/navbar"
+            android:orientation="horizontal"
+            android:background="@color/white"
+            android:padding="8dp"
+            android:elevation="4dp"
+            android:weightSum="4">
 
-        <include android:id="@+id/statExams" layout="@layout/item_stat_card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
-        <include android:id="@+id/statEvents" layout="@layout/item_stat_card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
-        <include android:id="@+id/statSoutenances" layout="@layout/item_stat_card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
-        <include android:id="@+id/statClubs" layout="@layout/item_stat_card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
-    </LinearLayout>
+            <include
+                android:id="@+id/statExams"
+                layout="@layout/item_stat_card"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
 
-    <!-- Inclusion de la BARRE DE NAVIGATION (Navbar) -->
-    <include
-        android:id="@+id/navbar"
-        layout="@layout/layout_navbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"/>
+            <include
+                android:id="@+id/statEvents"
+                layout="@layout/item_stat_card"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
 
-</RelativeLayout>
+            <include
+                android:id="@+id/statSoutenances"
+                layout="@layout/item_stat_card"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <include
+                android:id="@+id/statClubs"
+                layout="@layout/item_stat_card"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <!-- Navbar -->
+        <include
+            android:id="@+id/navbar"
+            layout="@layout/layout_navbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true" />
+
+    </RelativeLayout>
+
+    <!-- ===================== DRAWER CONTENT ===================== -->
+    <FrameLayout
+        android:layout_width="320dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#F8F9FA">
+
+        <include layout="@layout/drawer_profile" />
+    </FrameLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>

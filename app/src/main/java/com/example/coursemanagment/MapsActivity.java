@@ -30,12 +30,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.coursemanagment.covoiturage.activities.CovoiturageActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
 
 import org.json.JSONArray;
@@ -63,6 +66,13 @@ import java.util.concurrent.Executors;
 public class MapsActivity extends AppCompatActivity {
 
     private static final int REQ_LOC = 1001;
+
+    // Drawer
+    private DrawerLayout drawerLayout;
+
+    // Drawer profile views
+    private TextView tvFullName, tvEmail, tvRole;
+    private View btnEditProfile, btnMyCourses, btnManageUsers, btnManageClasses, btnLogout;
 
     private MapView mapView;
     private IMapController mapController;
@@ -119,13 +129,22 @@ public class MapsActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
         setContentView(R.layout.activity_maps);
 
+        // Drawer init
+        drawerLayout = findViewById(R.id.drawerLayout);
+        View openDrawer = findViewById(R.id.btnOpenDrawer);
+        if (openDrawer == null) openDrawer = findViewById(R.id.header);
+        if (openDrawer != null) {
+            openDrawer.setOnClickListener(v -> {
+                if (drawerLayout != null) drawerLayout.openDrawer(GravityCompat.START);
+            });
+        }
+
         setupNavbar();
 
         mapView = findViewById(R.id.mapView);
         etSearch = findViewById(R.id.etSearch);
         chipGroup = findViewById(R.id.chipGroup);
 
-        // important: default selected chip is chipAll (you have it in XML)
         if (chipGroup != null) chipGroup.check(R.id.chipAll);
 
         popupCard = findViewById(R.id.popupCard);
@@ -153,7 +172,6 @@ public class MapsActivity extends AppCompatActivity {
             );
         }
 
-        // close popup (and clear selection)
         btnPopupClose.setOnClickListener(v -> hidePopup(true));
 
         btnViewDetails.setOnClickListener(v -> {
@@ -163,14 +181,13 @@ public class MapsActivity extends AppCompatActivity {
             }
         });
 
-        // ✅ FIX: directions should close popup UI only (no clearing selection)
         if (btnGetDirections != null) {
             btnGetDirections.setOnClickListener(v -> {
-                Building b = selectedBuilding;   // capture first
+                Building b = selectedBuilding;
                 if (b == null) return;
 
-                hidePopup(false);                // close UI only
-                startRoutingTo(b);               // safe
+                hidePopup(false);
+                startRoutingTo(b);
             });
         }
 
@@ -178,10 +195,12 @@ public class MapsActivity extends AppCompatActivity {
             btnClearRoute.setOnClickListener(v -> clearRoute());
         }
 
-        // QR scanner
         findViewById(R.id.btnQr).setOnClickListener(v ->
                 qrLauncher.launch(new Intent(this, QrScannerActivity.class))
         );
+
+        // Drawer profile setup
+        setupDrawerProfile();
 
         setupAdminManageButton();
         setupSearchAndFilters();
@@ -189,7 +208,97 @@ public class MapsActivity extends AppCompatActivity {
         listenBuildingsFromFirebase();
     }
 
-    // ---------- Map ----------
+    // ===================== Drawer Profile =====================
+    private void setupDrawerProfile() {
+        tvFullName = findViewById(R.id.tvFullName);
+        tvEmail = findViewById(R.id.tvEmail);
+        tvRole = findViewById(R.id.tvRole);
+
+        btnEditProfile = findViewById(R.id.btnEditProfile);
+        btnMyCourses = findViewById(R.id.btnMyCourses);
+        btnManageUsers = findViewById(R.id.btnManageUsers);
+        btnManageClasses = findViewById(R.id.btnManageClasses);
+        btnLogout = findViewById(R.id.btnLogout);
+
+        // If drawer_profile isn't included for some reason, these can be null
+        if (btnLogout == null) return;
+
+        btnLogout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        });
+
+        if (btnEditProfile != null) {
+            btnEditProfile.setOnClickListener(v -> {
+                startActivity(new Intent(this, EditProfileActivity.class));
+                closeDrawer();
+            });
+        }
+
+        if (btnMyCourses != null) {
+            btnMyCourses.setOnClickListener(v -> {
+                startActivity(new Intent(this, CoursesActivity.class));
+                closeDrawer();
+            });
+        }
+
+        if (btnManageUsers != null) {
+            btnManageUsers.setOnClickListener(v -> {
+                startActivity(new Intent(this, AllUsersActivity.class));
+                closeDrawer();
+            });
+        }
+
+        if (btnManageClasses != null) {
+            btnManageClasses.setOnClickListener(v -> {
+                startActivity(new Intent(this, AdminClassListActivity.class));
+                closeDrawer();
+            });
+        }
+
+        loadUserProfileAndRoleIntoDrawer();
+    }
+
+    private void loadUserProfileAndRoleIntoDrawer() {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) return;
+
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("Users");
+        String uid = currentUser.getUid();
+
+        mDatabase.child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) return;
+
+                User user = snapshot.getValue(User.class);
+                if (user == null) return;
+
+                if (tvFullName != null) tvFullName.setText(user.firstName + " " + user.lastName);
+                if (tvEmail != null) tvEmail.setText(user.email);
+                if (tvRole != null) tvRole.setText(user.role);
+
+                boolean isAdmin = user.role != null && user.role.equalsIgnoreCase("Admin");
+
+                if (btnManageUsers != null) btnManageUsers.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
+                if (btnManageClasses != null) btnManageClasses.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
+                if (btnMyCourses != null) btnMyCourses.setVisibility(isAdmin ? View.GONE : View.VISIBLE);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
+    }
+
+    private void closeDrawer() {
+        if (drawerLayout != null) drawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    // ===================== Map =====================
     private void setupMap() {
         mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setMultiTouchControls(true);
@@ -285,7 +394,6 @@ public class MapsActivity extends AppCompatActivity {
                 return true;
             });
 
-            // If we are routing and this marker is for the selected building => keep reference
             if (routingMode && selectedBuilding != null && selectedBuilding.id != null
                     && b.id != null && b.id.equals(selectedBuilding.id)) {
                 selectedMarker = m;
@@ -402,7 +510,6 @@ public class MapsActivity extends AppCompatActivity {
         if (chipGroup == null) return "all";
         int id = chipGroup.getCheckedChipId();
 
-        // ✅ FIX: handle chipAll
         if (id == R.id.chipAll) return "all";
         if (id == R.id.chipFaculty) return "faculty";
         if (id == R.id.chipLab) return "lab";
@@ -467,7 +574,6 @@ public class MapsActivity extends AppCompatActivity {
             return;
         }
 
-        // keep selection for routing visibility
         selectedBuilding = b;
 
         GeoPoint me = (myLocationOverlay == null) ? null : myLocationOverlay.getMyLocation();
@@ -530,7 +636,6 @@ public class MapsActivity extends AppCompatActivity {
 
         if (routeCard != null) routeCard.setVisibility(View.GONE);
 
-        // show everything again
         applyRoutingVisibility();
     }
 
@@ -720,7 +825,7 @@ public class MapsActivity extends AppCompatActivity {
         TextView navProfile = findViewById(R.id.navProfile);
         int redColor = ContextCompat.getColor(this, R.color.esprit_red);
         navProfile.setTextColor(redColor);
-        for (android.graphics.drawable.Drawable d : navProfile.getCompoundDrawables()) if (d!=null) d.setTint(redColor);
+        for (android.graphics.drawable.Drawable d : navProfile.getCompoundDrawables()) if (d != null) d.setTint(redColor);
 
         findViewById(R.id.navCourses).setOnClickListener(v -> {
             startActivity(new Intent(this, CoursesActivity.class));
@@ -729,17 +834,15 @@ public class MapsActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.navEvents).setOnClickListener(v -> {
-            Intent intent = new Intent(this, com.example.eventscalendar.CalendarActivity.class);
+            Intent intent = ConfirmCalendarIntent();
             startActivity(intent);
             overridePendingTransition(0, 0);
             finish();
         });
 
+        // ✅ NOW: profile opens drawer instead of opening ProfileActivity
         findViewById(R.id.navProfile).setOnClickListener(v -> {
-            Intent intent = new Intent(this, ProfileActivity.class);
-            startActivity(intent);
-            overridePendingTransition(0, 0);
-            finish();
+            if (drawerLayout != null) drawerLayout.openDrawer(GravityCompat.START);
         });
 
         findViewById(R.id.navForums).setOnClickListener(v -> {
@@ -747,22 +850,38 @@ public class MapsActivity extends AppCompatActivity {
             overridePendingTransition(0, 0);
             finish();
         });
+
         findViewById(R.id.navCovoiturage).setOnClickListener(v -> {
             startActivity(new Intent(this, CovoiturageActivity.class));
             overridePendingTransition(0, 0);
             finish();
         });
     }
+
+    // helper for calendar (keeps your original intent path)
+    private Intent ConfirmCalendarIntent() {
+        return new Intent(this, com.example.eventscalendar.CalendarActivity.class);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        mapView.onResume();
+        if (mapView != null) mapView.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mapView.onPause();
+        if (mapView != null) mapView.onPause();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -781,6 +900,4 @@ public class MapsActivity extends AppCompatActivity {
             }
         }
     }
-
-
 }

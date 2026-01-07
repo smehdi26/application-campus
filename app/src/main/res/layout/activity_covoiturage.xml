@@ -1,130 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/covoiturage_light_gray_bg">
+    android:layout_height="match_parent">
 
-    <!-- HEADER -->
-    <TextView
-        android:id="@+id/header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Covoiturage"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:padding="16dp"
-        android:background="@color/white" />
-
-    <!-- HORIZONTAL SCROLLING TABS -->
-    <HorizontalScrollView
-        android:id="@+id/tabScrollView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/header"
-        android:background="@color/white"
-        android:scrollbars="none"
-        android:paddingVertical="8dp">
-
-        <LinearLayout
-            android:id="@+id/tabContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingHorizontal="8dp"
-            android:gravity="center_vertical">
-
-            <Button
-                android:id="@+id/btnHome"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Home"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:layout_marginEnd="8dp"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/covoiturage_dark_gray"
-                android:background="@drawable/bg_tab_inactive" />
-
-            <Button
-                android:id="@+id/btnBrowse"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Browse Rides"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:layout_marginEnd="8dp"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/covoiturage_dark_gray"
-                android:background="@drawable/bg_tab_inactive" />
-
-            <Button
-                android:id="@+id/btnCreate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Create Ride"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:layout_marginEnd="8dp"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/covoiturage_dark_gray"
-                android:background="@drawable/bg_tab_inactive" />
-
-            <Button
-                android:id="@+id/btnMyRide"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="My Ride Offer"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:layout_marginEnd="8dp"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/covoiturage_dark_gray"
-                android:background="@drawable/bg_tab_inactive" />
-
-            <Button
-                android:id="@+id/btnMyBookings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="My Bookings"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/covoiturage_dark_gray"
-                android:background="@drawable/bg_tab_inactive" />
-        </LinearLayout>
-    </HorizontalScrollView>
-
-    <!-- CONTENT AREA -->
-    <FrameLayout
-        android:id="@+id/covoiturageContainer"
+    <!-- ===================== MAIN CONTENT ===================== -->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/navbar"
-        android:layout_below="@id/tabScrollView" />
+        android:background="@color/covoiturage_light_gray_bg">
 
-    <!-- NAVBAR -->
-    <include
-        android:id="@+id/navbar"
-        layout="@layout/layout_navbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" />
+        <!-- HEADER (tap to open drawer) -->
+        <TextView
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Covoiturage"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:padding="16dp"
+            android:background="@color/white"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground" />
 
-</RelativeLayout>
+        <!-- HORIZONTAL SCROLLING TABS -->
+        <HorizontalScrollView
+            android:id="@+id/tabScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/header"
+            android:background="@color/white"
+            android:scrollbars="none"
+            android:paddingVertical="8dp">
+
+            <LinearLayout
+                android:id="@+id/tabContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="8dp"
+                android:gravity="center_vertical">
+
+                <Button
+                    android:id="@+id/btnHome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Home"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/covoiturage_dark_gray"
+                    android:background="@drawable/bg_tab_inactive" />
+
+                <Button
+                    android:id="@+id/btnBrowse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Browse Rides"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/covoiturage_dark_gray"
+                    android:background="@drawable/bg_tab_inactive" />
+
+                <Button
+                    android:id="@+id/btnCreate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Create Ride"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/covoiturage_dark_gray"
+                    android:background="@drawable/bg_tab_inactive" />
+
+                <Button
+                    android:id="@+id/btnMyRide"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="My Ride Offer"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/covoiturage_dark_gray"
+                    android:background="@drawable/bg_tab_inactive" />
+
+                <Button
+                    android:id="@+id/btnMyBookings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="My Bookings"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/covoiturage_dark_gray"
+                    android:background="@drawable/bg_tab_inactive" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <!-- CONTENT AREA -->
+        <FrameLayout
+            android:id="@+id/covoiturageContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/navbar"
+            android:layout_below="@id/tabScrollView" />
+
+        <!-- NAVBAR -->
+        <include
+            android:id="@+id/navbar"
+            layout="@layout/layout_navbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true" />
+
+    </RelativeLayout>
+
+    <!-- ===================== DRAWER CONTENT ===================== -->
+    <FrameLayout
+        android:layout_width="320dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#F8F9FA">
+
+        <!-- reuse the same profile drawer file -->
+        <include layout="@layout/drawer_profile" />
+    </FrameLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>

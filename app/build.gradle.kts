@@ -78,7 +78,6 @@ dependencies {
     implementation("com.google.zxing:core:3.5.3")
 
     implementation("org.osmdroid:osmdroid-android:6.1.18")
-
     // Google API
     implementation("com.google.android.gms:play-services-auth:20.7.0") {
         exclude(group = "com.google.guava", module = "listenablefuture")

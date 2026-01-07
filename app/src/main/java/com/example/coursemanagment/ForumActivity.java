@@ -12,7 +12,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.WindowCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,6 +32,13 @@ import java.util.Locale;
 
 public class ForumActivity extends AppCompatActivity {
 
+    // Drawer
+    private DrawerLayout drawerLayout;
+
+    // Drawer profile views
+    private TextView tvFullName, tvEmail, tvRole;
+    private View btnEditProfile, btnMyCourses, btnManageUsers, btnManageClasses, btnLogout;
+
     RecyclerView recyclerView;
     PostAdapter adapter;
     ArrayList<Post> list;
@@ -39,9 +48,9 @@ public class ForumActivity extends AppCompatActivity {
     View emptyState;
 
     String currentUserId;
-    String currentUserRole = ""; 
+    String currentUserRole = "";
     String selectedFilter = "All";
-    String currentSortMode = "Recent"; // Options: Recent, Popular, Hot
+    String currentSortMode = "Recent"; // Recent, Popular, Hot
 
     private ValueEventListener postsListener;
 
@@ -75,6 +84,16 @@ public class ForumActivity extends AppCompatActivity {
         WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
 
         setContentView(R.layout.activity_forum);
+
+        drawerLayout = findViewById(R.id.drawerLayout);
+
+        // Open drawer when clicking top-left E logo
+        View logoBox = findViewById(R.id.logoBox);
+        if (logoBox != null) {
+            logoBox.setOnClickListener(v -> {
+                if (drawerLayout != null) drawerLayout.openDrawer(GravityCompat.START);
+            });
+        }
 
         com.google.firebase.auth.FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {
@@ -127,7 +146,7 @@ public class ForumActivity extends AppCompatActivity {
                 startActivity(new Intent(ForumActivity.this, NotificationsActivityForum.class)));
 
         btnSort.setOnClickListener(v -> showSortBottomSheet());
-        
+
         btnShowFavorites.setOnClickListener(v -> toggleFavoritesFilter());
 
         btnPrevPage.setOnClickListener(v -> {
@@ -144,10 +163,102 @@ public class ForumActivity extends AppCompatActivity {
             }
         });
 
+        setupDrawerProfile(); // ✅ drawer profile actions + load info
         loadUserRole();
         loadPosts();
     }
 
+    // ===================== Drawer Profile =====================
+    private void setupDrawerProfile() {
+        tvFullName = findViewById(R.id.tvFullName);
+        tvEmail = findViewById(R.id.tvEmail);
+        tvRole = findViewById(R.id.tvRole);
+
+        btnEditProfile = findViewById(R.id.btnEditProfile);
+        btnMyCourses = findViewById(R.id.btnMyCourses);
+        btnManageUsers = findViewById(R.id.btnManageUsers);
+        btnManageClasses = findViewById(R.id.btnManageClasses);
+        btnLogout = findViewById(R.id.btnLogout);
+
+        if (btnLogout == null) return;
+
+        btnLogout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(ForumActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        });
+
+        if (btnEditProfile != null) {
+            btnEditProfile.setOnClickListener(v -> {
+                startActivity(new Intent(this, EditProfileActivity.class));
+                closeDrawer();
+            });
+        }
+
+        if (btnMyCourses != null) {
+            btnMyCourses.setOnClickListener(v -> {
+                startActivity(new Intent(this, CoursesActivity.class));
+                overridePendingTransition(0, 0);
+                closeDrawer();
+                finish();
+            });
+        }
+
+        if (btnManageUsers != null) {
+            btnManageUsers.setOnClickListener(v -> {
+                startActivity(new Intent(this, AllUsersActivity.class));
+                closeDrawer();
+            });
+        }
+
+        if (btnManageClasses != null) {
+            btnManageClasses.setOnClickListener(v -> {
+                startActivity(new Intent(this, AdminClassListActivity.class));
+                closeDrawer();
+            });
+        }
+
+        loadUserProfileAndRoleIntoDrawer();
+    }
+
+    private void loadUserProfileAndRoleIntoDrawer() {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        com.google.firebase.auth.FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) return;
+
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users");
+        String uid = currentUser.getUid();
+
+        usersRef.child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) return;
+
+                User user = snapshot.getValue(User.class);
+                if (user == null) return;
+
+                if (tvFullName != null) tvFullName.setText(user.firstName + " " + user.lastName);
+                if (tvEmail != null) tvEmail.setText(user.email);
+                if (tvRole != null) tvRole.setText(user.role);
+
+                boolean isAdmin = user.role != null && user.role.equalsIgnoreCase("Admin");
+
+                if (btnManageUsers != null) btnManageUsers.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
+                if (btnManageClasses != null) btnManageClasses.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
+                if (btnMyCourses != null) btnMyCourses.setVisibility(isAdmin ? View.GONE : View.VISIBLE);
+            }
+
+            @Override public void onCancelled(@NonNull DatabaseError error) { }
+        });
+    }
+
+    private void closeDrawer() {
+        if (drawerLayout != null) drawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    // ===================== Existing Forum code (unchanged logic) =====================
     private void toggleFavoritesFilter() {
         showingFavoritesOnly = !showingFavoritesOnly;
         if (showingFavoritesOnly) {
@@ -178,19 +289,19 @@ public class ForumActivity extends AppCompatActivity {
     private void showSortBottomSheet() {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.layout_forum_sort, null);
-        
+
         view.findViewById(R.id.sortRecent).setOnClickListener(v -> {
             currentSortMode = "Recent";
             sortAndFilter();
             bottomSheetDialog.dismiss();
         });
-        
+
         view.findViewById(R.id.sortPopular).setOnClickListener(v -> {
             currentSortMode = "Popular";
             sortAndFilter();
             bottomSheetDialog.dismiss();
         });
-        
+
         view.findViewById(R.id.sortHot).setOnClickListener(v -> {
             currentSortMode = "Hot";
             sortAndFilter();
@@ -204,7 +315,7 @@ public class ForumActivity extends AppCompatActivity {
     private void sortAndFilter() {
         Collections.sort(list, (p1, p2) -> {
             if (p1.isPinned != p2.isPinned) return p1.isPinned ? -1 : 1;
-            
+
             switch (currentSortMode) {
                 case "Popular":
                     return Integer.compare(p2.viewCount, p1.viewCount);
@@ -217,7 +328,7 @@ public class ForumActivity extends AppCompatActivity {
                     return Long.compare(p2.lastReplyTimestamp, p1.lastReplyTimestamp);
             }
         });
-        
+
         currentPage = 1;
         filterPosts();
     }
@@ -231,17 +342,17 @@ public class ForumActivity extends AppCompatActivity {
                         long unreadCount = 0;
                         for (DataSnapshot notificationSnapshot : snapshot.getChildren()) {
                             Boolean isRead = notificationSnapshot.child("isRead").getValue(Boolean.class);
-                            if (isRead == null || !isRead) {
-                                unreadCount++;
-                            }
+                            if (isRead == null || !isRead) unreadCount++;
                         }
+
                         TextView badge = findViewById(R.id.badgeNotifications);
                         androidx.cardview.widget.CardView badgeContainer = findViewById(R.id.badgeContainer);
                         if (badge != null && badgeContainer != null) {
                             if (unreadCount > 0) {
                                 badge.setText(String.valueOf(Math.min(unreadCount, 99)));
                                 badgeContainer.setVisibility(View.VISIBLE);
-                                android.view.animation.Animation pulseAnimation = android.view.animation.AnimationUtils.loadAnimation(ForumActivity.this, R.anim.pulse_badge);
+                                android.view.animation.Animation pulseAnimation =
+                                        android.view.animation.AnimationUtils.loadAnimation(ForumActivity.this, R.anim.pulse_badge);
                                 badgeContainer.startAnimation(pulseAnimation);
                             } else {
                                 badgeContainer.clearAnimation();
@@ -296,8 +407,8 @@ public class ForumActivity extends AppCompatActivity {
     private void filterPosts() {
         filteredList.clear();
         String searchQuery = (etSearch != null && etSearch.getText() != null)
-            ? etSearch.getText().toString().toLowerCase(Locale.getDefault()).trim()
-            : "";
+                ? etSearch.getText().toString().toLowerCase(Locale.getDefault()).trim()
+                : "";
 
         ArrayList<Post> subjectFiltered = new ArrayList<>();
         if ("All".equals(selectedFilter)) {
@@ -320,9 +431,7 @@ public class ForumActivity extends AppCompatActivity {
 
                 boolean matchesFavorites = !showingFavoritesOnly || favoritePostIds.contains(post.postId);
 
-                if (matchesSearch && matchesFavorites) {
-                    filteredList.add(post);
-                }
+                if (matchesSearch && matchesFavorites) filteredList.add(post);
             }
         }
 
@@ -362,13 +471,16 @@ public class ForumActivity extends AppCompatActivity {
                         if (!snapshot.exists()) return;
                         User user = snapshot.getValue(User.class);
                         if (user == null) return;
+
                         currentUserRole = (user.role != null) ? user.role : "";
                         adapter.updateUserRole(currentUserRole);
+
                         if ("Admin".equalsIgnoreCase(currentUserRole) || "Teacher".equalsIgnoreCase(currentUserRole)) {
                             fabCreatePost.setVisibility(View.VISIBLE);
                         } else {
                             fabCreatePost.setVisibility(View.GONE);
                         }
+
                         setupNavbar();
                     }
                     @Override public void onCancelled(@NonNull DatabaseError error) {}
@@ -401,45 +513,56 @@ public class ForumActivity extends AppCompatActivity {
     private void setupNavbar() {
         TextView navForum = findViewById(R.id.navForums);
         if (navForum == null) return;
+
         int redColor = androidx.core.content.ContextCompat.getColor(this, R.color.esprit_red);
         navForum.setTextColor(redColor);
         for (android.graphics.drawable.Drawable d : navForum.getCompoundDrawables()) {
             if (d != null) d.setTint(redColor);
         }
+
+        // ✅ open drawer instead of starting ProfileActivity
         findViewById(R.id.navProfile).setOnClickListener(v -> {
-            startActivity(new Intent(this, ProfileActivity.class));
-            overridePendingTransition(0, 0);
-            finish();
+            if (drawerLayout != null) drawerLayout.openDrawer(GravityCompat.START);
         });
+
         findViewById(R.id.navCourses).setOnClickListener(v -> {
             startActivity(new Intent(this, CoursesActivity.class));
             overridePendingTransition(0, 0);
             finish();
         });
+
         findViewById(R.id.navMap).setOnClickListener(v -> {
-            Intent intent = new Intent(this, MapsActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(this, MapsActivity.class));
             overridePendingTransition(0, 0);
             finish();
         });
+
         findViewById(R.id.navEvents).setOnClickListener(v -> {
-            Intent intent = new Intent(this, com.example.eventscalendar.CalendarActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(this, com.example.eventscalendar.CalendarActivity.class));
             overridePendingTransition(0, 0);
             finish();
         });
 
         findViewById(R.id.navCovoiturage).setOnClickListener(v -> {
-            Intent intent = new Intent(this, CovoiturageActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(this, CovoiturageActivity.class));
             overridePendingTransition(0, 0);
             finish();
         });
+
         if ("Admin".equalsIgnoreCase(currentUserRole)) {
             fabCreatePost.setOnLongClickListener(v -> {
                 startActivity(new Intent(this, AdminForumActivity.class));
                 return true;
             });
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
         }
     }
 

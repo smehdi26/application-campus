@@ -9,7 +9,7 @@
     android:elevation="20dp"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:weightSum="6"
+    android:weightSum="5"
     android:paddingTop="8dp"
     android:paddingBottom="8dp">
 
@@ -41,6 +41,20 @@
         android:drawablePadding="4dp"
         app:drawableTint="#757575"/>
 
+    <!-- 5. Forums -->
+    <TextView
+        android:id="@+id/navForums"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Forums"
+        android:textSize="9sp"
+        android:gravity="center"
+        android:textColor="#757575"
+        android:drawableTop="@drawable/ic_nav_forum"
+        android:drawablePadding="4dp"
+        app:drawableTint="#757575"/>
+
     <!-- 3. Events -->
     <TextView
         android:id="@+id/navEvents"
@@ -69,20 +83,6 @@
         android:drawablePadding="4dp"
         app:drawableTint="#757575"/>
 
-    <!-- 5. Forums -->
-    <TextView
-        android:id="@+id/navForums"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Forums"
-        android:textSize="9sp"
-        android:gravity="center"
-        android:textColor="#757575"
-        android:drawableTop="@drawable/ic_nav_forum"
-        android:drawablePadding="4dp"
-        app:drawableTint="#757575"/>
-
     <!-- 6. Profile -->
     <TextView
         android:id="@+id/navProfile"
@@ -95,6 +95,6 @@
         android:textColor="#757575"
         android:drawableTop="@drawable/ic_nav_profile"
         android:drawablePadding="4dp"
-        app:drawableTint="#757575"/>
-
+        app:drawableTint="#757575"
+        android:visibility="gone" />
 </LinearLayout>

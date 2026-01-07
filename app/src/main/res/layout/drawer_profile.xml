@@ -5,11 +5,9 @@
     android:layout_height="match_parent"
     android:background="#F8F9FA">
 
-    <!-- Scrollable Content -->
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="65dp"> <!-- Space for Navbar -->
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,11 +21,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginBottom="20dp">
+
                 <View
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:background="@color/esprit_red"
                     android:layout_marginBottom="8dp"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -35,6 +35,7 @@
                     android:textSize="22sp"
                     android:textStyle="bold"
                     android:textColor="#000"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -111,7 +112,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <!-- 1. Edit Profile (Always Visible) -->
+                    <!-- 1. Edit Profile -->
                     <LinearLayout
                         android:id="@+id/btnEditProfile"
                         android:layout_width="match_parent"
@@ -122,14 +123,34 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:background="?attr/selectableItemBackground">
-                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_edit" app:tint="#333"/>
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Edit Profile" android:textSize="16sp" android:textColor="#333" android:layout_marginStart="16dp"/>
-                        <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@android:drawable/arrow_down_float" android:rotation="-90" app:tint="#999"/>
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@android:drawable/ic_menu_edit"
+                            app:tint="#333"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="Edit Profile"
+                            android:textSize="16sp"
+                            android:textColor="#333"
+                            android:layout_marginStart="16dp"/>
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@android:drawable/arrow_down_float"
+                            android:rotation="-90"
+                            app:tint="#999"/>
                     </LinearLayout>
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE" android:layout_marginStart="56dp"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#EEEEEE"
+                        android:layout_marginStart="56dp"/>
 
-                    <!-- 2. My Courses (For Students/Teachers) -->
+                    <!-- 2. My Courses -->
                     <LinearLayout
                         android:id="@+id/btnMyCourses"
                         android:layout_width="match_parent"
@@ -140,12 +161,28 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:background="?attr/selectableItemBackground">
-                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_agenda" app:tint="#333"/>
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="My Courses" android:textSize="16sp" android:textColor="#333" android:layout_marginStart="16dp"/>
-                        <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@android:drawable/arrow_down_float" android:rotation="-90" app:tint="#999"/>
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@android:drawable/ic_menu_agenda"
+                            app:tint="#333"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="My Courses"
+                            android:textSize="16sp"
+                            android:textColor="#333"
+                            android:layout_marginStart="16dp"/>
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@android:drawable/arrow_down_float"
+                            android:rotation="-90"
+                            app:tint="#999"/>
                     </LinearLayout>
 
-                    <!-- 3. Manage Users (For Admins ONLY) -->
+                    <!-- 3. Manage Users (Admin) -->
                     <LinearLayout
                         android:id="@+id/btnManageUsers"
                         android:layout_width="match_parent"
@@ -157,12 +194,28 @@
                         android:focusable="true"
                         android:visibility="gone"
                         android:background="?attr/selectableItemBackground">
-                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_myplaces" app:tint="#333"/>
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Manage Users" android:textSize="16sp" android:textColor="#333" android:layout_marginStart="16dp"/>
-                        <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@android:drawable/arrow_down_float" android:rotation="-90" app:tint="#999"/>
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@android:drawable/ic_menu_myplaces"
+                            app:tint="#333"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="Manage Users"
+                            android:textSize="16sp"
+                            android:textColor="#333"
+                            android:layout_marginStart="16dp"/>
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@android:drawable/arrow_down_float"
+                            android:rotation="-90"
+                            app:tint="#999"/>
                     </LinearLayout>
 
-                    <!-- 4. Manage Classes (For Admins ONLY) - NEW -->
+                    <!-- 4. Manage Classes (Admin) -->
                     <LinearLayout
                         android:id="@+id/btnManageClasses"
                         android:layout_width="match_parent"
@@ -174,9 +227,25 @@
                         android:focusable="true"
                         android:visibility="gone"
                         android:background="?attr/selectableItemBackground">
-                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_agenda" app:tint="#333"/>
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Manage Classes" android:textSize="16sp" android:textColor="#333" android:layout_marginStart="16dp"/>
-                        <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@android:drawable/arrow_down_float" android:rotation="-90" app:tint="#999"/>
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@android:drawable/ic_menu_agenda"
+                            app:tint="#333"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="Manage Classes"
+                            android:textSize="16sp"
+                            android:textColor="#333"
+                            android:layout_marginStart="16dp"/>
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@android:drawable/arrow_down_float"
+                            android:rotation="-90"
+                            app:tint="#999"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -198,13 +267,5 @@
 
         </LinearLayout>
     </ScrollView>
-
-    <!-- NAVBAR INCLUDE -->
-    <include
-        android:id="@+id/navbar"
-        layout="@layout/layout_navbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

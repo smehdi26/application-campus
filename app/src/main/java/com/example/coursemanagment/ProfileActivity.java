@@ -10,7 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coursemanagment.covoiturage.activities.CovoiturageActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,7 +33,7 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.drawer_profile);
 
 
 
