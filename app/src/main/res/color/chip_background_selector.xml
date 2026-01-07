@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- State when the chip is checked -->
-    <item android:state_checked="true" android:color="@color/esprit_red"/>
-    <!-- Default state (not checked) -->
-    <item android:color="#E0E0E0"/>
-</selector>

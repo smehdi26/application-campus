@@ -31,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
 
     EditText etEmail, etPassword;
     Button btnLogin, btnLang;
-    TextView tvForgotPassword;
+    TextView tvRegisterLink;
     FirebaseAuth mAuth;
     boolean isPasswordVisible = false;
 
@@ -52,13 +52,19 @@ public class LoginActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
+        tvRegisterLink = findViewById(R.id.tvRegisterLink);
         btnLang = findViewById(R.id.btnChangeLang);
-        tvForgotPassword = findViewById(R.id.tvForgotPassword);
 
         // Listeners
         btnLang.setOnClickListener(v -> showLanguageDialog());
         btnLogin.setOnClickListener(v -> loginUser());
-        tvForgotPassword.setOnClickListener(v -> resetPassword());
+
+        if (tvRegisterLink != null) {
+            tvRegisterLink.setOnClickListener(v -> {
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+            });
+        }
 
         // Setup the Eye Icon logic
         setupPasswordVisibility();
@@ -83,49 +89,6 @@ public class LoginActivity extends AppCompatActivity {
             }
             return false;
         });
-    }
-
-    private void resetPassword() {
-        String email = etEmail.getText().toString().trim();
-
-        if (TextUtils.isEmpty(email)) {
-            Toast.makeText(this, "Please enter your email address", Toast.LENGTH_SHORT).show();
-            etEmail.setError("Email required to reset password");
-            return;
-        }
-
-        mAuth.fetchSignInMethodsForEmail(email)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // Check if email exists in Firebase Auth
-                        if (task.getResult() != null && task.getResult().getSignInMethods() != null && !task.getResult().getSignInMethods().isEmpty()) {
-                            // Email exists, proceed to send password reset email
-                            mAuth.sendPasswordResetEmail(email)
-                                    .addOnCompleteListener(sendTask -> {
-                                        if (sendTask.isSuccessful()) {
-                                            Toast.makeText(LoginActivity.this, "Password reset email sent to " + email, Toast.LENGTH_LONG).show();
-                                        } else {
-                                            String error = "Failed to send reset email.";
-                                            if (sendTask.getException() != null) {
-                                                error += " " + sendTask.getException().getMessage();
-                                            }
-                                            Toast.makeText(LoginActivity.this, error, Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                        } else {
-                            // Email does not exist in Firebase Auth
-                            Toast.makeText(LoginActivity.this, "Email address not registered.", Toast.LENGTH_LONG).show();
-                            etEmail.setError("Email not found");
-                        }
-                    } else {
-                        // Error fetching sign-in methods (e.g., network issues)
-                        String error = "Error checking email existence.";
-                        if (task.getException() != null) {
-                            error += " " + task.getException().getMessage();
-                        }
-                        Toast.makeText(LoginActivity.this, error, Toast.LENGTH_LONG).show();
-                    }
-                });
     }
 
     // --- LANGUAGE DIALOG ---

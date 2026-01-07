@@ -10,9 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.coursemanagment.covoiturage.activities.CovoiturageActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
@@ -20,7 +18,7 @@ import com.google.firebase.database.*;
 public class ProfileActivity extends AppCompatActivity {
 
     TextView tvFullName, tvEmail, tvRole;
-    LinearLayout btnEditProfile, btnMyCourses, btnManageUsers, btnManageClasses; // Added btnManageClasses
+    LinearLayout btnEditProfile, btnMyCourses, btnManageUsers; // Added btnManageUsers
     Button btnLogout;
 
     FirebaseAuth mAuth;
@@ -36,8 +34,6 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-
-
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference("Users");
 
@@ -46,8 +42,7 @@ public class ProfileActivity extends AppCompatActivity {
         tvRole = findViewById(R.id.tvRole);
         btnEditProfile = findViewById(R.id.btnEditProfile);
         btnMyCourses = findViewById(R.id.btnMyCourses);
-        btnManageUsers = findViewById(R.id.btnManageUsers);
-        btnManageClasses = findViewById(R.id.btnManageClasses); // Find new button
+        btnManageUsers = findViewById(R.id.btnManageUsers); // Find new button
         btnLogout = findViewById(R.id.btnLogout);
 
         setupNavbar();
@@ -70,14 +65,9 @@ public class ProfileActivity extends AppCompatActivity {
             overridePendingTransition(0, 0);
         });
 
+        // Manage Users Click
         btnManageUsers.setOnClickListener(v -> {
             Intent intent = new Intent(this, AllUsersActivity.class);
-            startActivity(intent);
-        });
-
-        // Manage Classes Listener
-        btnManageClasses.setOnClickListener(v -> {
-            Intent intent = new Intent(this, AdminClassListActivity.class);
             startActivity(intent);
         });
     }
@@ -99,14 +89,12 @@ public class ProfileActivity extends AppCompatActivity {
 
                             // --- ROLE UI TOGGLE ---
                             if ("Admin".equalsIgnoreCase(user.role)) {
-                                // ADMIN
+                                // Admin: Show Manage Users, Hide My Courses
                                 btnManageUsers.setVisibility(View.VISIBLE);
-                                btnManageClasses.setVisibility(View.VISIBLE); // Show
                                 btnMyCourses.setVisibility(View.GONE);
                             } else {
-                                // USER
+                                // User: Show My Courses, Hide Manage Users
                                 btnManageUsers.setVisibility(View.GONE);
-                                btnManageClasses.setVisibility(View.GONE); // Hide
                                 btnMyCourses.setVisibility(View.VISIBLE);
                             }
                         }
@@ -130,19 +118,8 @@ public class ProfileActivity extends AppCompatActivity {
             finish();
         });
 
-        findViewById(R.id.navEvents).setOnClickListener(v -> {
-            Intent intent = new Intent(this, com.example.eventscalendar.CalendarActivity.class);
-            startActivity(intent);
-            overridePendingTransition(0, 0);
-            finish();
-        });
-        findViewById(R.id.navForums).setOnClickListener(v -> {
-            startActivity(new Intent(this, ForumActivity.class));
-            overridePendingTransition(0, 0);
-            finish();
-        });
-        findViewById(R.id.navCovoiturage).setOnClickListener(v -> {
-            startActivity(new Intent(this, CovoiturageActivity.class));
+        findViewById(R.id.navMap).setOnClickListener(v -> {
+            startActivity(new Intent(this, MapsActivity.class));
             overridePendingTransition(0, 0);
             finish();
         });

@@ -34,39 +34,34 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    viewBinding {
-        enable = true
-    }
-
-    packaging {
-        resources.excludes.add("META-INF/DEPENDENCIES")
-    }
 }
-
-configurations.all {
-    exclude(group = "com.google.guava", module = "listenablefuture")
-}
-
 
 dependencies {
     implementation(libs.appcompat)
+    implementation("com.google.firebase:firebase-auth:22.3.0")
+    implementation("com.google.firebase:firebase-database:21.0.0")
     implementation(libs.material)
-    implementation(libs.firebase.auth)
-    implementation(libs.firebase.database)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-    // MPAndroidChart temporarily removed - can be added back later if needed
-    // implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-    implementation(libs.applandeo.calendar)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
+
+    // --- UI helpers for Map + Details ---
+    implementation("androidx.recyclerview:recyclerview:1.4.0")
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
+
+    // Image loading
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
+    // QR scanning (in-app)
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation("com.google.zxing:core:3.5.3")
+
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-
-    // Google API
-    implementation("com.google.android.gms:play-services-auth:20.7.0") {
-        exclude(group = "com.google.guava", module = "listenablefuture")
-    }
-    implementation("com.google.api-client:google-api-client-android:1.23.0")
-    implementation("com.google.api-client:google-api-client-gson:1.23.0")
-    implementation("com.google.apis:google-api-services-calendar:v3-rev411-1.25.0")
 }

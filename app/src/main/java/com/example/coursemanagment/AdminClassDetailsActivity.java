@@ -16,8 +16,8 @@ public class AdminClassDetailsActivity extends AppCompatActivity {
 
     TextView tvClassName;
     RecyclerView recyclerView;
-    Button btnAddCourse, btnManageClassInfo; // New Button
-    LinearLayout btnBack;
+    Button btnAddCourse;
+    LinearLayout btnBack; // Define variable
 
     DatabaseReference mDatabase;
     ArrayList<Course> list;
@@ -34,9 +34,9 @@ public class AdminClassDetailsActivity extends AppCompatActivity {
         tvClassName = findViewById(R.id.tvHeaderClassName);
         recyclerView = findViewById(R.id.recyclerAdminCourses);
         btnAddCourse = findViewById(R.id.btnAdminAddCourse);
-        btnManageClassInfo = findViewById(R.id.btnManageClassInfo); // Link ID
-        btnBack = findViewById(R.id.btnBack);
+        btnBack = findViewById(R.id.btnBack); // Link ID
 
+        // --- BACK BUTTON LOGIC ---
         btnBack.setOnClickListener(v -> finish());
 
         if(currentClass != null) {
@@ -49,18 +49,10 @@ public class AdminClassDetailsActivity extends AppCompatActivity {
         adapter = new CourseAdapter(this, list);
         recyclerView.setAdapter(adapter);
 
-        // --- 1. EDIT CLASS & STUDENTS LOGIC ---
-        btnManageClassInfo.setOnClickListener(v -> {
-            Intent intent = new Intent(AdminClassDetailsActivity.this, AdminAddClassActivity.class);
-            intent.putExtra("class_data", currentClass); // Pass class data to edit
-            startActivity(intent);
-            finish(); // Close details so when they come back, info (like Name) is refreshed
-        });
-
-        // --- 2. ADD COURSE LOGIC ---
+        // Click Add Course
         btnAddCourse.setOnClickListener(v -> {
             Intent intent = new Intent(AdminClassDetailsActivity.this, AdminAddCourseActivity.class);
-            intent.putExtra("class_id", currentClass.id);
+            intent.putExtra("class_id", currentClass.id); // Pass Class ID
             startActivity(intent);
         });
 
@@ -68,7 +60,9 @@ public class AdminClassDetailsActivity extends AppCompatActivity {
     }
 
     private void loadCourses() {
+        // Query courses that belong to THIS classId
         Query query = mDatabase.orderByChild("classId").equalTo(currentClass.id);
+
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -76,7 +70,7 @@ public class AdminClassDetailsActivity extends AppCompatActivity {
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Course c = ds.getValue(Course.class);
                     if(c != null) {
-                        c.courseId = ds.getKey();
+                        c.courseId = ds.getKey(); // Critical Fix for ID
                         list.add(c);
                     }
                 }

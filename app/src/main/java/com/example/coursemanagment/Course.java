@@ -10,10 +10,10 @@ public class Course implements Serializable {
     public String timing;
     public String location;
 
-    // --- THESE FIELDS WERE LIKELY MISSING ---
-    public String classId;
-    public String teacherId;
-    public String teacherName;
+    // NEW FIELDS
+    public String classId;      // Which class this course belongs to
+    public String teacherId;    // Which teacher teaches it
+    public String teacherName;  // For display purposes
 
     public Course() {}
 

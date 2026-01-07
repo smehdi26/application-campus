@@ -25,7 +25,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
     ArrayList<User> list;
     DatabaseReference mDatabase;
     Button btnLogout;
-    CardView btnManageClasses, btnManageForum;
+    CardView btnManageClasses; // <--- 1. Define the variable
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +35,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         // Initialize Views
         recyclerView = findViewById(R.id.recyclerUsers);
         btnLogout = findViewById(R.id.btnAdminLogout);
-        btnManageClasses = findViewById(R.id.btnManageClasses);
-        btnManageForum = findViewById(R.id.btnManageForum);
+        btnManageClasses = findViewById(R.id.btnManageClasses); // <--- 2. Find the view ID
 
         mDatabase = FirebaseDatabase.getInstance().getReference("Users");
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -44,16 +43,11 @@ public class AdminDashboardActivity extends AppCompatActivity {
         adapter = new UserAdapter(this, list);
         recyclerView.setAdapter(adapter);
 
+        // --- 3. ADDED: MANAGE CLASSES CLICK LISTENER ---
         if (btnManageClasses != null) {
             btnManageClasses.setOnClickListener(v -> {
+                // Navigate to the Class List page
                 Intent intent = new Intent(AdminDashboardActivity.this, AdminClassListActivity.class);
-                startActivity(intent);
-            });
-        }
-
-        if (btnManageForum != null) {
-            btnManageForum.setOnClickListener(v -> {
-                Intent intent = new Intent(AdminDashboardActivity.this, AdminForumActivity.class);
                 startActivity(intent);
             });
         }
