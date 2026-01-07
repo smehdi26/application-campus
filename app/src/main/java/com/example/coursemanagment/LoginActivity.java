@@ -25,6 +25,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
@@ -89,43 +90,44 @@ public class LoginActivity extends AppCompatActivity {
         String email = etEmail.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)) {
-            Toast.makeText(this, "Please enter your email address", Toast.LENGTH_SHORT).show();
-            etEmail.setError("Email required to reset password");
+            etEmail.setError("Email is required.");
+            etEmail.requestFocus();
             return;
         }
 
-        mAuth.fetchSignInMethodsForEmail(email)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // Check if email exists in Firebase Auth
-                        if (task.getResult() != null && task.getResult().getSignInMethods() != null && !task.getResult().getSignInMethods().isEmpty()) {
-                            // Email exists, proceed to send password reset email
-                            mAuth.sendPasswordResetEmail(email)
-                                    .addOnCompleteListener(sendTask -> {
-                                        if (sendTask.isSuccessful()) {
-                                            Toast.makeText(LoginActivity.this, "Password reset email sent to " + email, Toast.LENGTH_LONG).show();
-                                        } else {
-                                            String error = "Failed to send reset email.";
-                                            if (sendTask.getException() != null) {
-                                                error += " " + sendTask.getException().getMessage();
-                                            }
-                                            Toast.makeText(LoginActivity.this, error, Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                        } else {
-                            // Email does not exist in Firebase Auth
-                            Toast.makeText(LoginActivity.this, "Email address not registered.", Toast.LENGTH_LONG).show();
-                            etEmail.setError("Email not found");
-                        }
-                    } else {
-                        // Error fetching sign-in methods (e.g., network issues)
-                        String error = "Error checking email existence.";
-                        if (task.getException() != null) {
-                            error += " " + task.getException().getMessage();
-                        }
-                        Toast.makeText(LoginActivity.this, error, Toast.LENGTH_LONG).show();
-                    }
-                });
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users");
+        Query emailQuery = usersRef.orderByChild("email").equalTo(email);
+
+        emailQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Email exists in the database, proceed to send password reset email
+                    mAuth.sendPasswordResetEmail(email)
+                            .addOnCompleteListener(sendTask -> {
+                                if (sendTask.isSuccessful()) {
+                                    Toast.makeText(LoginActivity.this, "Password reset email sent to " + email, Toast.LENGTH_LONG).show();
+                                } else {
+                                    String error = "Failed to send reset email.";
+                                    if (sendTask.getException() != null) {
+                                        error += " " + sendTask.getException().getMessage();
+                                    }
+                                    Toast.makeText(LoginActivity.this, error, Toast.LENGTH_LONG).show();
+                                }
+                            });
+                } else {
+                    // Email does not exist in the database
+                    Toast.makeText(LoginActivity.this, "Email address not found.", Toast.LENGTH_LONG).show();
+                    etEmail.setError("Email not registered");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle potential errors, like permission issues or network problems
+                Toast.makeText(LoginActivity.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     // --- LANGUAGE DIALOG ---
