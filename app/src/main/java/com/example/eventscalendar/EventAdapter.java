@@ -20,14 +20,23 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import android.graphics.Color;
 import java.util.List;
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
     private List<EventModel> events;
     private FirebaseAuth mAuth;
     private DatabaseReference mUsersDatabase;
     private DatabaseReference mEventsDatabase;
-    public EventAdapter(List<EventModel> events) {
+    private OnEventRegisterClickListener listener; // New Interface
+
+    // Interface definition
+    public interface OnEventRegisterClickListener {
+        void onRegisterClick(EventModel event);
+    }
+
+    public EventAdapter(List<EventModel> events, OnEventRegisterClickListener listener) { // Modified constructor
         this.events = events;
+        this.listener = listener; // Initialize listener
         this.mAuth = FirebaseAuth.getInstance();
         this.mUsersDatabase = FirebaseDatabase.getInstance().getReference("Users");
         this.mEventsDatabase = FirebaseDatabase.getInstance().getReference("events");
@@ -62,24 +71,35 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             holder.category.setBackgroundResource(R.drawable.bg_badge_gray);
             holder.category.setTextColor(Color.GRAY);
         }
-        checkUserRole(holder);
+        checkUserRole(holder, event.getId());
         holder.btnDeleteEvent.setOnClickListener(v -> {
             mEventsDatabase.child(event.getId()).removeValue();
             Toast.makeText(v.getContext(), "Event deleted", Toast.LENGTH_SHORT).show();
         });
-                    holder.btnEditEvent.setOnClickListener(v -> {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, EditEventActivity.class);
-                        intent.putExtra("eventId", event.getId());
-                        intent.putExtra("eventTitle", event.getTitle());
-                        intent.putExtra("eventCategory", event.getCategory());
-                        intent.putExtra("eventDate", event.getDate());
-                        intent.putExtra("eventTime", event.getTime());
-                        intent.putExtra("eventLocation", event.getLocation());
-                        intent.putExtra("eventDescription", event.getDescription());
-                        context.startActivity(intent);
-                    });    }
-    private void checkUserRole(EventViewHolder holder) {
+        holder.btnEditEvent.setOnClickListener(v -> {
+            Context context = v.getContext();
+            Intent intent = new Intent(context, EditEventActivity.class);
+            intent.putExtra("eventId", event.getId());
+            intent.putExtra("eventTitle", event.getTitle());
+            intent.putExtra("eventCategory", event.getCategory());
+            intent.putExtra("eventDate", event.getDate());
+            intent.putExtra("eventTime", event.getTime());
+            intent.putExtra("eventLocation", event.getLocation());
+            intent.putExtra("eventDescription", event.getDescription());
+            context.startActivity(intent);
+        });
+
+        // New: Register button click listener
+        holder.btnRegisterEvent.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onRegisterClick(event);
+            }
+        });
+
+        checkUserRole(holder, event.getId()); // Modified to pass eventId
+    }
+
+    private void checkUserRole(EventViewHolder holder, String eventId) { // Modified signature
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             String uid = currentUser.getUid();
@@ -90,18 +110,44 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
                         User user = snapshot.getValue(User.class);
                         if (user != null && "Admin".equalsIgnoreCase(user.role)) {
                             holder.adminOptions.setVisibility(View.VISIBLE);
+                            holder.btnRegisterEvent.setVisibility(View.GONE); // Admin doesn't need to register
                         } else {
                             holder.adminOptions.setVisibility(View.GONE);
+                            // Check if the user has already registered for this event
+                            mUsersDatabase.child(uid).child("interestedEvents").child(eventId)
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot eventSnapshot) {
+                                            if (eventSnapshot.exists()) {
+                                                holder.btnRegisterEvent.setText("Registered");
+                                                holder.btnRegisterEvent.setEnabled(false);
+                                                holder.btnRegisterEvent.setBackgroundColor(Color.GRAY);
+                                            } else {
+                                                holder.btnRegisterEvent.setText("Register");
+                                                holder.btnRegisterEvent.setEnabled(true);
+                                                holder.btnRegisterEvent.setBackgroundResource(android.R.drawable.btn_default); // Reset background
+                                            }
+                                            holder.btnRegisterEvent.setVisibility(View.VISIBLE); // Show for non-admins
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            holder.btnRegisterEvent.setVisibility(View.VISIBLE); // Show for non-admins on error
+                                        }
+                                    });
                         }
                     }
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     holder.adminOptions.setVisibility(View.GONE);
+                    holder.btnRegisterEvent.setVisibility(View.VISIBLE); // Show for non-admins on error
                 }
             });
         } else {
             holder.adminOptions.setVisibility(View.GONE);
+            // Revised to hide if no user is logged in
+            holder.btnRegisterEvent.setVisibility(View.GONE);
         }
     }
     @Override
@@ -116,7 +162,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     static class EventViewHolder extends RecyclerView.ViewHolder {
         TextView title, dateTime, location, category;
         LinearLayout adminOptions;
-        Button btnEditEvent, btnDeleteEvent;
+        Button btnEditEvent, btnDeleteEvent, btnRegisterEvent;
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.tvEventTitle);
@@ -126,6 +172,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             adminOptions = itemView.findViewById(R.id.admin_options);
             btnEditEvent = itemView.findViewById(R.id.btnEditEvent);
             btnDeleteEvent = itemView.findViewById(R.id.btnDeleteEvent);
+            btnRegisterEvent = itemView.findViewById(R.id.btnRegisterEvent); // New
         }
     }
 }

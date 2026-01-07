@@ -25,6 +25,7 @@ import android.util.Log; // Import Log
 
 public class GroupedEventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<Object> items;
+    private EventAdapter.OnEventRegisterClickListener listener; // New member
     private static final int VIEW_TYPE_MONTH = 0;
     private static final int VIEW_TYPE_EVENT = 1;
     private FirebaseAuth mAuth;
@@ -32,8 +33,9 @@ public class GroupedEventAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private DatabaseReference mEventsDatabase;
     private static final String TAG = "GroupedEventAdapter"; // Tag for logging
 
-    public GroupedEventAdapter(List<Object> items) {
+    public GroupedEventAdapter(List<Object> items, EventAdapter.OnEventRegisterClickListener listener) { // Modified constructor
         this.items = items;
+        this.listener = listener; // Initialize listener
         this.mAuth = FirebaseAuth.getInstance();
         this.mUsersDatabase = FirebaseDatabase.getInstance().getReference("Users");
         this.mEventsDatabase = FirebaseDatabase.getInstance().getReference("events");
@@ -141,26 +143,8 @@ public class GroupedEventAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                             holder.btnRegisterEvent.setOnClickListener(v -> {
                                 Log.d(TAG, "Register button clicked for event: " + event.getTitle());
-                                if (user.interestedEvents != null && !user.interestedEvents.containsKey(event.getId())) {
-                                    user.interestedEvents.put(event.getId(), true);
-                                    mUsersDatabase.child(uid).setValue(user).addOnCompleteListener(task -> {
-                                        if (task.isSuccessful()) {
-                                            Log.d(TAG, "Event " + event.getTitle() + " successfully registered in Firebase.");
-                                            Toast.makeText(v.getContext(), "Event registered!", Toast.LENGTH_SHORT).show();
-                                            holder.btnRegisterEvent.setText("Registered");
-                                            holder.btnRegisterEvent.setEnabled(false);
-
-                                            if (v.getContext() instanceof EventsListActivity) {
-                                                Log.d(TAG, "Calling syncToGoogleCalendar for event: " + event.getTitle());
-                                                ((EventsListActivity) v.getContext()).syncToGoogleCalendar(event);
-                                            }
-                                        } else {
-                                            Log.e(TAG, "Failed to register event " + event.getTitle() + " in Firebase.", task.getException());
-                                            Toast.makeText(v.getContext(), "Failed to register.", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                } else {
-                                    Log.d(TAG, "Event " + event.getTitle() + " already registered (or interestedEvents is null).");
+                                if (listener != null) {
+                                    listener.onRegisterClick(event);
                                 }
                             });
                         } else {

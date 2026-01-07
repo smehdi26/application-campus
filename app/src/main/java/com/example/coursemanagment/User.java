@@ -3,13 +3,14 @@ package com.example.coursemanagment;
 import com.google.firebase.database.IgnoreExtraProperties;
 import java.util.HashMap;
 import java.util.Map;
+import com.example.eventscalendar.EventModel; // New import
 
 @IgnoreExtraProperties
 public class User {
     public String uid; // We need to store the UID inside the object now
     public String firstName, lastName, email, role;
     public String classId = ""; // Empty means Unassigned
-    public Map<String, Object> interestedEvents = new HashMap<>(); // Dedicated field for calendar events
+    public Map<String, EventModel> interestedEvents = new HashMap<>(); // Changed to Map<String, EventModel>
 
     public User() {}
 

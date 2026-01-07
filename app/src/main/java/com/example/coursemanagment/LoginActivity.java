@@ -200,7 +200,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     // Everyone goes to ProfileActivity (Admin, Student, Teacher)
-                    Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, ForumActivity.class);
                     startActivity(intent);
                     finish();
                 } else {

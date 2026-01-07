@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Gestion des Cours</string>
+    <string name="app_name">CompusI</string>
     <string name="welcome">Bon retour</string>
     <string name="login">Connexion</string>
     <string name="email">Email</string>
